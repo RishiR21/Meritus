@@ -17,7 +17,7 @@
   --popover: #fdffff;
   --popover-foreground: #18202a;
   --primary: #007373;
-  --primary-foreground: #f8fdfc;
+  --primary-foreground: #ffffff;
   --secondary: #e4e8ed;
   --secondary-foreground: #222a33;
   --muted: #e3e8ec;
@@ -45,7 +45,7 @@
     --popover: #161d26;
     --popover-foreground: #ebeff2;
     --primary: #41c1ba;
-    --primary-foreground: #031a1b;
+    --primary-foreground: #041f20;
     --secondary: #222a33;
     --secondary-foreground: #ebeff2;
     --muted: #222a33;
@@ -73,7 +73,7 @@
   --popover: #161d26;
   --popover-foreground: #ebeff2;
   --primary: #41c1ba;
-  --primary-foreground: #031a1b;
+  --primary-foreground: #041f20;
   --secondary: #222a33;
   --secondary-foreground: #ebeff2;
   --muted: #222a33;
@@ -100,7 +100,7 @@
   --popover: #fdffff;
   --popover-foreground: #18202a;
   --primary: #007373;
-  --primary-foreground: #f8fdfc;
+  --primary-foreground: #ffffff;
   --secondary: #e4e8ed;
   --secondary-foreground: #222a33;
   --muted: #e3e8ec;
@@ -276,12 +276,16 @@ body {
   font-size: 1rem;
 }
 
-/* Segmented Toggle Group */
+/* High-Contrast Segmented Toggle Group */
 .toggle-group {
   display: flex;
   width: 100%;
   border-radius: 0.5rem;
   overflow: hidden;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  padding: 2px;
+  gap: 2px;
 }
 
 .toggle-item {
@@ -289,46 +293,37 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 1.75rem;
-  padding: 0 0.625rem;
+  height: 1.85rem;
+  padding: 0 0.5rem;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
   font-weight: 500;
-  border: 1px solid var(--input);
+  border: 0;
+  border-radius: 0.375rem;
   background: transparent;
-  color: var(--foreground);
+  color: var(--muted-foreground);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
-  margin-left: -1px;
-}
-
-.toggle-item:first-child {
-  margin-left: 0;
-  border-top-left-radius: 0.5rem;
-  border-bottom-left-radius: 0.5rem;
-}
-
-.toggle-item:last-child {
-  border-top-right-radius: 0.5rem;
-  border-bottom-right-radius: 0.5rem;
 }
 
 .toggle-item[aria-pressed="true"] {
-  background-color: var(--muted);
-  color: var(--foreground);
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1);
   z-index: 2;
 }
 
 .toggle-item[aria-pressed="false"]:hover {
-  background-color: color-mix(in srgb, var(--muted) 60%, transparent);
+  background-color: var(--muted);
+  color: var(--foreground);
 }
 
 .toggle-item:focus-visible {
   z-index: 3;
-  border-color: var(--ring);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 40%, transparent);
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
 }
 
 /* Interactive SVG Area Chart */

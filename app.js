@@ -1,6 +1,6 @@
 ﻿/**
- * Compound Interest Calculator
- * High-fidelity recreation of reinmaking.vercel.app
+ * Meritus — Compound Interest Calculator
+ * High-fidelity financial projection engine
  */
 
 // State Management
@@ -34,7 +34,7 @@ const formatCompactCurrency = (val) => {
 
 // Compound Calculation Engine
 function calculateProjection({ principal, monthly, rate, years, frequency }) {
-  const totalYears = Math.max(1, Math.round(years));
+  const totalYears = Math.max(0, Math.round(years));
   const monthlyMultiplier = Math.pow(1 + rate / 100 / frequency, frequency / 12);
   let balance = principal;
   let totalContributions = 0;
@@ -95,7 +95,7 @@ function animateBalance(targetValue) {
 
   const startValue = currentDisplayedBalance;
   const startTime = performance.now();
-  const duration = 550;
+  const duration = 500;
 
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId);
@@ -127,13 +127,13 @@ function animateBalance(targetValue) {
 // Render UI Components
 function updateUI() {
   const result = calculateProjection(state);
-  const roundedYears = Math.round(state.years);
+  const roundedYears = Math.max(0, Math.round(state.years));
 
   // 1. Sync Slider Fill Tracks & Inputs
-  syncSlider('principal', state.principal, 0, 250000);
-  syncSlider('monthly', state.monthly, 0, 5000);
-  syncSlider('rate', state.rate, 0, 15);
-  syncSlider('years', state.years, 1, 50);
+  syncSlider('principal', state.principal, 0, 1000000);
+  syncSlider('monthly', state.monthly, 0, 100000);
+  syncSlider('rate', state.rate, 0, 800);
+  syncSlider('years', state.years, 0, 80);
 
   // 2. Hero Section
   const headingElem = document.getElementById('hero-heading');
@@ -143,7 +143,7 @@ function updateUI() {
 
   animateBalance(result.finalBalance);
 
-  const interestRatio = result.finalBalance > 0 ? result.totalInterest / result.finalBalance : 0;
+  const interestRatio = result.finalBalance > 0 ? Math.min(1, result.totalInterest / result.finalBalance) : 0;
   const interestPercent = Math.round(interestRatio * 100);
   const depositPercent = Math.round((1 - interestRatio) * 100);
 
@@ -166,7 +166,7 @@ function updateUI() {
   document.getElementById('stat-total-deposited').textContent = formatCurrency(result.totalDeposited);
   document.getElementById('stat-total-interest').textContent = formatCurrency(result.totalInterest);
   document.getElementById('stat-growth-multiple').textContent = `${result.growthMultiple.toFixed(2)}×`;
-  const finalYearInterest = result.schedule[result.schedule.length - 1].interestThisYear;
+  const finalYearInterest = result.schedule[result.schedule.length - 1]?.interestThisYear ?? 0;
   document.getElementById('stat-final-year-interest').textContent = formatCurrency(finalYearInterest);
 
   // 4. Year by Year Schedule Table
@@ -205,18 +205,26 @@ function renderTable(schedule) {
   const remainingCount = rows.length - displayedRows.length;
 
   if (tbody) {
-    tbody.innerHTML = displayedRows.map(row => {
-      const isInterestDominant = row.interest > (row.principal + row.contributions);
-      return `
-        <tr class="border-b border-border transition-colors hover:bg-muted/50">
-          <td class="p-2 align-middle whitespace-nowrap num font-mono text-muted-foreground">${row.year}</td>
-          <td class="p-2 align-middle whitespace-nowrap num text-right font-mono">${formatCurrency(row.principal + row.contributions)}</td>
-          <td class="p-2 align-middle whitespace-nowrap num text-right font-mono">${formatCurrency(row.interestThisYear)}</td>
-          <td class="p-2 align-middle whitespace-nowrap num text-right font-mono ${isInterestDominant ? 'text-primary font-medium' : ''}">${formatCurrency(row.interest)}</td>
-          <td class="p-2 align-middle whitespace-nowrap num text-right font-mono font-medium">${formatCurrency(row.balance)}</td>
+    if (rows.length === 0) {
+      tbody.innerHTML = `
+        <tr class="border-b border-border">
+          <td colspan="5" class="p-4 text-center text-muted-foreground font-mono text-xs">0 years invested. Deposit balance is immediate.</td>
         </tr>
       `;
-    }).join('');
+    } else {
+      tbody.innerHTML = displayedRows.map(row => {
+        const isInterestDominant = row.interest > (row.principal + row.contributions);
+        return `
+          <tr class="border-b border-border transition-colors hover:bg-muted/50">
+            <td class="p-2 align-middle whitespace-nowrap num font-mono text-muted-foreground">${row.year}</td>
+            <td class="p-2 align-middle whitespace-nowrap num text-right font-mono">${formatCurrency(row.principal + row.contributions)}</td>
+            <td class="p-2 align-middle whitespace-nowrap num text-right font-mono">${formatCurrency(row.interestThisYear)}</td>
+            <td class="p-2 align-middle whitespace-nowrap num text-right font-mono ${isInterestDominant ? 'text-primary font-semibold' : ''}">${formatCurrency(row.interest)}</td>
+            <td class="p-2 align-middle whitespace-nowrap num text-right font-mono font-medium">${formatCurrency(row.balance)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
   }
 
   if (toggleBtn) {
@@ -251,28 +259,33 @@ function renderChart(schedule, crossoverYear) {
   const maxBalance = Math.max(...schedule.map(d => d.balance), 100);
 
   // Determine tick interval
-  const tickInterval = totalYears > 30 ? 10 : totalYears > 15 ? 5 : totalYears > 8 ? 2 : 1;
+  const tickInterval = totalYears > 50 ? 10 : totalYears > 30 ? 10 : totalYears > 15 ? 5 : totalYears > 8 ? 2 : 1;
   const xTicks = [];
-  for (let y = 0; y <= totalYears; y += tickInterval) {
-    xTicks.push(y);
-  }
-  if (!xTicks.includes(totalYears)) {
-    xTicks.push(totalYears);
+  if (totalYears === 0) {
+    xTicks.push(0);
+  } else {
+    for (let y = 0; y <= totalYears; y += tickInterval) {
+      xTicks.push(y);
+    }
+    if (!xTicks.includes(totalYears)) {
+      xTicks.push(totalYears);
+    }
   }
 
   // Coordinate scales
-  const getX = (year) => margin.left + (year / totalYears) * plotWidth;
+  const getX = (year) => {
+    if (totalYears === 0) return margin.left + plotWidth / 2;
+    return margin.left + (year / totalYears) * plotWidth;
+  };
   const getY = (val) => margin.top + plotHeight - (val / maxBalance) * plotHeight;
 
   // Generate SVG stacked paths
-  // Layer 1: Principal
   let pathPrincipal = `M ${getX(0)} ${getY(0)}`;
   for (let i = 0; i < schedule.length; i++) {
     pathPrincipal += ` L ${getX(schedule[i].year)} ${getY(schedule[i].principal)}`;
   }
-  pathPrincipal += ` L ${getX(totalYears)} ${getY(0)} Z`;
+  pathPrincipal += ` L ${getX(schedule[schedule.length - 1].year)} ${getY(0)} Z`;
 
-  // Layer 2: Contributions stacked on top of Principal
   let pathContributions = `M ${getX(0)} ${getY(schedule[0].principal)}`;
   for (let i = 0; i < schedule.length; i++) {
     pathContributions += ` L ${getX(schedule[i].year)} ${getY(schedule[i].principal + schedule[i].contributions)}`;
@@ -282,7 +295,6 @@ function renderChart(schedule, crossoverYear) {
   }
   pathContributions += ` Z`;
 
-  // Layer 3: Interest stacked on top of (Principal + Contributions) = Balance
   let pathInterest = `M ${getX(0)} ${getY(schedule[0].principal + schedule[0].contributions)}`;
   for (let i = 0; i < schedule.length; i++) {
     pathInterest += ` L ${getX(schedule[i].year)} ${getY(schedule[i].balance)}`;
@@ -292,7 +304,6 @@ function renderChart(schedule, crossoverYear) {
   }
   pathInterest += ` Z`;
 
-  // Boundary lines for crisp strokes
   let lineBalance = `M ${getX(0)} ${getY(schedule[0].balance)}`;
   for (let i = 1; i < schedule.length; i++) {
     lineBalance += ` L ${getX(schedule[i].year)} ${getY(schedule[i].balance)}`;
@@ -325,7 +336,7 @@ function renderChart(schedule, crossoverYear) {
 
   // Crossover vertical dashed line & label
   let crossoverSvg = '';
-  if (crossoverYear !== null && crossoverYear <= totalYears) {
+  if (crossoverYear !== null && crossoverYear <= totalYears && totalYears > 0) {
     const cx = getX(crossoverYear);
     crossoverSvg = `
       <line x1="${cx}" y1="${margin.top}" x2="${cx}" y2="${height - margin.bottom}" stroke="var(--chart-1)" stroke-dasharray="3 3" stroke-width="1.5" />
@@ -365,33 +376,36 @@ function renderChart(schedule, crossoverYear) {
       <!-- Crossover Marker -->
       ${crossoverSvg}
 
-      <!-- Interactive Crosshair (hidden by default) -->
+      <!-- Interactive Crosshair -->
       <line id="chart-crosshair" x1="0" y1="${margin.top}" x2="0" y2="${height - margin.bottom}" stroke="var(--border)" stroke-width="1" style="display: none;" />
     </svg>
   `;
 
   container.innerHTML = svgContent;
 
-  // Add Hover Interaction on Container
+  // Add Hover Interaction
   container.onmousemove = (e) => {
     const rect = container.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
 
     if (mouseX < margin.left || mouseX > width - margin.right) {
       hideTooltip();
       return;
     }
 
-    const ratio = (mouseX - margin.left) / plotWidth;
-    const rawYear = ratio * totalYears;
-    const closestIndex = Math.max(0, Math.min(schedule.length - 1, Math.round(rawYear)));
-    const dataPoint = schedule[closestIndex];
+    let dataPoint;
+    if (totalYears === 0) {
+      dataPoint = schedule[0];
+    } else {
+      const ratio = (mouseX - margin.left) / plotWidth;
+      const rawYear = ratio * totalYears;
+      const closestIndex = Math.max(0, Math.min(schedule.length - 1, Math.round(rawYear)));
+      dataPoint = schedule[closestIndex];
+    }
 
     const targetX = getX(dataPoint.year);
     const targetY = getY(dataPoint.balance);
 
-    // Show crosshair
     const crosshair = document.getElementById('chart-crosshair');
     if (crosshair) {
       crosshair.setAttribute('x1', targetX);
@@ -466,7 +480,6 @@ function hideTooltip() {
 
 // Event Listeners Setup
 function setupEventListeners() {
-  // Input Bindings helper
   const bindField = (id, min, max, step, precision = 0) => {
     const input = document.getElementById(`${id}-input`);
     const slider = document.getElementById(`${id}-slider`);
@@ -496,10 +509,10 @@ function setupEventListeners() {
     }
   };
 
-  bindField('principal', 0, 250000, 500, 0);
-  bindField('monthly', 0, 5000, 25, 0);
-  bindField('rate', 0, 15, 0.1, 1);
-  bindField('years', 1, 50, 1, 0);
+  bindField('principal', 0, 1000000, 1000, 0);
+  bindField('monthly', 0, 100000, 50, 0);
+  bindField('rate', 0, 800, 0.1, 1);
+  bindField('years', 0, 80, 1, 0);
 
   // Compounding Frequency Toggles
   const toggleButtons = document.querySelectorAll('.toggle-item');
@@ -548,7 +561,6 @@ function setupEventListeners() {
 
 // Initializer
 document.addEventListener('DOMContentLoaded', () => {
-  // Check stored theme
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme) {
     document.documentElement.classList.add(savedTheme);

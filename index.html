@@ -100,7 +100,7 @@
             </svg>
             <!-- Moon icon for light mode -->
             <svg id="theme-moon-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block dark:hidden">
-              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+              <path d="M12 3a6 6 0 0 0 9 9 9 0 1 1-9-9Z"></path>
             </svg>
           </button>
         </div>
@@ -132,7 +132,7 @@
                 <label for="principal-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
                   Starting amount
                 </label>
-                <span class="num font-mono text-[0.6875rem] text-muted-foreground">$0 – $250,000</span>
+                <span class="num font-mono text-[0.6875rem] text-muted-foreground">$0 – $1,000,000</span>
               </div>
               <div class="input-group">
                 <div class="input-group-addon pl-2 pr-1 text-muted-foreground">$</div>
@@ -140,8 +140,8 @@
               </div>
               <div class="slider-container">
                 <div class="slider-track-bg"></div>
-                <div id="principal-fill" class="slider-track-fill" style="width: 4%;"></div>
-                <input id="principal-slider" type="range" min="0" max="250000" step="500" value="10000" class="custom-range-slider" aria-label="Starting amount" />
+                <div id="principal-fill" class="slider-track-fill" style="width: 1%;"></div>
+                <input id="principal-slider" type="range" min="0" max="1000000" step="1000" value="10000" class="custom-range-slider" aria-label="Starting amount" />
               </div>
             </div>
 
@@ -151,7 +151,7 @@
                 <label for="monthly-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
                   Monthly contribution
                 </label>
-                <span class="num font-mono text-[0.6875rem] text-muted-foreground">$0 – $5,000</span>
+                <span class="num font-mono text-[0.6875rem] text-muted-foreground">$0 – $100,000</span>
               </div>
               <div class="input-group">
                 <div class="input-group-addon pl-2 pr-1 text-muted-foreground">$</div>
@@ -159,8 +159,8 @@
               </div>
               <div class="slider-container">
                 <div class="slider-track-bg"></div>
-                <div id="monthly-fill" class="slider-track-fill" style="width: 10%;"></div>
-                <input id="monthly-slider" type="range" min="0" max="5000" step="25" value="500" class="custom-range-slider" aria-label="Monthly contribution" />
+                <div id="monthly-fill" class="slider-track-fill" style="width: 0.5%;"></div>
+                <input id="monthly-slider" type="range" min="0" max="100000" step="50" value="500" class="custom-range-slider" aria-label="Monthly contribution" />
               </div>
             </div>
 
@@ -170,7 +170,7 @@
                 <label for="rate-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
                   Annual return
                 </label>
-                <span class="num font-mono text-[0.6875rem] text-muted-foreground">0 – 15%</span>
+                <span class="num font-mono text-[0.6875rem] text-muted-foreground">0 – 800%</span>
               </div>
               <div class="input-group">
                 <input id="rate-input" type="text" inputmode="decimal" value="7" aria-describedby="rate-hint" class="num font-mono text-base" />
@@ -178,8 +178,8 @@
               </div>
               <div class="slider-container">
                 <div class="slider-track-bg"></div>
-                <div id="rate-fill" class="slider-track-fill" style="width: 46.666%;"></div>
-                <input id="rate-slider" type="range" min="0" max="15" step="0.1" value="7" class="custom-range-slider" aria-label="Annual return" />
+                <div id="rate-fill" class="slider-track-fill" style="width: 0.875%;"></div>
+                <input id="rate-slider" type="range" min="0" max="800" step="0.1" value="7" class="custom-range-slider" aria-label="Annual return" />
               </div>
               <p id="rate-hint" class="text-left font-normal text-muted-foreground text-xs leading-normal">
                 The long-run average for a broad stock index has been roughly 7% after inflation.
@@ -192,7 +192,7 @@
                 <label for="years-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
                   Time invested
                 </label>
-                <span class="num font-mono text-[0.6875rem] text-muted-foreground">1 – 50 yrs</span>
+                <span class="num font-mono text-[0.6875rem] text-muted-foreground">0 – 80 yrs</span>
               </div>
               <div class="input-group">
                 <input id="years-input" type="text" inputmode="decimal" value="30" class="num font-mono text-base" />
@@ -200,8 +200,8 @@
               </div>
               <div class="slider-container">
                 <div class="slider-track-bg"></div>
-                <div id="years-fill" class="slider-track-fill" style="width: 59.18%;"></div>
-                <input id="years-slider" type="range" min="1" max="50" step="1" value="30" class="custom-range-slider" aria-label="Time invested" />
+                <div id="years-fill" class="slider-track-fill" style="width: 37.5%;"></div>
+                <input id="years-slider" type="range" min="0" max="80" step="1" value="30" class="custom-range-slider" aria-label="Time invested" />
               </div>
             </div>
 
