@@ -1,5 +1,5 @@
 ﻿/**
- * Meritus — Compound Interest Calculator
+ * Meritus — Investment Growth & Capital Appreciation Calculator
  * High-fidelity financial projection engine with customizable ranges
  */
 
@@ -143,7 +143,7 @@ function updateUI() {
   // 2. Hero Section
   const headingElem = document.getElementById('hero-heading');
   if (headingElem) {
-    headingElem.textContent = `Balance after ${roundedYears} ${roundedYears === 1 ? 'year' : 'years'}`;
+    headingElem.textContent = `Portfolio balance after ${roundedYears} ${roundedYears === 1 ? 'year' : 'years'}`;
   }
 
   animateBalance(result.finalBalance);
@@ -154,7 +154,7 @@ function updateUI() {
 
   const heroDescElem = document.getElementById('hero-description');
   if (heroDescElem) {
-    heroDescElem.innerHTML = `You put in ${formatCurrency(result.totalDeposited)} and interest added <span class="num font-mono text-foreground">${formatCurrency(result.totalInterest)}</span> on top — ${interestPercent}% of the final balance is money you never deposited.`;
+    heroDescElem.innerHTML = `You put in ${formatCurrency(result.totalDeposited)} and capital growth added <span class="num font-mono text-foreground">${formatCurrency(result.totalInterest)}</span> on top — ${interestPercent}% of the final balance is money generated from investment appreciation.`;
   }
 
   // Composition Bar
@@ -164,7 +164,7 @@ function updateUI() {
   if (barDeposits && barInterest && compBar) {
     barDeposits.style.flexGrow = Math.max(0.001, 1 - interestRatio);
     barInterest.style.flexGrow = Math.max(0.001, interestRatio);
-    compBar.setAttribute('aria-label', `Composition of the final balance: ${depositPercent} percent deposits, ${interestPercent} percent interest`);
+    compBar.setAttribute('aria-label', `Composition of final value: ${depositPercent} percent contributions, ${interestPercent} percent capital growth`);
   }
 
   // 3. Metric Cards
@@ -224,7 +224,7 @@ function renderTable(schedule) {
     if (rows.length === 0) {
       tbody.innerHTML = `
         <tr class="border-b border-border">
-          <td colspan="5" class="p-4 text-center text-muted-foreground font-mono text-xs">0 years invested. Deposit balance is immediate.</td>
+          <td colspan="5" class="p-4 text-center text-muted-foreground font-mono text-xs">0 years invested. Initial capital balance is immediate.</td>
         </tr>
       `;
     } else {
@@ -357,7 +357,7 @@ function renderChart(schedule, crossoverYear) {
     crossoverSvg = `
       <line x1="${cx}" y1="${margin.top}" x2="${cx}" y2="${height - margin.bottom}" stroke="var(--chart-1)" stroke-dasharray="3 3" stroke-width="1.5" />
       <g transform="translate(${cx + 6}, ${margin.top + 14})">
-        <text fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="11" font-weight="500">Interest > deposits · yr ${crossoverYear}</text>
+        <text fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="11" font-weight="500">Growth > contributions · yr ${crossoverYear}</text>
       </g>
     `;
   }
@@ -460,7 +460,7 @@ function showTooltip(data, x, y, containerRect) {
         <div class="flex items-center justify-between gap-4">
           <div class="flex items-center gap-2">
             <span class="size-2 rounded-[2px]" style="background-color: var(--chart-3);"></span>
-            <span class="text-muted-foreground">Starting amount</span>
+            <span class="text-muted-foreground">Initial capital</span>
           </div>
           <span class="num font-mono font-medium text-foreground">${formatCurrency(data.principal)}</span>
         </div>
@@ -474,12 +474,12 @@ function showTooltip(data, x, y, containerRect) {
         <div class="flex items-center justify-between gap-4">
           <div class="flex items-center gap-2">
             <span class="size-2 rounded-[2px]" style="background-color: var(--chart-1);"></span>
-            <span class="text-muted-foreground">Interest</span>
+            <span class="text-muted-foreground">Capital Growth</span>
           </div>
           <span class="num font-mono font-medium text-foreground">${formatCurrency(data.interest)}</span>
         </div>
         <div class="border-t border-border/50 pt-1 mt-0.5 flex items-center justify-between gap-4">
-          <span class="font-medium text-foreground">Total Balance</span>
+          <span class="font-medium text-foreground">Portfolio Value</span>
           <span class="num font-mono font-bold text-foreground">${formatCurrency(data.balance)}</span>
         </div>
       </div>
@@ -505,7 +505,6 @@ function setDropdownMax(id, maxVal) {
     option = document.createElement('option');
     option.value = maxVal;
     option.textContent = `${config.prefix}0 – ${config.prefix}${maxVal.toLocaleString()}${config.suffix}`;
-    // Insert before custom option
     const customOpt = select.querySelector('option[value="custom"]');
     if (customOpt) select.insertBefore(option, customOpt);
     else select.appendChild(option);

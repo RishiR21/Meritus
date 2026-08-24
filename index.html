@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Meritus — Compound Interest Calculator</title>
-  <meta name="description" content="Meritus: Project how a starting balance and monthly contributions grow with compound interest, and see exactly how much of the final balance is interest." />
+  <title>Meritus — Investment Growth & Capital Appreciation Calculator</title>
+  <meta name="description" content="Meritus: Project how your capital and monthly contributions grow through compound appreciation across equities, real estate, and business investments." />
   <meta name="theme-color" content="#eff1f4" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#1b1f26" media="(prefers-color-scheme: dark)" />
 
@@ -80,7 +80,7 @@
             <span class="font-mono text-xs tracking-[0.24em] font-semibold text-primary uppercase">Meritus</span>
             <span class="text-border text-xs">/</span>
             <p class="font-mono text-[0.6875rem] tracking-[0.24em] text-muted-foreground uppercase">
-              Compound interest
+              Investment Growth & Appreciation
             </p>
           </div>
           
@@ -106,10 +106,10 @@
         </div>
 
         <h1 class="max-w-2xl text-3xl leading-[1.1] font-medium tracking-tight text-balance sm:text-4xl">
-          Watch a deposit turn into decades of growth.
+          Watch capital turn into decades of growth.
         </h1>
         <p class="max-w-xl text-sm leading-relaxed text-muted-foreground text-pretty">
-          Adjust the assumptions and the projection updates instantly — separating what you put in from what the interest earned on its own.
+          Adjust the assumptions and the projection updates instantly — separating what you put in from the value generated through compound returns across equity, real estate, and investments.
         </p>
       </header>
 
@@ -130,10 +130,10 @@
             <div class="flex flex-col gap-2">
               <div class="flex items-baseline justify-between gap-4">
                 <label for="principal-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
-                  Starting amount
+                  Initial capital
                 </label>
                 <div class="flex items-center">
-                  <select id="principal-range-select" class="range-select num" aria-label="Starting amount scale range">
+                  <select id="principal-range-select" class="range-select num" aria-label="Initial capital scale range">
                     <option value="50000">$0 – $50,000</option>
                     <option value="250000">$0 – $250,000</option>
                     <option value="1000000" selected>$0 – $1,000,000</option>
@@ -150,7 +150,7 @@
               <div class="slider-container">
                 <div class="slider-track-bg"></div>
                 <div id="principal-fill" class="slider-track-fill" style="width: 1%;"></div>
-                <input id="principal-slider" type="range" min="0" max="1000000" step="1000" value="10000" class="custom-range-slider" aria-label="Starting amount" />
+                <input id="principal-slider" type="range" min="0" max="1000000" step="1000" value="10000" class="custom-range-slider" aria-label="Initial capital" />
               </div>
             </div>
 
@@ -183,14 +183,14 @@
               </div>
             </div>
 
-            <!-- Annual return -->
+            <!-- Annual return / Growth Rate -->
             <div class="flex flex-col gap-2">
               <div class="flex items-baseline justify-between gap-4">
                 <label for="rate-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
-                  Annual return
+                  Annual growth rate
                 </label>
                 <div class="flex items-center">
-                  <select id="rate-range-select" class="range-select num" aria-label="Annual return scale range">
+                  <select id="rate-range-select" class="range-select num" aria-label="Annual growth rate scale range">
                     <option value="15">0 – 15%</option>
                     <option value="30">0 – 30%</option>
                     <option value="50">0 – 50%</option>
@@ -207,10 +207,10 @@
               <div class="slider-container">
                 <div class="slider-track-bg"></div>
                 <div id="rate-fill" class="slider-track-fill" style="width: 0.875%;"></div>
-                <input id="rate-slider" type="range" min="0" max="800" step="0.1" value="7" class="custom-range-slider" aria-label="Annual return" />
+                <input id="rate-slider" type="range" min="0" max="800" step="0.1" value="7" class="custom-range-slider" aria-label="Annual growth rate" />
               </div>
               <p id="rate-hint" class="text-left font-normal text-muted-foreground text-xs leading-normal">
-                The long-run average for a broad stock index has been roughly 7% after inflation.
+                Reflects expected annualized asset appreciation, equity returns, or investment yield.
               </p>
             </div>
 
@@ -248,7 +248,7 @@
             <!-- Compounding Frequency -->
             <div class="flex flex-col gap-2">
               <label class="text-[0.8125rem] tracking-tight font-medium select-none">
-                Compounding
+                Compounding frequency
               </label>
               <div class="toggle-group" role="group" aria-label="Compounding frequency">
                 <button type="button" class="toggle-item" data-value="1" aria-pressed="false">Annually</button>
@@ -268,18 +268,18 @@
           <section class="flex flex-col gap-6">
             <div class="flex flex-col gap-2">
               <h2 id="hero-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
-                Balance after 30 years
+                Portfolio balance after 30 years
               </h2>
               <p id="hero-balance" class="num font-mono text-[clamp(2.75rem,9vw,5.5rem)] leading-[0.9] font-medium text-foreground">
                 $691,150
               </p>
               <p id="hero-description" class="max-w-prose text-sm leading-relaxed text-muted-foreground text-pretty">
-                You put in $190,000 and interest added <span class="num font-mono text-foreground">$501,150</span> on top — 73% of the final balance is money you never deposited.
+                You put in $190,000 and capital growth added <span class="num font-mono text-foreground">$501,150</span> on top — 73% of the final balance is money generated from investment appreciation.
               </p>
             </div>
 
             <!-- Composition Progress Bar -->
-            <div id="composition-bar" role="img" aria-label="Composition of the final balance: 27 percent deposits, 73 percent interest" class="flex h-2.5 w-full gap-px overflow-hidden rounded-[1px]">
+            <div id="composition-bar" role="img" aria-label="Composition of final value: 27 percent contributions, 73 percent capital growth" class="flex h-2.5 w-full gap-px overflow-hidden rounded-[1px]">
               <div id="comp-bar-deposits" class="bg-[var(--chart-2)] transition-[flex-grow] duration-500" style="flex-grow: 0.2749;"></div>
               <div id="comp-bar-interest" class="bg-[var(--chart-1)] transition-[flex-grow] duration-500" style="flex-grow: 0.7251;"></div>
             </div>
@@ -291,7 +291,7 @@
             <div class="flex flex-wrap items-center gap-x-5 gap-y-2 select-none">
               <div class="flex items-center gap-2">
                 <span aria-hidden="true" class="size-2.5 rounded-[1px]" style="background-color: var(--chart-3);"></span>
-                <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Starting amount</span>
+                <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Initial capital</span>
               </div>
               <div class="flex items-center gap-2">
                 <span aria-hidden="true" class="size-2.5 rounded-[1px]" style="background-color: var(--chart-2);"></span>
@@ -299,7 +299,7 @@
               </div>
               <div class="flex items-center gap-2">
                 <span aria-hidden="true" class="size-2.5 rounded-[1px]" style="background-color: var(--chart-1);"></span>
-                <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Interest</span>
+                <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Capital Growth</span>
               </div>
             </div>
 
@@ -312,19 +312,19 @@
           <!-- Summary Metric Cards (4 tiles) -->
           <dl class="grid grid-cols-2 divide-x divide-y divide-border border-t border-l border-border md:grid-cols-4 bg-card rounded-sm overflow-hidden border-r border-b">
             <div class="flex flex-col gap-1.5 p-4">
-              <dt class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Total deposited</dt>
+              <dt class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Total contributed</dt>
               <dd id="stat-total-deposited" class="num font-mono text-xl leading-none font-medium text-foreground">$190,000</dd>
             </div>
             <div class="flex flex-col gap-1.5 p-4">
-              <dt class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Interest earned</dt>
+              <dt class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Capital growth</dt>
               <dd id="stat-total-interest" class="num font-mono text-xl leading-none font-medium text-foreground">$501,150</dd>
             </div>
             <div class="flex flex-col gap-1.5 p-4">
-              <dt class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Return on deposits</dt>
+              <dt class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Return multiple</dt>
               <dd id="stat-growth-multiple" class="num font-mono text-xl leading-none font-medium text-foreground">3.64×</dd>
             </div>
             <div class="flex flex-col gap-1.5 p-4">
-              <dt class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Interest in final year</dt>
+              <dt class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Growth in final year</dt>
               <dd id="stat-final-year-interest" class="num font-mono text-xl leading-none font-medium text-foreground">$46,374</dd>
             </div>
           </dl>
@@ -333,7 +333,7 @@
           <section aria-labelledby="schedule-heading" class="flex flex-col gap-4">
             <div class="flex items-baseline justify-between gap-4">
               <h2 id="schedule-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
-                Year by year
+                Year by year breakdown
               </h2>
               <span id="table-row-count" class="num font-mono text-[0.6875rem] text-muted-foreground">30 rows</span>
             </div>
@@ -346,16 +346,16 @@
                       Year
                     </th>
                     <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                      Deposited
+                      Contributed
                     </th>
                     <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                      Interest this year
+                      Growth this year
                     </th>
                     <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                      Total interest
+                      Total growth
                     </th>
                     <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                      Balance
+                      Portfolio Value
                     </th>
                   </tr>
                 </thead>
@@ -381,7 +381,7 @@
       <!-- Footer -->
       <footer class="mt-16 border-t border-border pt-6">
         <p class="max-w-2xl font-mono text-[0.6875rem] leading-relaxed text-muted-foreground">
-          Projections assume a constant annual return and deposits made at the end of each month. Real markets fluctuate; this is an illustration, not financial advice.
+          Projections model compound appreciation and regular contributions. Asset classes and investment markets fluctuate; this tool is for illustrative modeling, not individual financial advice.
         </p>
       </footer>
 

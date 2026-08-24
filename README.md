@@ -1,15 +1,14 @@
-﻿# Meritus — Compound Interest Calculator
+﻿# Meritus — Investment Growth & Capital Appreciation Calculator
 
-**Meritus** is a high-fidelity, interactive Compound Interest Calculator with stacked SVG area charts, month-by-month compound growth projections, year-by-year amortization schedule, and seamless dark/light mode support.
-
-![Meritus Compound Interest Calculator Preview](https://github.com/RishiR21/Meritus/raw/main/preview.png)
+**Meritus** is a high-fidelity, interactive wealth & investment growth modeling tool. It visualizes multi-asset compound appreciation, equity compounding, real estate value growth, and long-term portfolio accumulation with customizable slider scales and sleek dark/light mode support.
 
 ## 🚀 Features
 
-- **Real-Time Projection Engine**: Calculates starting deposits, periodic monthly contributions, and compounding frequency (Annually, Quarterly, Monthly, Daily).
-- **Interactive Stacked Area Chart**: Visualizes the growth layers (Starting Amount, Contributions, Interest) with crossover markers and hover tooltips.
-- **Dynamic Amortization Schedule**: Year-by-year breakdown with pagination and interest-dominant highlights.
-- **Theme Support**: Seamless Dark and Light theme switcher matching modern design tokens.
+- **Multi-Asset Growth Modeling**: Models growth across stocks/equities, real estate, startup/business equity, and compounding portfolios.
+- **Customizable Range Scales**: Interactive dropdowns on every parameter allowing users to tailor slider scales to their specific wealth brackets or enter custom maximum limits.
+- **Interactive Stacked Area Chart**: Visualizes investment layers (**Initial Capital**, **Contributions**, and **Capital Growth**) with hover tooltips and crossover milestones.
+- **Dynamic Amortization & Breakdown Schedule**: Year-by-year schedule with pagination.
+- **High-Contrast Compounding Toggles**: Distinct segmented controls for Annually, Quarterly, Monthly, and Daily return compounding.
 - **Zero Dependencies**: Pure HTML5, CSS3, and modern Vanilla JavaScript with Tailwind CSS CDN.
 
 ## 🛠️ Getting Started
@@ -31,4 +30,4 @@ This repository is ready to be hosted directly on:
 - **Vercel / Cloudflare Pages / Netlify**: Connect the GitHub repository `RishiR21/Meritus` for automatic one-click deployment.
 
 ---
-Built with ❤️ for clean financial visualization.
+Built with ❤️ for clean financial and investment visualization.
