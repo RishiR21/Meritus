@@ -132,7 +132,16 @@
                 <label for="principal-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
                   Starting amount
                 </label>
-                <span class="num font-mono text-[0.6875rem] text-muted-foreground">$0 – $1,000,000</span>
+                <div class="flex items-center">
+                  <select id="principal-range-select" class="range-select num" aria-label="Starting amount scale range">
+                    <option value="50000">$0 – $50,000</option>
+                    <option value="250000">$0 – $250,000</option>
+                    <option value="1000000" selected>$0 – $1,000,000</option>
+                    <option value="5000000">$0 – $5,000,000</option>
+                    <option value="10000000">$0 – $10,000,000</option>
+                    <option value="custom">Custom scale...</option>
+                  </select>
+                </div>
               </div>
               <div class="input-group">
                 <div class="input-group-addon pl-2 pr-1 text-muted-foreground">$</div>
@@ -151,7 +160,17 @@
                 <label for="monthly-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
                   Monthly contribution
                 </label>
-                <span class="num font-mono text-[0.6875rem] text-muted-foreground">$0 – $100,000</span>
+                <div class="flex items-center">
+                  <select id="monthly-range-select" class="range-select num" aria-label="Monthly contribution scale range">
+                    <option value="2500">$0 – $2,500</option>
+                    <option value="5000">$0 – $5,000</option>
+                    <option value="25000">$0 – $25,000</option>
+                    <option value="50000">$0 – $50,000</option>
+                    <option value="100000" selected>$0 – $100,000</option>
+                    <option value="500000">$0 – $500,000</option>
+                    <option value="custom">Custom scale...</option>
+                  </select>
+                </div>
               </div>
               <div class="input-group">
                 <div class="input-group-addon pl-2 pr-1 text-muted-foreground">$</div>
@@ -170,7 +189,16 @@
                 <label for="rate-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
                   Annual return
                 </label>
-                <span class="num font-mono text-[0.6875rem] text-muted-foreground">0 – 800%</span>
+                <div class="flex items-center">
+                  <select id="rate-range-select" class="range-select num" aria-label="Annual return scale range">
+                    <option value="15">0 – 15%</option>
+                    <option value="30">0 – 30%</option>
+                    <option value="50">0 – 50%</option>
+                    <option value="100">0 – 100%</option>
+                    <option value="800" selected>0 – 800%</option>
+                    <option value="custom">Custom scale...</option>
+                  </select>
+                </div>
               </div>
               <div class="input-group">
                 <input id="rate-input" type="text" inputmode="decimal" value="7" aria-describedby="rate-hint" class="num font-mono text-base" />
@@ -192,7 +220,16 @@
                 <label for="years-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
                   Time invested
                 </label>
-                <span class="num font-mono text-[0.6875rem] text-muted-foreground">0 – 80 yrs</span>
+                <div class="flex items-center">
+                  <select id="years-range-select" class="range-select num" aria-label="Time invested scale range">
+                    <option value="20">0 – 20 yrs</option>
+                    <option value="30">0 – 30 yrs</option>
+                    <option value="50">0 – 50 yrs</option>
+                    <option value="80" selected>0 – 80 yrs</option>
+                    <option value="100">0 – 100 yrs</option>
+                    <option value="custom">Custom scale...</option>
+                  </select>
+                </div>
               </div>
               <div class="input-group">
                 <input id="years-input" type="text" inputmode="decimal" value="30" class="num font-mono text-base" />

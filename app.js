@@ -1,6 +1,6 @@
 ﻿/**
  * Meritus — Compound Interest Calculator
- * High-fidelity financial projection engine
+ * High-fidelity financial projection engine with customizable ranges
  */
 
 // State Management
@@ -11,7 +11,13 @@ const state = {
   years: 30,
   frequency: 12,
   isTableExpanded: false,
-  animatedBalance: 10000
+  animatedBalance: 10000,
+  ranges: {
+    principal: { min: 0, max: 1000000, step: 1000, precision: 0, prefix: '$', suffix: '' },
+    monthly: { min: 0, max: 100000, step: 50, precision: 0, prefix: '$', suffix: '' },
+    rate: { min: 0, max: 800, step: 0.1, precision: 1, prefix: '', suffix: '%' },
+    years: { min: 0, max: 80, step: 1, precision: 0, prefix: '', suffix: ' yrs' }
+  }
 };
 
 // Formatter utilities
@@ -103,7 +109,6 @@ function animateBalance(targetValue) {
 
   function step(currentTime) {
     const progress = Math.min(1, (currentTime - startTime) / duration);
-    // Cubic ease out
     const easeOut = 1 - Math.pow(1 - progress, 3);
     const currentValue = startValue + (targetValue - startValue) * easeOut;
     currentDisplayedBalance = currentValue;
@@ -130,10 +135,10 @@ function updateUI() {
   const roundedYears = Math.max(0, Math.round(state.years));
 
   // 1. Sync Slider Fill Tracks & Inputs
-  syncSlider('principal', state.principal, 0, 1000000);
-  syncSlider('monthly', state.monthly, 0, 100000);
-  syncSlider('rate', state.rate, 0, 800);
-  syncSlider('years', state.years, 0, 80);
+  syncSlider('principal');
+  syncSlider('monthly');
+  syncSlider('rate');
+  syncSlider('years');
 
   // 2. Hero Section
   const headingElem = document.getElementById('hero-heading');
@@ -177,15 +182,26 @@ function updateUI() {
 }
 
 // Slider Track helper
-function syncSlider(id, val, min, max) {
+function syncSlider(id) {
+  const config = state.ranges[id];
+  const val = state[id];
   const slider = document.getElementById(`${id}-slider`);
   const input = document.getElementById(`${id}-input`);
   const fill = document.getElementById(`${id}-fill`);
 
-  if (slider && document.activeElement !== slider) slider.value = val;
-  if (input && document.activeElement !== input) input.value = val;
+  if (slider) {
+    slider.min = config.min;
+    slider.max = config.max;
+    slider.step = config.step;
+    if (document.activeElement !== slider) slider.value = val;
+  }
+
+  if (input && document.activeElement !== input) {
+    input.value = val;
+  }
+
   if (fill) {
-    const percent = Math.max(0, Math.min(100, ((val - min) / (max - min)) * 100));
+    const percent = Math.max(0, Math.min(100, ((val - config.min) / (config.max - config.min)) * 100));
     fill.style.width = `${percent}%`;
   }
 }
@@ -478,41 +494,97 @@ function hideTooltip() {
   if (crosshair) crosshair.style.display = 'none';
 }
 
+// Range Select Helper: Ensure custom or new max is present in dropdown
+function setDropdownMax(id, maxVal) {
+  const select = document.getElementById(`${id}-range-select`);
+  if (!select) return;
+
+  const config = state.ranges[id];
+  let option = select.querySelector(`option[value="${maxVal}"]`);
+  if (!option) {
+    option = document.createElement('option');
+    option.value = maxVal;
+    option.textContent = `${config.prefix}0 – ${config.prefix}${maxVal.toLocaleString()}${config.suffix}`;
+    // Insert before custom option
+    const customOpt = select.querySelector('option[value="custom"]');
+    if (customOpt) select.insertBefore(option, customOpt);
+    else select.appendChild(option);
+  }
+  select.value = String(maxVal);
+}
+
 // Event Listeners Setup
 function setupEventListeners() {
-  const bindField = (id, min, max, step, precision = 0) => {
+  const bindField = (id) => {
     const input = document.getElementById(`${id}-input`);
     const slider = document.getElementById(`${id}-slider`);
+    const select = document.getElementById(`${id}-range-select`);
+    const config = state.ranges[id];
 
+    // Range dropdown change handler
+    if (select) {
+      select.addEventListener('change', (e) => {
+        if (e.target.value === 'custom') {
+          const userPrompt = prompt(`Enter custom maximum for ${id} (${config.prefix}0 to ...${config.suffix}):`, config.max);
+          const parsed = parseFloat(userPrompt?.replace(/[^0-9.]/g, ''));
+          if (Number.isFinite(parsed) && parsed > config.min) {
+            config.max = parsed;
+            setDropdownMax(id, parsed);
+          } else {
+            select.value = String(config.max);
+          }
+        } else {
+          config.max = parseFloat(e.target.value);
+        }
+
+        // Adjust step size proportionally
+        if (id === 'principal') config.step = Math.max(100, Math.round(config.max / 1000) * 10);
+        else if (id === 'monthly') config.step = Math.max(10, Math.round(config.max / 1000) * 5);
+        else if (id === 'rate') config.step = config.max > 100 ? 0.5 : 0.1;
+        else if (id === 'years') config.step = 1;
+
+        updateUI();
+      });
+    }
+
+    // Direct input handler (with auto-range expansion)
     if (input) {
       input.addEventListener('input', (e) => {
         const raw = parseFloat(e.target.value.replace(/[^0-9.]/g, ''));
         const val = Number.isFinite(raw) ? raw : 0;
         state[id] = val;
+
+        // Auto-expand range if user types a value exceeding current slider max
+        if (val > config.max) {
+          config.max = val;
+          setDropdownMax(id, val);
+        }
+
         updateUI();
       });
 
       input.addEventListener('blur', () => {
-        const clamped = Math.min(max, Math.max(min, state[id]));
-        state[id] = Number(clamped.toFixed(precision));
+        const clamped = Math.max(config.min, state[id]);
+        state[id] = Number(clamped.toFixed(config.precision));
         input.value = state[id];
         updateUI();
       });
     }
 
+    // Slider move handler
     if (slider) {
       slider.addEventListener('input', (e) => {
         const val = parseFloat(e.target.value);
-        state[id] = Number(val.toFixed(precision));
+        state[id] = Number(val.toFixed(config.precision));
         updateUI();
       });
     }
   };
 
-  bindField('principal', 0, 1000000, 1000, 0);
-  bindField('monthly', 0, 100000, 50, 0);
-  bindField('rate', 0, 800, 0.1, 1);
-  bindField('years', 0, 80, 1, 0);
+  bindField('principal');
+  bindField('monthly');
+  bindField('rate');
+  bindField('years');
 
   // Compounding Frequency Toggles
   const toggleButtons = document.querySelectorAll('.toggle-item');
