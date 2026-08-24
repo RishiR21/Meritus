@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -71,10 +71,10 @@
 <body class="antialiased bg-background text-foreground min-h-screen selection:bg-primary/20">
 
   <main class="min-h-svh">
-    <div class="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14">
+    <div class="mx-auto max-w-[1440px] px-4 py-8 sm:px-8 sm:py-12 xl:px-10">
       
       <!-- Top Header -->
-      <header class="mb-10 flex flex-col gap-4 border-b border-border pb-8 sm:mb-14 relative">
+      <header class="mb-8 flex flex-col gap-4 border-b border-border pb-6 sm:mb-10 relative">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2.5">
             <span class="font-mono text-xs tracking-[0.24em] font-semibold text-primary uppercase">Meritus</span>
@@ -105,19 +105,19 @@
           </button>
         </div>
 
-        <h1 class="max-w-2xl text-3xl leading-[1.1] font-medium tracking-tight text-balance sm:text-4xl">
+        <h1 class="max-w-3xl text-2xl leading-[1.15] font-medium tracking-tight text-balance sm:text-3xl lg:text-4xl">
           Watch capital turn into decades of growth.
         </h1>
-        <p class="max-w-xl text-sm leading-relaxed text-muted-foreground text-pretty">
+        <p class="max-w-2xl text-sm leading-relaxed text-muted-foreground text-pretty">
           Adjust the assumptions and the projection updates instantly — separating what you put in from the value generated through compound returns across equity, real estate, and investments.
         </p>
       </header>
 
-      <!-- Main Layout Grid -->
-      <div class="grid gap-8 lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[22rem_minmax(0,1fr)]">
+      <!-- Main 3-Column Layout Grid (Uses Full Page Space) -->
+      <div class="grid gap-8 xl:grid-cols-[19rem_minmax(0,1fr)_18.5rem] lg:gap-8 xl:gap-8 items-start">
         
-        <!-- Sticky Sidebar: Assumptions (01) -->
-        <div class="lg:sticky lg:top-8 lg:self-start">
+        <!-- Column 1: Assumptions (01) -->
+        <div class="xl:sticky xl:top-8 xl:self-start">
           <section aria-labelledby="assumptions-heading" class="flex flex-col gap-6 rounded-sm border border-border bg-card p-5 sm:p-6 shadow-sm">
             <header class="flex items-baseline justify-between gap-4">
               <h2 id="assumptions-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
@@ -261,91 +261,42 @@
           </section>
         </div>
 
-        <!-- Right Main: Results, Chart, Stats & Table -->
-        <div class="flex flex-col gap-10">
+        <!-- Column 2: Center Canvas (Expansive Grand Chart & Full-Width Table) -->
+        <div class="flex flex-col gap-8 min-w-0">
           
-          <!-- Hero Result Section -->
-          <section class="flex flex-col gap-6">
-            <div class="flex flex-col gap-2">
-              <h2 id="hero-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
-                Portfolio balance after 30 years
-              </h2>
-              <p id="hero-balance" class="num font-mono text-[clamp(2.75rem,9vw,5.5rem)] leading-[0.9] font-medium text-foreground">
-                $691,150
-              </p>
-              <p id="hero-description" class="max-w-prose text-sm leading-relaxed text-muted-foreground text-pretty">
-                You put in $190,000 and capital growth added <span class="num font-mono text-foreground">$501,150</span> on top — 73% of the final balance is money generated from investment appreciation.
-              </p>
-            </div>
-
-            <!-- Composition Progress Bar -->
-            <div id="composition-bar" role="img" aria-label="Composition of final value: 27 percent contributions, 73 percent capital growth" class="flex h-2.5 w-full gap-px overflow-hidden rounded-[1px]">
-              <div id="comp-bar-deposits" class="bg-[var(--chart-2)] transition-[flex-grow] duration-500" style="flex-grow: 0.2749;"></div>
-              <div id="comp-bar-interest" class="bg-[var(--chart-1)] transition-[flex-grow] duration-500" style="flex-grow: 0.7251;"></div>
-            </div>
-          </section>
-
-          <!-- Chart & Vertical Summary Section (Side-by-Side) -->
-          <div class="grid gap-6 lg:grid-cols-[1fr_15.5rem] xl:grid-cols-[1fr_17rem] items-stretch">
-            
-            <!-- Left: Interactive Chart -->
-            <div class="flex flex-col gap-3 min-w-0 bg-card rounded-sm border border-border p-4 sm:p-5 shadow-xs">
-              <!-- Legend & Header -->
-              <div class="flex flex-wrap items-center justify-between gap-2 select-none border-b border-border pb-3">
-                <span class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Growth Projection</span>
-                <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5">
-                  <div class="flex items-center gap-1.5">
-                    <span aria-hidden="true" class="size-2 rounded-[1px]" style="background-color: var(--chart-3);"></span>
-                    <span class="font-mono text-[0.625rem] tracking-[0.06em] text-muted-foreground uppercase">Initial capital</span>
-                  </div>
-                  <div class="flex items-center gap-1.5">
-                    <span aria-hidden="true" class="size-2 rounded-[1px]" style="background-color: var(--chart-2);"></span>
-                    <span class="font-mono text-[0.625rem] tracking-[0.06em] text-muted-foreground uppercase">Contributions</span>
-                  </div>
-                  <div class="flex items-center gap-1.5">
-                    <span aria-hidden="true" class="size-2 rounded-[1px]" style="background-color: var(--chart-1);"></span>
-                    <span class="font-mono text-[0.625rem] tracking-[0.06em] text-muted-foreground uppercase">Capital Growth</span>
-                  </div>
+          <!-- Interactive Chart Card -->
+          <div class="flex flex-col gap-4 bg-card rounded-sm border border-border p-5 sm:p-6 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4 select-none">
+              <div>
+                <h2 class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
+                  Growth Projection
+                </h2>
+              </div>
+              
+              <!-- Legend -->
+              <div class="flex flex-wrap items-center gap-x-5 gap-y-2 select-none">
+                <div class="flex items-center gap-2">
+                  <span aria-hidden="true" class="size-2.5 rounded-[1px]" style="background-color: var(--chart-3);"></span>
+                  <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Initial capital</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span aria-hidden="true" class="size-2.5 rounded-[1px]" style="background-color: var(--chart-2);"></span>
+                  <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Contributions</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span aria-hidden="true" class="size-2.5 rounded-[1px]" style="background-color: var(--chart-1);"></span>
+                  <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Capital Growth</span>
                 </div>
               </div>
-
-              <!-- SVG Chart -->
-              <div id="chart-container" class="chart-container flex-1 min-h-[300px] sm:min-h-[340px]">
-                <!-- Rendered via JS -->
-              </div>
             </div>
 
-            <!-- Right: Vertical Summary Metrics Column -->
-            <section aria-label="Portfolio Summary" class="flex flex-col rounded-sm border border-border bg-card overflow-hidden divide-y divide-border justify-between shadow-xs">
-              <div class="flex flex-col gap-1 p-4 bg-muted/30">
-                <span class="font-mono text-[0.625rem] tracking-[0.18em] text-muted-foreground uppercase">Summary</span>
-                <span class="font-mono text-xs font-semibold text-foreground">Performance Metrics</span>
-              </div>
-              
-              <div class="flex flex-col gap-1 p-4">
-                <dt class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Total contributed</dt>
-                <dd id="stat-total-deposited" class="num font-mono text-xl leading-none font-medium text-foreground">$190,000</dd>
-              </div>
-              
-              <div class="flex flex-col gap-1 p-4">
-                <dt class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Capital growth</dt>
-                <dd id="stat-total-interest" class="num font-mono text-xl leading-none font-semibold text-primary">$501,150</dd>
-              </div>
-              
-              <div class="flex flex-col gap-1 p-4">
-                <dt class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Return multiple</dt>
-                <dd id="stat-growth-multiple" class="num font-mono text-xl leading-none font-medium text-foreground">3.64×</dd>
-              </div>
-              
-              <div class="flex flex-col gap-1 p-4">
-                <dt class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Growth in final year</dt>
-                <dd id="stat-final-year-interest" class="num font-mono text-xl leading-none font-medium text-foreground">$46,374</dd>
-              </div>
-            </section>
-
+            <!-- SVG Chart (Spacious & Majestic) -->
+            <div id="chart-container" class="chart-container w-full min-h-[340px] sm:min-h-[380px]">
+              <!-- Rendered via JS -->
+            </div>
           </div>
 
-          <!-- Year by Year Schedule Table (5-column layout matching exact design) -->
+          <!-- Year by Year Schedule Table -->
           <section aria-labelledby="schedule-heading" class="flex flex-col gap-4">
             <div class="flex items-baseline justify-between gap-4">
               <h2 id="schedule-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
@@ -359,7 +310,7 @@
               </div>
             </div>
 
-            <div class="overflow-x-auto rounded-sm border border-border bg-card">
+            <div class="overflow-x-auto rounded-sm border border-border bg-card shadow-sm">
               <table class="w-full caption-bottom text-sm">
                 <thead>
                   <tr class="border-b border-border hover:bg-transparent">
@@ -395,6 +346,64 @@
             </button>
           </section>
 
+        </div>
+
+        <!-- Column 3: Dedicated Vertical Right Summary (02) -->
+        <div class="xl:sticky xl:top-8 xl:self-start">
+          <section aria-labelledby="summary-heading" class="flex flex-col rounded-sm border border-border bg-card p-5 sm:p-6 shadow-sm divide-y divide-border">
+            <header class="flex items-baseline justify-between gap-4 pb-4">
+              <h2 id="summary-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
+                Summary
+              </h2>
+              <span class="num font-mono text-[0.6875rem] text-muted-foreground">02</span>
+            </header>
+
+            <!-- Big Balance Section -->
+            <div class="flex flex-col gap-2.5 py-5">
+              <span id="hero-heading" class="font-mono text-[0.6875rem] tracking-[0.14em] text-muted-foreground uppercase">
+                Portfolio balance after 30 years
+              </span>
+              <p id="hero-balance" class="num font-mono text-[clamp(2.25rem,4vw,3.25rem)] leading-none font-medium text-foreground tracking-tight">
+                $691,150
+              </p>
+              <p id="hero-description" class="text-xs leading-relaxed text-muted-foreground text-pretty mt-1">
+                You put in $190,000 and capital growth added <span class="num font-mono text-foreground font-medium">$501,150</span> on top — 73% of the final balance is money generated from investment appreciation.
+              </p>
+
+              <!-- Composition Progress Bar -->
+              <div class="mt-2 flex flex-col gap-1.5">
+                <div id="composition-bar" role="img" aria-label="Composition of final value: 27 percent contributions, 73 percent capital growth" class="flex h-2 w-full gap-px overflow-hidden rounded-[1px]">
+                  <div id="comp-bar-deposits" class="bg-[var(--chart-2)] transition-[flex-grow] duration-500" style="flex-grow: 0.2749;"></div>
+                  <div id="comp-bar-interest" class="bg-[var(--chart-1)] transition-[flex-grow] duration-500" style="flex-grow: 0.7251;"></div>
+                </div>
+                <div class="flex items-center justify-between font-mono text-[0.625rem] text-muted-foreground">
+                  <span>Deposits</span>
+                  <span>Growth</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Key Metric Rows (Vertical Stack) -->
+            <div class="flex flex-col divide-y divide-border pt-2">
+              <div class="flex items-baseline justify-between py-3">
+                <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Total contributed</span>
+                <span id="stat-total-deposited" class="num font-mono text-base font-medium text-foreground">$190,000</span>
+              </div>
+              <div class="flex items-baseline justify-between py-3">
+                <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Capital growth</span>
+                <span id="stat-total-interest" class="num font-mono text-base font-semibold text-primary">$501,150</span>
+              </div>
+              <div class="flex items-baseline justify-between py-3">
+                <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Return multiple</span>
+                <span id="stat-growth-multiple" class="num font-mono text-base font-medium text-foreground">3.64×</span>
+              </div>
+              <div class="flex items-baseline justify-between py-3">
+                <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Growth in final yr</span>
+                <span id="stat-final-year-interest" class="num font-mono text-base font-medium text-foreground">$46,374</span>
+              </div>
+            </div>
+
+          </section>
         </div>
 
       </div>
