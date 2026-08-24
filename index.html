@@ -329,21 +329,17 @@
             </div>
           </dl>
 
-          <!-- Year by Year Schedule Table (Editable) -->
+          <!-- Year by Year Schedule Table (5-column layout matching exact design) -->
           <section aria-labelledby="schedule-heading" class="flex flex-col gap-4">
-            <div class="flex items-baseline justify-between gap-4 flex-wrap">
-              <div class="flex items-baseline gap-3">
-                <h2 id="schedule-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
-                  Year by year schedule
-                </h2>
-                <span id="table-row-count" class="num font-mono text-[0.6875rem] text-muted-foreground">30 rows</span>
-              </div>
-              
+            <div class="flex items-baseline justify-between gap-4">
+              <h2 id="schedule-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
+                Year by year breakdown
+              </h2>
               <div class="flex items-center gap-3">
-                <span class="text-muted-foreground text-[0.6875rem] font-mono">💡 Click any year's deposit or rate to customize</span>
                 <button id="reset-overrides-btn" type="button" style="display: none;" class="text-[0.6875rem] font-mono text-primary hover:underline font-medium cursor-pointer">
                   Reset custom years
                 </button>
+                <span id="table-row-count" class="num font-mono text-[0.6875rem] text-muted-foreground">30 rows</span>
               </div>
             </div>
 
@@ -355,10 +351,7 @@
                       Year
                     </th>
                     <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                      Deposit / yr
-                    </th>
-                    <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                      Growth Rate
+                      Contributed
                     </th>
                     <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
                       Growth this year
@@ -399,6 +392,61 @@
 
     </div>
   </main>
+
+  <!-- Modal / Floating Card for Year Customization -->
+  <div id="year-modal-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-200 hidden opacity-0">
+    <div id="year-modal-card" class="bg-card border border-border rounded-lg shadow-2xl max-w-md w-full p-6 flex flex-col gap-5 transform transition-all duration-200 scale-95">
+      <div class="flex items-center justify-between border-b border-border pb-3">
+        <div>
+          <h3 id="modal-year-title" class="font-mono text-sm font-semibold text-foreground uppercase tracking-wider">Customize Year 1</h3>
+          <p class="text-xs text-muted-foreground mt-0.5">Adjust assumptions for this specific year. Changes cascade prospectively.</p>
+        </div>
+        <button id="modal-close-btn" type="button" class="text-muted-foreground hover:text-foreground rounded p-1 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <!-- Annual Contribution input -->
+        <div class="flex flex-col gap-1.5">
+          <div class="flex items-center justify-between">
+            <label for="modal-contrib-input" class="text-xs font-medium text-foreground">Annual Contribution in this year</label>
+            <span id="modal-default-contrib-hint" class="font-mono text-[0.6875rem] text-muted-foreground">Default: $6,000</span>
+          </div>
+          <div class="input-group">
+            <div class="input-group-addon pl-2 pr-1 text-muted-foreground">$</div>
+            <input id="modal-contrib-input" type="text" inputmode="decimal" class="num font-mono text-sm" />
+          </div>
+        </div>
+
+        <!-- Annual Growth Rate input -->
+        <div class="flex flex-col gap-1.5">
+          <div class="flex items-center justify-between">
+            <label for="modal-rate-input" class="text-xs font-medium text-foreground">Growth Rate in this year</label>
+            <span id="modal-default-rate-hint" class="font-mono text-[0.6875rem] text-muted-foreground">Default: 7.0%</span>
+          </div>
+          <div class="input-group">
+            <input id="modal-rate-input" type="text" inputmode="decimal" class="num font-mono text-sm" />
+            <div class="input-group-addon pr-2 pl-1 text-muted-foreground">%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-border mt-2">
+        <button id="modal-reset-btn" type="button" class="text-xs font-mono text-muted-foreground hover:text-destructive transition-colors">
+          Reset to default
+        </button>
+        <div class="flex items-center gap-2">
+          <button id="modal-cancel-btn" type="button" class="px-3 py-1.5 rounded text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+            Cancel
+          </button>
+          <button id="modal-save-btn" type="button" class="px-4 py-1.5 rounded text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90 shadow-sm transition-opacity">
+            Apply & Recalculate
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="./app.js"></script>
 </body>

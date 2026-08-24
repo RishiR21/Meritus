@@ -1,6 +1,6 @@
 ﻿/**
  * Meritus — Investment Growth & Capital Appreciation Calculator
- * High-fidelity financial projection engine with customizable ranges & editable schedule
+ * High-fidelity financial projection engine with customizable ranges & interactive schedule
  */
 
 // State Management
@@ -13,6 +13,7 @@ const state = {
   isTableExpanded: false,
   animatedBalance: 10000,
   yearOverrides: {}, // { [yearNumber]: { contribution?: number, rate?: number } }
+  activeModalYear: null,
   ranges: {
     principal: { min: 0, max: 1000000, step: 1000, precision: 0, prefix: '$', suffix: '' },
     monthly: { min: 0, max: 100000, step: 50, precision: 0, prefix: '$', suffix: '' },
@@ -222,7 +223,7 @@ function syncSlider(id) {
   }
 }
 
-// Table renderer with inline editable cells
+// Table renderer matching the exact 5-column layout
 function renderTable(schedule) {
   const tbody = document.getElementById('schedule-tbody');
   const rowCountElem = document.getElementById('table-row-count');
@@ -246,7 +247,7 @@ function renderTable(schedule) {
     if (rows.length === 0) {
       tbody.innerHTML = `
         <tr class="border-b border-border">
-          <td colspan="6" class="p-4 text-center text-muted-foreground font-mono text-xs">0 years invested. Initial capital balance is immediate.</td>
+          <td colspan="5" class="p-4 text-center text-muted-foreground font-mono text-xs">0 years invested. Initial capital balance is immediate.</td>
         </tr>
       `;
     } else {
@@ -254,64 +255,26 @@ function renderTable(schedule) {
         const isInterestDominant = row.interest > (row.principal + row.contributions);
         const isCustom = row.isCustom;
         return `
-          <tr class="border-b border-border transition-colors hover:bg-muted/40 ${isCustom ? 'bg-primary/5' : ''}">
-            <td class="p-2 align-middle whitespace-nowrap num font-mono text-muted-foreground">
-              <div class="flex items-center">
-                ${isCustom ? '<span class="custom-row-badge" title="Custom assumptions for this year"></span>' : ''}
+          <tr data-year="${row.year}" title="Click to customize assumptions for Year ${row.year}" class="schedule-row border-b border-border transition-colors hover:bg-muted/60 cursor-pointer ${isCustom ? 'bg-primary/5' : ''}">
+            <td class="p-2.5 px-3 align-middle whitespace-nowrap num font-mono text-muted-foreground">
+              <div class="flex items-center gap-1.5">
+                ${isCustom ? '<span class="size-1.5 rounded-full bg-primary" title="Custom assumptions active"></span>' : ''}
                 <span>${row.year}</span>
               </div>
             </td>
-            <td class="p-2 align-middle whitespace-nowrap num text-right font-mono">
-              <input 
-                type="text" 
-                inputmode="decimal" 
-                data-year="${row.year}" 
-                data-field="contribution" 
-                value="${Math.round(row.depositThisYear)}" 
-                title="Edit annual contribution for Year ${row.year}"
-                class="table-cell-input num ${isCustom ? 'font-semibold text-primary' : ''}" 
-              />
-            </td>
-            <td class="p-2 align-middle whitespace-nowrap num text-right font-mono">
-              <div class="inline-flex items-center justify-end">
-                <input 
-                  type="text" 
-                  inputmode="decimal" 
-                  data-year="${row.year}" 
-                  data-field="rate" 
-                  value="${row.rateThisYear.toFixed(1)}" 
-                  title="Edit growth rate for Year ${row.year}"
-                  class="table-cell-input num w-16 ${isCustom ? 'font-semibold text-primary' : ''}" 
-                />
-                <span class="text-muted-foreground text-xs pl-0.5">%</span>
-              </div>
-            </td>
-            <td class="p-2 align-middle whitespace-nowrap num text-right font-mono">${formatCurrency(row.interestThisYear)}</td>
-            <td class="p-2 align-middle whitespace-nowrap num text-right font-mono ${isInterestDominant ? 'text-primary font-semibold' : ''}">${formatCurrency(row.interest)}</td>
-            <td class="p-2 align-middle whitespace-nowrap num text-right font-mono font-medium">${formatCurrency(row.balance)}</td>
+            <td class="p-2.5 px-3 align-middle whitespace-nowrap num text-right font-mono font-medium text-foreground">${formatCurrency(row.principal + row.contributions)}</td>
+            <td class="p-2.5 px-3 align-middle whitespace-nowrap num text-right font-mono text-foreground">${formatCurrency(row.interestThisYear)}</td>
+            <td class="p-2.5 px-3 align-middle whitespace-nowrap num text-right font-mono ${isInterestDominant ? 'text-primary font-bold' : 'text-foreground'}">${formatCurrency(row.interest)}</td>
+            <td class="p-2.5 px-3 align-middle whitespace-nowrap num text-right font-mono font-medium text-foreground">${formatCurrency(row.balance)}</td>
           </tr>
         `;
       }).join('');
 
-      // Attach inline input listeners
-      tbody.querySelectorAll('.table-cell-input').forEach(input => {
-        input.addEventListener('change', (e) => {
-          const yr = Number(e.target.getAttribute('data-year'));
-          const field = e.target.getAttribute('data-field');
-          const raw = parseFloat(e.target.value.replace(/[^0-9.-]/g, ''));
-          const val = Number.isFinite(raw) ? raw : 0;
-
-          if (!state.yearOverrides[yr]) {
-            state.yearOverrides[yr] = {};
-          }
-
-          if (field === 'contribution') {
-            state.yearOverrides[yr].contribution = Math.max(0, val);
-          } else if (field === 'rate') {
-            state.yearOverrides[yr].rate = Math.max(-100, Math.min(1000, val));
-          }
-
-          updateUI();
+      // Attach row click handlers to open Year Customization Modal
+      tbody.querySelectorAll('.schedule-row').forEach(tr => {
+        tr.addEventListener('click', () => {
+          const yr = Number(tr.getAttribute('data-year'));
+          openYearModal(yr);
         });
       });
     }
@@ -331,6 +294,97 @@ function renderTable(schedule) {
       toggleBtn.style.display = 'none';
     }
   }
+}
+
+// Year Customization Modal Controller
+function openYearModal(year) {
+  state.activeModalYear = year;
+  const modal = document.getElementById('year-modal-backdrop');
+  const card = document.getElementById('year-modal-card');
+  const title = document.getElementById('modal-year-title');
+  const contribInput = document.getElementById('modal-contrib-input');
+  const rateInput = document.getElementById('modal-rate-input');
+  const defContribHint = document.getElementById('modal-default-contrib-hint');
+  const defRateHint = document.getElementById('modal-default-rate-hint');
+
+  const defaultAnnualContrib = state.monthly * 12;
+  const defaultRate = state.rate;
+
+  const currentContrib = (state.yearOverrides[year]?.contribution !== undefined) 
+    ? state.yearOverrides[year].contribution 
+    : defaultAnnualContrib;
+
+  const currentRate = (state.yearOverrides[year]?.rate !== undefined) 
+    ? state.yearOverrides[year].rate 
+    : defaultRate;
+
+  title.textContent = `Customize Year ${year}`;
+  defContribHint.textContent = `Default: ${formatCurrency(defaultAnnualContrib)}`;
+  defRateHint.textContent = `Default: ${defaultRate.toFixed(1)}%`;
+
+  contribInput.value = Math.round(currentContrib);
+  rateInput.value = Number(currentRate).toFixed(1);
+
+  modal.classList.remove('hidden');
+  setTimeout(() => {
+    modal.classList.remove('opacity-0');
+    card.classList.remove('scale-95');
+    card.classList.add('scale-100');
+    contribInput.focus();
+    contribInput.select();
+  }, 10);
+}
+
+function closeYearModal() {
+  const modal = document.getElementById('year-modal-backdrop');
+  const card = document.getElementById('year-modal-card');
+  if (!modal) return;
+
+  modal.classList.add('opacity-0');
+  card.classList.remove('scale-100');
+  card.classList.add('scale-95');
+  setTimeout(() => {
+    modal.classList.add('hidden');
+    state.activeModalYear = null;
+  }, 200);
+}
+
+function saveYearModal() {
+  const year = state.activeModalYear;
+  if (!year) return;
+
+  const contribInput = document.getElementById('modal-contrib-input');
+  const rateInput = document.getElementById('modal-rate-input');
+
+  const rawContrib = parseFloat(contribInput.value.replace(/[^0-9.]/g, ''));
+  const rawRate = parseFloat(rateInput.value.replace(/[^0-9.-]/g, ''));
+
+  if (!state.yearOverrides[year]) {
+    state.yearOverrides[year] = {};
+  }
+
+  if (Number.isFinite(rawContrib)) {
+    state.yearOverrides[year].contribution = Math.max(0, rawContrib);
+  }
+
+  if (Number.isFinite(rawRate)) {
+    state.yearOverrides[year].rate = Math.max(-100, Math.min(1000, rawRate));
+  }
+
+  closeYearModal();
+  updateUI();
+}
+
+function resetCurrentYearModal() {
+  const year = state.activeModalYear;
+  if (!year) return;
+
+  if (state.yearOverrides[year]) {
+    delete state.yearOverrides[year];
+  }
+
+  closeYearModal();
+  updateUI();
 }
 
 // Chart Renderer using SVG
@@ -661,6 +715,23 @@ function setupEventListeners() {
   bindField('monthly');
   bindField('rate');
   bindField('years');
+
+  // Modal event listeners
+  document.getElementById('modal-close-btn')?.addEventListener('click', closeYearModal);
+  document.getElementById('modal-cancel-btn')?.addEventListener('click', closeYearModal);
+  document.getElementById('modal-save-btn')?.addEventListener('click', saveYearModal);
+  document.getElementById('modal-reset-btn')?.addEventListener('click', resetCurrentYearModal);
+  document.getElementById('year-modal-backdrop')?.addEventListener('click', (e) => {
+    if (e.target.id === 'year-modal-backdrop') closeYearModal();
+  });
+
+  // Modal keyboard listeners (Enter to save, Esc to close)
+  window.addEventListener('keydown', (e) => {
+    if (state.activeModalYear !== null) {
+      if (e.key === 'Escape') closeYearModal();
+      if (e.key === 'Enter') saveYearModal();
+    }
+  });
 
   // Reset Overrides Button
   const resetBtn = document.getElementById('reset-overrides-btn');
