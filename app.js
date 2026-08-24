@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Meritus — Investment Growth & Capital Appreciation Calculator
  * High-fidelity financial projection engine with customizable ranges & interactive schedule
  */
@@ -780,7 +780,18 @@ function setupEventListeners() {
     });
   }
 
-  // Window resize handler for responsive chart
+  // Window & element resize handler for responsive chart
+  if (typeof ResizeObserver !== 'undefined') {
+    const chartElem = document.getElementById('chart-container');
+    if (chartElem) {
+      const observer = new ResizeObserver(() => {
+        const result = calculateProjection(state);
+        renderChart(result.schedule, result.crossoverYear);
+      });
+      observer.observe(chartElem);
+    }
+  }
+
   window.addEventListener('resize', () => {
     const result = calculateProjection(state);
     renderChart(result.schedule, result.crossoverYear);
