@@ -716,7 +716,34 @@ function setupEventListeners() {
   bindField('rate');
   bindField('years');
 
-  // Modal event listeners
+// Creator Info Modal Controller
+function openCreatorModal() {
+  const modal = document.getElementById('creator-modal-backdrop');
+  const card = document.getElementById('creator-modal-card');
+  if (!modal || !card) return;
+
+  modal.classList.remove('hidden');
+  setTimeout(() => {
+    modal.classList.remove('opacity-0');
+    card.classList.remove('scale-95');
+    card.classList.add('scale-100');
+  }, 10);
+}
+
+function closeCreatorModal() {
+  const modal = document.getElementById('creator-modal-backdrop');
+  const card = document.getElementById('creator-modal-card');
+  if (!modal || !card) return;
+
+  modal.classList.add('opacity-0');
+  card.classList.remove('scale-100');
+  card.classList.add('scale-95');
+  setTimeout(() => {
+    modal.classList.add('hidden');
+  }, 200);
+}
+
+// Modal event listeners
   document.getElementById('modal-close-btn')?.addEventListener('click', closeYearModal);
   document.getElementById('modal-cancel-btn')?.addEventListener('click', closeYearModal);
   document.getElementById('modal-save-btn')?.addEventListener('click', saveYearModal);
@@ -725,11 +752,21 @@ function setupEventListeners() {
     if (e.target.id === 'year-modal-backdrop') closeYearModal();
   });
 
+  // Creator Modal listeners
+  document.getElementById('creator-info-btn')?.addEventListener('click', openCreatorModal);
+  document.getElementById('creator-modal-close-btn')?.addEventListener('click', closeCreatorModal);
+  document.getElementById('creator-modal-backdrop')?.addEventListener('click', (e) => {
+    if (e.target.id === 'creator-modal-backdrop') closeCreatorModal();
+  });
+
   // Modal keyboard listeners (Enter to save, Esc to close)
   window.addEventListener('keydown', (e) => {
-    if (state.activeModalYear !== null) {
-      if (e.key === 'Escape') closeYearModal();
-      if (e.key === 'Enter') saveYearModal();
+    if (e.key === 'Escape') {
+      closeCreatorModal();
+      if (state.activeModalYear !== null) closeYearModal();
+    }
+    if (state.activeModalYear !== null && e.key === 'Enter') {
+      saveYearModal();
     }
   });
 
