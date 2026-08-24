@@ -329,13 +329,22 @@
             </div>
           </dl>
 
-          <!-- Year by Year Schedule Table -->
+          <!-- Year by Year Schedule Table (Editable) -->
           <section aria-labelledby="schedule-heading" class="flex flex-col gap-4">
-            <div class="flex items-baseline justify-between gap-4">
-              <h2 id="schedule-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
-                Year by year breakdown
-              </h2>
-              <span id="table-row-count" class="num font-mono text-[0.6875rem] text-muted-foreground">30 rows</span>
+            <div class="flex items-baseline justify-between gap-4 flex-wrap">
+              <div class="flex items-baseline gap-3">
+                <h2 id="schedule-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
+                  Year by year schedule
+                </h2>
+                <span id="table-row-count" class="num font-mono text-[0.6875rem] text-muted-foreground">30 rows</span>
+              </div>
+              
+              <div class="flex items-center gap-3">
+                <span class="text-muted-foreground text-[0.6875rem] font-mono">💡 Click any year's deposit or rate to customize</span>
+                <button id="reset-overrides-btn" type="button" style="display: none;" class="text-[0.6875rem] font-mono text-primary hover:underline font-medium cursor-pointer">
+                  Reset custom years
+                </button>
+              </div>
             </div>
 
             <div class="overflow-x-auto rounded-sm border border-border bg-card">
@@ -346,7 +355,10 @@
                       Year
                     </th>
                     <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                      Contributed
+                      Deposit / yr
+                    </th>
+                    <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
+                      Growth Rate
                     </th>
                     <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
                       Growth this year

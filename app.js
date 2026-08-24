@@ -1,6 +1,6 @@
 ﻿/**
  * Meritus — Investment Growth & Capital Appreciation Calculator
- * High-fidelity financial projection engine with customizable ranges
+ * High-fidelity financial projection engine with customizable ranges & editable schedule
  */
 
 // State Management
@@ -12,6 +12,7 @@ const state = {
   frequency: 12,
   isTableExpanded: false,
   animatedBalance: 10000,
+  yearOverrides: {}, // { [yearNumber]: { contribution?: number, rate?: number } }
   ranges: {
     principal: { min: 0, max: 1000000, step: 1000, precision: 0, prefix: '$', suffix: '' },
     monthly: { min: 0, max: 100000, step: 50, precision: 0, prefix: '$', suffix: '' },
@@ -38,10 +39,9 @@ const formatCompactCurrency = (val) => {
   }).format(val);
 };
 
-// Compound Calculation Engine
-function calculateProjection({ principal, monthly, rate, years, frequency }) {
+// Compound Calculation Engine with prospective cascading year overrides
+function calculateProjection({ principal, monthly, rate, years, frequency, yearOverrides = {} }) {
   const totalYears = Math.max(0, Math.round(years));
-  const monthlyMultiplier = Math.pow(1 + rate / 100 / frequency, frequency / 12);
   let balance = principal;
   let totalContributions = 0;
   let totalInterest = 0;
@@ -52,25 +52,41 @@ function calculateProjection({ principal, monthly, rate, years, frequency }) {
     contributions: 0,
     interest: 0,
     balance: principal,
-    interestThisYear: 0
+    interestThisYear: 0,
+    rateThisYear: rate,
+    depositThisYear: 0,
+    isCustom: false
   }];
 
   for (let y = 1; y <= totalYears; y++) {
+    const override = yearOverrides[y];
+    const isCustom = Boolean(override && (override.contribution !== undefined || override.rate !== undefined));
+    
+    const annualContrib = (override && override.contribution !== undefined) ? override.contribution : (monthly * 12);
+    const annualRate = (override && override.rate !== undefined) ? override.rate : rate;
+    
+    const monthlyDeposit = annualContrib / 12;
+    const monthlyMultiplier = Math.pow(1 + annualRate / 100 / frequency, frequency / 12);
     const startInterest = totalInterest;
+
     for (let m = 0; m < 12; m++) {
       const interestEarned = balance * (monthlyMultiplier - 1);
       totalInterest += interestEarned;
       balance += interestEarned;
-      balance += monthly;
-      totalContributions += monthly;
+      balance += monthlyDeposit;
+      totalContributions += monthlyDeposit;
     }
+
     schedule.push({
       year: y,
       principal: principal,
       contributions: totalContributions,
       interest: totalInterest,
       balance: balance,
-      interestThisYear: totalInterest - startInterest
+      interestThisYear: totalInterest - startInterest,
+      rateThisYear: annualRate,
+      depositThisYear: annualContrib,
+      isCustom: isCustom
     });
   }
 
@@ -206,13 +222,14 @@ function syncSlider(id) {
   }
 }
 
-// Table renderer
+// Table renderer with inline editable cells
 function renderTable(schedule) {
   const tbody = document.getElementById('schedule-tbody');
   const rowCountElem = document.getElementById('table-row-count');
   const toggleBtn = document.getElementById('table-toggle-btn');
   const toggleText = document.getElementById('table-toggle-text');
   const toggleIcon = document.getElementById('table-toggle-icon');
+  const resetBtn = document.getElementById('reset-overrides-btn');
 
   const rows = schedule.filter(item => item.year > 0);
   if (rowCountElem) rowCountElem.textContent = `${rows.length} rows`;
@@ -220,26 +237,83 @@ function renderTable(schedule) {
   const displayedRows = state.isTableExpanded ? rows : rows.slice(0, 10);
   const remainingCount = rows.length - displayedRows.length;
 
+  const hasOverrides = Object.keys(state.yearOverrides).length > 0;
+  if (resetBtn) {
+    resetBtn.style.display = hasOverrides ? 'inline-block' : 'none';
+  }
+
   if (tbody) {
     if (rows.length === 0) {
       tbody.innerHTML = `
         <tr class="border-b border-border">
-          <td colspan="5" class="p-4 text-center text-muted-foreground font-mono text-xs">0 years invested. Initial capital balance is immediate.</td>
+          <td colspan="6" class="p-4 text-center text-muted-foreground font-mono text-xs">0 years invested. Initial capital balance is immediate.</td>
         </tr>
       `;
     } else {
       tbody.innerHTML = displayedRows.map(row => {
         const isInterestDominant = row.interest > (row.principal + row.contributions);
+        const isCustom = row.isCustom;
         return `
-          <tr class="border-b border-border transition-colors hover:bg-muted/50">
-            <td class="p-2 align-middle whitespace-nowrap num font-mono text-muted-foreground">${row.year}</td>
-            <td class="p-2 align-middle whitespace-nowrap num text-right font-mono">${formatCurrency(row.principal + row.contributions)}</td>
+          <tr class="border-b border-border transition-colors hover:bg-muted/40 ${isCustom ? 'bg-primary/5' : ''}">
+            <td class="p-2 align-middle whitespace-nowrap num font-mono text-muted-foreground">
+              <div class="flex items-center">
+                ${isCustom ? '<span class="custom-row-badge" title="Custom assumptions for this year"></span>' : ''}
+                <span>${row.year}</span>
+              </div>
+            </td>
+            <td class="p-2 align-middle whitespace-nowrap num text-right font-mono">
+              <input 
+                type="text" 
+                inputmode="decimal" 
+                data-year="${row.year}" 
+                data-field="contribution" 
+                value="${Math.round(row.depositThisYear)}" 
+                title="Edit annual contribution for Year ${row.year}"
+                class="table-cell-input num ${isCustom ? 'font-semibold text-primary' : ''}" 
+              />
+            </td>
+            <td class="p-2 align-middle whitespace-nowrap num text-right font-mono">
+              <div class="inline-flex items-center justify-end">
+                <input 
+                  type="text" 
+                  inputmode="decimal" 
+                  data-year="${row.year}" 
+                  data-field="rate" 
+                  value="${row.rateThisYear.toFixed(1)}" 
+                  title="Edit growth rate for Year ${row.year}"
+                  class="table-cell-input num w-16 ${isCustom ? 'font-semibold text-primary' : ''}" 
+                />
+                <span class="text-muted-foreground text-xs pl-0.5">%</span>
+              </div>
+            </td>
             <td class="p-2 align-middle whitespace-nowrap num text-right font-mono">${formatCurrency(row.interestThisYear)}</td>
             <td class="p-2 align-middle whitespace-nowrap num text-right font-mono ${isInterestDominant ? 'text-primary font-semibold' : ''}">${formatCurrency(row.interest)}</td>
             <td class="p-2 align-middle whitespace-nowrap num text-right font-mono font-medium">${formatCurrency(row.balance)}</td>
           </tr>
         `;
       }).join('');
+
+      // Attach inline input listeners
+      tbody.querySelectorAll('.table-cell-input').forEach(input => {
+        input.addEventListener('change', (e) => {
+          const yr = Number(e.target.getAttribute('data-year'));
+          const field = e.target.getAttribute('data-field');
+          const raw = parseFloat(e.target.value.replace(/[^0-9.-]/g, ''));
+          const val = Number.isFinite(raw) ? raw : 0;
+
+          if (!state.yearOverrides[yr]) {
+            state.yearOverrides[yr] = {};
+          }
+
+          if (field === 'contribution') {
+            state.yearOverrides[yr].contribution = Math.max(0, val);
+          } else if (field === 'rate') {
+            state.yearOverrides[yr].rate = Math.max(-100, Math.min(1000, val));
+          }
+
+          updateUI();
+        });
+      });
     }
   }
 
@@ -293,7 +367,7 @@ function renderChart(schedule, crossoverYear) {
     if (totalYears === 0) return margin.left + plotWidth / 2;
     return margin.left + (year / totalYears) * plotWidth;
   };
-  const getY = (val) => margin.top + plotHeight - (val / maxBalance) * plotHeight;
+  const getY = (val) => margin.top + plotHeight - (Math.max(0, val) / maxBalance) * plotHeight;
 
   // Generate SVG stacked paths
   let pathPrincipal = `M ${getX(0)} ${getY(0)}`;
@@ -455,7 +529,10 @@ function showTooltip(data, x, y, containerRect) {
 
   tooltipWrapper.innerHTML = `
     <div class="tooltip-card">
-      <div class="font-medium text-foreground">${yearLabel}</div>
+      <div class="flex items-center justify-between gap-2">
+        <span class="font-medium text-foreground">${yearLabel}</span>
+        ${data.isCustom ? '<span class="text-[0.625rem] font-mono text-primary bg-primary/10 px-1 py-0.2 rounded">Custom</span>' : ''}
+      </div>
       <div class="grid gap-1.5 pt-1">
         <div class="flex items-center justify-between gap-4">
           <div class="flex items-center gap-2">
@@ -584,6 +661,15 @@ function setupEventListeners() {
   bindField('monthly');
   bindField('rate');
   bindField('years');
+
+  // Reset Overrides Button
+  const resetBtn = document.getElementById('reset-overrides-btn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      state.yearOverrides = {};
+      updateUI();
+    });
+  }
 
   // Compounding Frequency Toggles
   const toggleButtons = document.querySelectorAll('.toggle-item');

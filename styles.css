@@ -321,6 +321,42 @@ body {
   font-size: 1rem;
 }
 
+/* Editable Table Cell Inputs */
+.table-cell-input {
+  width: 100%;
+  min-width: 4.5rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  padding: 2px 4px;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: inherit;
+  text-align: right;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.table-cell-input:hover {
+  border-color: var(--border);
+  background-color: var(--card);
+}
+
+.table-cell-input:focus {
+  border-color: var(--ring);
+  background-color: var(--card);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 25%, transparent);
+}
+
+.custom-row-badge {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--chart-1);
+  margin-right: 4px;
+}
+
 /* High-Contrast Segmented Toggle Group */
 .toggle-group {
   display: flex;
