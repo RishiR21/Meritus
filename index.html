@@ -1,0 +1,352 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Compound Interest Calculator — see investment growth over time</title>
+  <meta name="description" content="Project how a starting balance and monthly contributions grow with compound interest, and see exactly how much of the final balance is interest." />
+  <meta name="theme-color" content="#eff1f4" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#1b1f26" media="(prefers-color-scheme: dark)" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            background: 'var(--background)',
+            foreground: 'var(--foreground)',
+            card: {
+              DEFAULT: 'var(--card)',
+              foreground: 'var(--card-foreground)',
+            },
+            popover: {
+              DEFAULT: 'var(--popover)',
+              foreground: 'var(--popover-foreground)',
+            },
+            primary: {
+              DEFAULT: 'var(--primary)',
+              foreground: 'var(--primary-foreground)',
+            },
+            secondary: {
+              DEFAULT: 'var(--secondary)',
+              foreground: 'var(--secondary-foreground)',
+            },
+            muted: {
+              DEFAULT: 'var(--muted)',
+              foreground: 'var(--muted-foreground)',
+            },
+            accent: {
+              DEFAULT: 'var(--accent)',
+              foreground: 'var(--accent-foreground)',
+            },
+            destructive: {
+              DEFAULT: 'var(--destructive)',
+              foreground: '#ffffff',
+            },
+            border: 'var(--border)',
+            input: 'var(--input)',
+            ring: 'var(--ring)',
+            chart: {
+              1: 'var(--chart-1)',
+              2: 'var(--chart-2)',
+              3: 'var(--chart-3)',
+              4: 'var(--chart-4)',
+              5: 'var(--chart-5)',
+            }
+          },
+          fontFamily: {
+            sans: ['Geist', 'sans-serif'],
+            mono: ['Geist Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body class="antialiased bg-background text-foreground min-h-screen selection:bg-primary/20">
+
+  <main class="min-h-svh">
+    <div class="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14">
+      
+      <!-- Top Header -->
+      <header class="mb-10 flex flex-col gap-4 border-b border-border pb-8 sm:mb-14 relative">
+        <div class="flex items-center justify-between">
+          <p class="font-mono text-[0.6875rem] tracking-[0.24em] text-muted-foreground uppercase">
+            Compound interest
+          </p>
+          
+          <!-- Theme Toggle Button -->
+          <button id="theme-toggle" type="button" aria-label="Toggle theme" class="inline-flex items-center justify-center size-8 rounded-md border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <!-- Sun icon for dark mode -->
+            <svg id="theme-sun-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden dark:block">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2"></path>
+              <path d="M12 20v2"></path>
+              <path d="m4.93 4.93 1.41 1.41"></path>
+              <path d="m17.66 17.66 1.41 1.41"></path>
+              <path d="M2 12h2"></path>
+              <path d="M20 12h2"></path>
+              <path d="m6.34 17.66-1.41 1.41"></path>
+              <path d="m19.07 4.93-1.41 1.41"></path>
+            </svg>
+            <!-- Moon icon for light mode -->
+            <svg id="theme-moon-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block dark:hidden">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <h1 class="max-w-2xl text-3xl leading-[1.1] font-medium tracking-tight text-balance sm:text-4xl">
+          Watch a deposit turn into decades of growth.
+        </h1>
+        <p class="max-w-xl text-sm leading-relaxed text-muted-foreground text-pretty">
+          Adjust the assumptions and the projection updates instantly — separating what you put in from what the interest earned on its own.
+        </p>
+      </header>
+
+      <!-- Main Layout Grid -->
+      <div class="grid gap-8 lg:grid-cols-[20rem_minmax(0,1fr)] lg:gap-12 xl:grid-cols-[22rem_minmax(0,1fr)]">
+        
+        <!-- Sticky Sidebar: Assumptions (01) -->
+        <div class="lg:sticky lg:top-8 lg:self-start">
+          <section aria-labelledby="assumptions-heading" class="flex flex-col gap-6 rounded-sm border border-border bg-card p-5 sm:p-6 shadow-sm">
+            <header class="flex items-baseline justify-between gap-4">
+              <h2 id="assumptions-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
+                Assumptions
+              </h2>
+              <span class="num font-mono text-[0.6875rem] text-muted-foreground">01</span>
+            </header>
+
+            <!-- Starting amount -->
+            <div class="flex flex-col gap-2">
+              <div class="flex items-baseline justify-between gap-4">
+                <label for="principal-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
+                  Starting amount
+                </label>
+                <span class="num font-mono text-[0.6875rem] text-muted-foreground">$0 – $250,000</span>
+              </div>
+              <div class="input-group">
+                <div class="input-group-addon pl-2 pr-1 text-muted-foreground">$</div>
+                <input id="principal-input" type="text" inputmode="decimal" value="10000" class="num font-mono text-base" />
+              </div>
+              <div class="slider-container">
+                <div class="slider-track-bg"></div>
+                <div id="principal-fill" class="slider-track-fill" style="width: 4%;"></div>
+                <input id="principal-slider" type="range" min="0" max="250000" step="500" value="10000" class="custom-range-slider" aria-label="Starting amount" />
+              </div>
+            </div>
+
+            <!-- Monthly contribution -->
+            <div class="flex flex-col gap-2">
+              <div class="flex items-baseline justify-between gap-4">
+                <label for="monthly-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
+                  Monthly contribution
+                </label>
+                <span class="num font-mono text-[0.6875rem] text-muted-foreground">$0 – $5,000</span>
+              </div>
+              <div class="input-group">
+                <div class="input-group-addon pl-2 pr-1 text-muted-foreground">$</div>
+                <input id="monthly-input" type="text" inputmode="decimal" value="500" class="num font-mono text-base" />
+              </div>
+              <div class="slider-container">
+                <div class="slider-track-bg"></div>
+                <div id="monthly-fill" class="slider-track-fill" style="width: 10%;"></div>
+                <input id="monthly-slider" type="range" min="0" max="5000" step="25" value="500" class="custom-range-slider" aria-label="Monthly contribution" />
+              </div>
+            </div>
+
+            <!-- Annual return -->
+            <div class="flex flex-col gap-2">
+              <div class="flex items-baseline justify-between gap-4">
+                <label for="rate-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
+                  Annual return
+                </label>
+                <span class="num font-mono text-[0.6875rem] text-muted-foreground">0 – 15%</span>
+              </div>
+              <div class="input-group">
+                <input id="rate-input" type="text" inputmode="decimal" value="7" aria-describedby="rate-hint" class="num font-mono text-base" />
+                <div class="input-group-addon pr-2 pl-1 text-muted-foreground">%</div>
+              </div>
+              <div class="slider-container">
+                <div class="slider-track-bg"></div>
+                <div id="rate-fill" class="slider-track-fill" style="width: 46.666%;"></div>
+                <input id="rate-slider" type="range" min="0" max="15" step="0.1" value="7" class="custom-range-slider" aria-label="Annual return" />
+              </div>
+              <p id="rate-hint" class="text-left font-normal text-muted-foreground text-xs leading-normal">
+                The long-run average for a broad stock index has been roughly 7% after inflation.
+              </p>
+            </div>
+
+            <!-- Time invested -->
+            <div class="flex flex-col gap-2">
+              <div class="flex items-baseline justify-between gap-4">
+                <label for="years-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
+                  Time invested
+                </label>
+                <span class="num font-mono text-[0.6875rem] text-muted-foreground">1 – 50 yrs</span>
+              </div>
+              <div class="input-group">
+                <input id="years-input" type="text" inputmode="decimal" value="30" class="num font-mono text-base" />
+                <div class="input-group-addon pr-2 pl-1 text-muted-foreground">yrs</div>
+              </div>
+              <div class="slider-container">
+                <div class="slider-track-bg"></div>
+                <div id="years-fill" class="slider-track-fill" style="width: 59.18%;"></div>
+                <input id="years-slider" type="range" min="1" max="50" step="1" value="30" class="custom-range-slider" aria-label="Time invested" />
+              </div>
+            </div>
+
+            <!-- Separator -->
+            <div class="shrink-0 bg-border h-px w-full my-1"></div>
+
+            <!-- Compounding Frequency -->
+            <div class="flex flex-col gap-2">
+              <label class="text-[0.8125rem] tracking-tight font-medium select-none">
+                Compounding
+              </label>
+              <div class="toggle-group" role="group" aria-label="Compounding frequency">
+                <button type="button" class="toggle-item" data-value="1" aria-pressed="false">Annually</button>
+                <button type="button" class="toggle-item" data-value="4" aria-pressed="false">Quarterly</button>
+                <button type="button" class="toggle-item" data-value="12" aria-pressed="true">Monthly</button>
+                <button type="button" class="toggle-item" data-value="365" aria-pressed="false">Daily</button>
+              </div>
+            </div>
+
+          </section>
+        </div>
+
+        <!-- Right Main: Results, Chart, Stats & Table -->
+        <div class="flex flex-col gap-10">
+          
+          <!-- Hero Result Section -->
+          <section class="flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+              <h2 id="hero-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
+                Balance after 30 years
+              </h2>
+              <p id="hero-balance" class="num font-mono text-[clamp(2.75rem,9vw,5.5rem)] leading-[0.9] font-medium text-foreground">
+                $691,150
+              </p>
+              <p id="hero-description" class="max-w-prose text-sm leading-relaxed text-muted-foreground text-pretty">
+                You put in $190,000 and interest added <span class="num font-mono text-foreground">$501,150</span> on top — 73% of the final balance is money you never deposited.
+              </p>
+            </div>
+
+            <!-- Composition Progress Bar -->
+            <div id="composition-bar" role="img" aria-label="Composition of the final balance: 27 percent deposits, 73 percent interest" class="flex h-2.5 w-full gap-px overflow-hidden rounded-[1px]">
+              <div id="comp-bar-deposits" class="bg-[var(--chart-2)] transition-[flex-grow] duration-500" style="flex-grow: 0.2749;"></div>
+              <div id="comp-bar-interest" class="bg-[var(--chart-1)] transition-[flex-grow] duration-500" style="flex-grow: 0.7251;"></div>
+            </div>
+          </section>
+
+          <!-- Interactive Chart Section -->
+          <div class="flex flex-col gap-4">
+            <!-- Legend -->
+            <div class="flex flex-wrap items-center gap-x-5 gap-y-2 select-none">
+              <div class="flex items-center gap-2">
+                <span aria-hidden="true" class="size-2.5 rounded-[1px]" style="background-color: var(--chart-3);"></span>
+                <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Starting amount</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span aria-hidden="true" class="size-2.5 rounded-[1px]" style="background-color: var(--chart-2);"></span>
+                <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Contributions</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span aria-hidden="true" class="size-2.5 rounded-[1px]" style="background-color: var(--chart-1);"></span>
+                <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Interest</span>
+              </div>
+            </div>
+
+            <!-- SVG Chart -->
+            <div id="chart-container" class="chart-container">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Summary Metric Cards (4 tiles) -->
+          <dl class="grid grid-cols-2 divide-x divide-y divide-border border-t border-l border-border md:grid-cols-4 bg-card rounded-sm overflow-hidden border-r border-b">
+            <div class="flex flex-col gap-1.5 p-4">
+              <dt class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Total deposited</dt>
+              <dd id="stat-total-deposited" class="num font-mono text-xl leading-none font-medium text-foreground">$190,000</dd>
+            </div>
+            <div class="flex flex-col gap-1.5 p-4">
+              <dt class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Interest earned</dt>
+              <dd id="stat-total-interest" class="num font-mono text-xl leading-none font-medium text-foreground">$501,150</dd>
+            </div>
+            <div class="flex flex-col gap-1.5 p-4">
+              <dt class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Return on deposits</dt>
+              <dd id="stat-growth-multiple" class="num font-mono text-xl leading-none font-medium text-foreground">3.64×</dd>
+            </div>
+            <div class="flex flex-col gap-1.5 p-4">
+              <dt class="font-mono text-[0.625rem] tracking-[0.14em] text-muted-foreground uppercase">Interest in final year</dt>
+              <dd id="stat-final-year-interest" class="num font-mono text-xl leading-none font-medium text-foreground">$46,374</dd>
+            </div>
+          </dl>
+
+          <!-- Year by Year Schedule Table -->
+          <section aria-labelledby="schedule-heading" class="flex flex-col gap-4">
+            <div class="flex items-baseline justify-between gap-4">
+              <h2 id="schedule-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
+                Year by year
+              </h2>
+              <span id="table-row-count" class="num font-mono text-[0.6875rem] text-muted-foreground">30 rows</span>
+            </div>
+
+            <div class="overflow-x-auto rounded-sm border border-border bg-card">
+              <table class="w-full caption-bottom text-sm">
+                <thead>
+                  <tr class="border-b border-border hover:bg-transparent">
+                    <th class="h-10 px-3 text-left align-middle font-medium whitespace-nowrap text-foreground font-mono text-[0.625rem] tracking-[0.12em] uppercase">
+                      Year
+                    </th>
+                    <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
+                      Deposited
+                    </th>
+                    <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
+                      Interest this year
+                    </th>
+                    <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
+                      Total interest
+                    </th>
+                    <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
+                      Balance
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="schedule-tbody" class="[&_tr:last-child]:border-0">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Expand/Collapse Button -->
+            <button id="table-toggle-btn" type="button" class="group inline-flex shrink-0 items-center justify-center border border-border bg-background hover:bg-muted hover:text-foreground h-7 gap-1.5 rounded-md px-2.5 self-start font-mono text-xs font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <svg id="table-toggle-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200">
+                <path d="m6 9 6 6 6-6"></path>
+              </svg>
+              <span id="table-toggle-text">Show 20 more years</span>
+            </button>
+          </section>
+
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <footer class="mt-16 border-t border-border pt-6">
+        <p class="max-w-2xl font-mono text-[0.6875rem] leading-relaxed text-muted-foreground">
+          Projections assume a constant annual return and deposits made at the end of each month. Real markets fluctuate; this is an illustration, not financial advice.
+        </p>
+      </footer>
+
+    </div>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
