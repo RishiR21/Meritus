@@ -743,6 +743,33 @@ function closeCreatorModal() {
   }, 200);
 }
 
+// Photo Lightbox Controller
+function openPhotoLightbox() {
+  const modal = document.getElementById('photo-lightbox-backdrop');
+  const card = document.getElementById('photo-lightbox-card');
+  if (!modal || !card) return;
+
+  modal.classList.remove('hidden');
+  setTimeout(() => {
+    modal.classList.remove('opacity-0');
+    card.classList.remove('scale-95');
+    card.classList.add('scale-100');
+  }, 10);
+}
+
+function closePhotoLightbox() {
+  const modal = document.getElementById('photo-lightbox-backdrop');
+  const card = document.getElementById('photo-lightbox-card');
+  if (!modal || !card) return;
+
+  modal.classList.add('opacity-0');
+  card.classList.remove('scale-100');
+  card.classList.add('scale-95');
+  setTimeout(() => {
+    modal.classList.add('hidden');
+  }, 200);
+}
+
 // Modal event listeners
   document.getElementById('modal-close-btn')?.addEventListener('click', closeYearModal);
   document.getElementById('modal-cancel-btn')?.addEventListener('click', closeYearModal);
@@ -759,9 +786,17 @@ function closeCreatorModal() {
     if (e.target.id === 'creator-modal-backdrop') closeCreatorModal();
   });
 
+  // Photo Lightbox listeners
+  document.getElementById('creator-avatar-btn')?.addEventListener('click', openPhotoLightbox);
+  document.getElementById('photo-lightbox-close-btn')?.addEventListener('click', closePhotoLightbox);
+  document.getElementById('photo-lightbox-backdrop')?.addEventListener('click', (e) => {
+    if (e.target.id === 'photo-lightbox-backdrop') closePhotoLightbox();
+  });
+
   // Modal keyboard listeners (Enter to save, Esc to close)
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+      closePhotoLightbox();
       closeCreatorModal();
       if (state.activeModalYear !== null) closeYearModal();
     }
