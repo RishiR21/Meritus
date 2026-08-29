@@ -79,13 +79,13 @@
       <!-- Top Integrated Navigation Bar -->
       <header class="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-border pb-5">
         <div class="flex items-center gap-3">
-          <div class="size-8 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center text-primary font-mono font-bold text-sm">
+          <div class="size-8 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center text-primary font-mono font-bold text-sm shadow-xs">
             M
           </div>
           <div>
             <div class="flex items-center gap-2">
               <span class="font-sans text-base font-semibold text-foreground tracking-tight">Meritus</span>
-              <span class="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-mono font-medium">v2.0</span>
+              <span class="text-[11px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-mono font-medium">v2.0</span>
             </div>
             <p id="header-category-label" class="text-xs text-muted-foreground">
               Compound Growth &amp; Mortgage Decision Suite
@@ -140,7 +140,7 @@
           
           <!-- Column 1: Assumptions Studio (Sidebar) -->
           <div class="w-full lg:w-[21rem] xl:w-[22rem] shrink-0 lg:sticky lg:top-6">
-            <section aria-labelledby="growth-assumptions-heading" class="studio-card p-5 sm:p-6 flex flex-col gap-5">
+            <section aria-labelledby="growth-assumptions-heading" class="studio-card p-5 sm:p-6 flex flex-col gap-4">
               <div class="flex items-center justify-between border-b border-border pb-3">
                 <h2 id="growth-assumptions-heading" class="font-sans text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Assumptions
@@ -149,7 +149,7 @@
               </div>
 
               <!-- Starting amount -->
-              <div class="flex flex-col gap-1.5">
+              <div class="flex flex-col gap-1">
                 <div class="flex items-center justify-between">
                   <label for="principal-input" class="text-xs font-medium text-foreground">
                     Initial Capital
@@ -164,8 +164,8 @@
                   </select>
                 </div>
                 <div class="input-group">
-                  <span class="input-group-addon pl-3 text-muted-foreground">$</span>
-                  <input id="principal-input" type="text" inputmode="decimal" value="10000" class="num text-sm" />
+                  <span class="input-group-addon pl-2.5 text-muted-foreground">$</span>
+                  <input id="principal-input" type="text" inputmode="decimal" value="10,000" class="num text-sm" />
                 </div>
                 <div class="slider-container">
                   <div class="slider-track-bg"></div>
@@ -175,7 +175,7 @@
               </div>
 
               <!-- Monthly contribution -->
-              <div class="flex flex-col gap-1.5">
+              <div class="flex flex-col gap-1">
                 <div class="flex items-center justify-between">
                   <label for="monthly-input" class="text-xs font-medium text-foreground">
                     Monthly Contribution
@@ -191,9 +191,9 @@
                   </select>
                 </div>
                 <div class="input-group">
-                  <span class="input-group-addon pl-3 text-muted-foreground">$</span>
+                  <span class="input-group-addon pl-2.5 text-muted-foreground">$</span>
                   <input id="monthly-input" type="text" inputmode="decimal" value="500" class="num text-sm" />
-                  <span class="input-group-addon pr-3 text-muted-foreground text-xs">/mo</span>
+                  <span class="input-group-addon pr-2.5 text-muted-foreground text-xs">/mo</span>
                 </div>
                 <div class="slider-container">
                   <div class="slider-track-bg"></div>
@@ -203,7 +203,7 @@
               </div>
 
               <!-- Annual return / Growth Rate -->
-              <div class="flex flex-col gap-1.5">
+              <div class="flex flex-col gap-1">
                 <div class="flex items-center justify-between">
                   <label for="rate-input" class="text-xs font-medium text-foreground">
                     Annual Growth Rate
@@ -218,8 +218,8 @@
                   </select>
                 </div>
                 <div class="input-group">
-                  <input id="rate-input" type="text" inputmode="decimal" value="7" class="num text-sm pl-3" />
-                  <span class="input-group-addon pr-3 text-muted-foreground">%</span>
+                  <input id="rate-input" type="text" inputmode="decimal" value="7.0" class="num text-sm pl-2.5" />
+                  <span class="input-group-addon pr-2.5 text-muted-foreground">%</span>
                 </div>
                 <div class="slider-container">
                   <div class="slider-track-bg"></div>
@@ -232,7 +232,7 @@
               </div>
 
               <!-- Time invested -->
-              <div class="flex flex-col gap-1.5">
+              <div class="flex flex-col gap-1">
                 <div class="flex items-center justify-between">
                   <label for="years-input" class="text-xs font-medium text-foreground">
                     Investment Horizon
@@ -247,8 +247,8 @@
                   </select>
                 </div>
                 <div class="input-group">
-                  <input id="years-input" type="text" inputmode="decimal" value="30" class="num text-sm pl-3" />
-                  <span class="input-group-addon pr-3 text-muted-foreground text-xs">years</span>
+                  <input id="years-input" type="text" inputmode="decimal" value="30" class="num text-sm pl-2.5" />
+                  <span class="input-group-addon pr-2.5 text-muted-foreground text-xs">years</span>
                 </div>
                 <div class="slider-container">
                   <div class="slider-track-bg"></div>
@@ -275,7 +275,7 @@
             </section>
           </div>
 
-          <!-- Column 2: Main Canvas (Executive Banner + Chart + Table) -->
+          <!-- Column 2: Main Canvas -->
           <div class="flex-1 min-w-0 flex flex-col gap-6 w-full">
             
             <!-- Executive Outcome & Performance Summary Banner -->
@@ -306,26 +306,26 @@
                   <div id="comp-bar-interest" class="bg-[var(--chart-1)] rounded-full transition-all duration-500" style="flex-grow: 0.7251;"></div>
                 </div>
                 <div class="flex items-center justify-between font-mono text-[11px] text-muted-foreground">
-                  <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-[var(--chart-2)] inline-block"></span>Principal &amp; Deposits</span>
-                  <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-[var(--chart-1)] inline-block"></span>Capital Appreciation</span>
+                  <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-[var(--chart-2)] inline-block"></span>Principal &amp; Deposits: <strong id="growth-stat-dep-val" class="text-foreground font-medium">$190,000</strong></span>
+                  <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-[var(--chart-1)] inline-block"></span>Capital Appreciation: <strong id="growth-stat-int-val" class="text-primary font-semibold">$501,150</strong></span>
                 </div>
               </div>
 
               <!-- 4-Stat Grid -->
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+                <div class="p-3 rounded-lg bg-muted/40 border border-border/40 flex flex-col gap-0.5">
                   <span class="text-[11px] text-muted-foreground font-medium">Total Contributed</span>
                   <span id="stat-total-deposited" class="num font-mono text-base font-semibold text-foreground">$190,000</span>
                 </div>
-                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                <div class="p-3 rounded-lg bg-muted/40 border border-border/40 flex flex-col gap-0.5">
                   <span class="text-[11px] text-muted-foreground font-medium">Capital Growth</span>
                   <span id="stat-total-interest" class="num font-mono text-base font-semibold text-primary">$501,150</span>
                 </div>
-                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                <div class="p-3 rounded-lg bg-muted/40 border border-border/40 flex flex-col gap-0.5">
                   <span class="text-[11px] text-muted-foreground font-medium">Return Multiple</span>
                   <span id="stat-growth-multiple" class="num font-mono text-base font-semibold text-foreground">3.64×</span>
                 </div>
-                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                <div class="p-3 rounded-lg bg-muted/40 border border-border/40 flex flex-col gap-0.5">
                   <span class="text-[11px] text-muted-foreground font-medium">Growth in Final Year</span>
                   <span id="stat-final-year-interest" class="num font-mono text-base font-semibold text-foreground">$46,374</span>
                 </div>
@@ -345,15 +345,15 @@
                 <!-- Legend -->
                 <div class="flex flex-wrap items-center gap-4 text-xs select-none">
                   <div class="flex items-center gap-1.5">
-                    <span class="size-2.5 rounded-full" style="background-color: var(--chart-3);"></span>
+                    <span class="size-2 rounded-full" style="background-color: var(--chart-3);"></span>
                     <span class="text-muted-foreground font-medium">Initial Capital</span>
                   </div>
                   <div class="flex items-center gap-1.5">
-                    <span class="size-2.5 rounded-full" style="background-color: var(--chart-2);"></span>
+                    <span class="size-2 rounded-full" style="background-color: var(--chart-2);"></span>
                     <span class="text-muted-foreground font-medium">Contributions</span>
                   </div>
                   <div class="flex items-center gap-1.5">
-                    <span class="size-2.5 rounded-full" style="background-color: var(--chart-1);"></span>
+                    <span class="size-2 rounded-full" style="background-color: var(--chart-1);"></span>
                     <span class="text-foreground font-semibold">Capital Growth</span>
                   </div>
                 </div>
@@ -421,7 +421,7 @@
           
           <!-- Column 1: Loan Assumptions Studio (Sidebar) -->
           <div class="w-full lg:w-[21rem] xl:w-[22rem] shrink-0 lg:sticky lg:top-6">
-            <section aria-labelledby="mortgage-assumptions-heading" class="studio-card p-5 sm:p-6 flex flex-col gap-5">
+            <section aria-labelledby="mortgage-assumptions-heading" class="studio-card p-5 sm:p-6 flex flex-col gap-4">
               <div class="flex items-center justify-between border-b border-border pb-3">
                 <h2 id="mortgage-assumptions-heading" class="font-sans text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Loan Assumptions
@@ -440,9 +440,9 @@
               </div>
 
               <!-- Paydown Inputs -->
-              <div id="mortgage-paydown-inputs" class="flex flex-col gap-4">
+              <div id="mortgage-paydown-inputs" class="flex flex-col gap-3.5">
                 <!-- Home Price -->
-                <div class="flex flex-col gap-1.5">
+                <div class="flex flex-col gap-1">
                   <div class="flex items-center justify-between">
                     <label for="mortgage-price-input" class="text-xs font-medium text-foreground">
                       Home Purchase Price
@@ -457,8 +457,8 @@
                     </select>
                   </div>
                   <div class="input-group">
-                    <span class="input-group-addon pl-3 text-muted-foreground">$</span>
-                    <input id="mortgage-price-input" type="text" inputmode="decimal" value="500000" class="num text-sm" />
+                    <span class="input-group-addon pl-2.5 text-muted-foreground">$</span>
+                    <input id="mortgage-price-input" type="text" inputmode="decimal" value="500,000" class="num text-sm" />
                   </div>
                   <div class="slider-container">
                     <div class="slider-track-bg"></div>
@@ -468,7 +468,7 @@
                 </div>
 
                 <!-- Down Payment -->
-                <div class="flex flex-col gap-1.5">
+                <div class="flex flex-col gap-1">
                   <div class="flex items-center justify-between">
                     <label for="mortgage-down-amount" class="text-xs font-medium text-foreground">
                       Down Payment
@@ -479,8 +479,8 @@
                   </div>
                   <div class="grid grid-cols-[1fr_5rem] gap-2">
                     <div class="input-group">
-                      <span class="input-group-addon pl-3 text-muted-foreground">$</span>
-                      <input id="mortgage-down-amount" type="text" inputmode="decimal" value="100000" class="num text-sm" />
+                      <span class="input-group-addon pl-2.5 text-muted-foreground">$</span>
+                      <input id="mortgage-down-amount" type="text" inputmode="decimal" value="100,000" class="num text-sm" />
                     </div>
                     <div class="input-group">
                       <input id="mortgage-down-percent" type="text" inputmode="decimal" value="20" class="num text-sm pl-2" />
@@ -495,7 +495,7 @@
                 </div>
 
                 <!-- Interest Rate -->
-                <div class="flex flex-col gap-1.5">
+                <div class="flex flex-col gap-1">
                   <div class="flex items-center justify-between">
                     <label for="mortgage-rate-input" class="text-xs font-medium text-foreground">
                       Mortgage Interest Rate
@@ -508,8 +508,8 @@
                     </select>
                   </div>
                   <div class="input-group">
-                    <input id="mortgage-rate-input" type="text" inputmode="decimal" value="6.5" class="num text-sm pl-3" />
-                    <span class="input-group-addon pr-3 text-muted-foreground">%</span>
+                    <input id="mortgage-rate-input" type="text" inputmode="decimal" value="6.50" class="num text-sm pl-2.5" />
+                    <span class="input-group-addon pr-2.5 text-muted-foreground">%</span>
                   </div>
                   <div class="slider-container">
                     <div class="slider-track-bg"></div>
@@ -519,7 +519,7 @@
                 </div>
 
                 <!-- Loan Term -->
-                <div class="flex flex-col gap-1.5">
+                <div class="flex flex-col gap-1">
                   <div class="flex items-center justify-between">
                     <label class="text-xs font-medium text-foreground">Loan Term</label>
                     <span id="mortgage-term-display" class="font-mono text-xs text-muted-foreground">30 years (360 mos)</span>
@@ -540,13 +540,13 @@
                 <div class="shrink-0 bg-border h-px w-full my-0.5"></div>
 
                 <!-- Prepayment Strategies -->
-                <div class="flex flex-col gap-3">
-                  <span class="text-xs font-semibold text-primary uppercase tracking-wider">
+                <div class="flex flex-col gap-2.5">
+                  <span class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     Prepayment Acceleration
                   </span>
 
                   <!-- Extra Monthly Principal -->
-                  <div class="flex flex-col gap-1.5">
+                  <div class="flex flex-col gap-1">
                     <div class="flex items-center justify-between">
                       <label for="mortgage-extra-monthly-input" class="text-xs text-muted-foreground">Extra Monthly Principal</label>
                       <select id="mortgage-extra-monthly-range-select" class="range-chip-select">
@@ -556,9 +556,9 @@
                       </select>
                     </div>
                     <div class="input-group">
-                      <span class="input-group-addon pl-3 text-muted-foreground">$</span>
+                      <span class="input-group-addon pl-2.5 text-muted-foreground">$</span>
                       <input id="mortgage-extra-monthly-input" type="text" inputmode="decimal" value="200" class="num text-sm" />
-                      <span class="input-group-addon pr-3 text-muted-foreground text-xs">/mo</span>
+                      <span class="input-group-addon pr-2.5 text-muted-foreground text-xs">/mo</span>
                     </div>
                     <div class="slider-container">
                       <div class="slider-track-bg"></div>
@@ -568,7 +568,7 @@
                   </div>
 
                   <!-- Annual Lump Sum Prepayment -->
-                  <div class="flex flex-col gap-1.5">
+                  <div class="flex flex-col gap-1">
                     <div class="flex items-center justify-between">
                       <label for="mortgage-extra-annual-input" class="text-xs text-muted-foreground">Annual Lump Sum</label>
                       <select id="mortgage-extra-annual-range-select" class="range-chip-select">
@@ -578,9 +578,9 @@
                       </select>
                     </div>
                     <div class="input-group">
-                      <span class="input-group-addon pl-3 text-muted-foreground">$</span>
+                      <span class="input-group-addon pl-2.5 text-muted-foreground">$</span>
                       <input id="mortgage-extra-annual-input" type="text" inputmode="decimal" value="0" class="num text-sm" />
-                      <span class="input-group-addon pr-3 text-muted-foreground text-xs">/yr</span>
+                      <span class="input-group-addon pr-2.5 text-muted-foreground text-xs">/yr</span>
                     </div>
                     <div class="slider-container">
                       <div class="slider-track-bg"></div>
@@ -590,7 +590,7 @@
                   </div>
 
                   <!-- Payment Schedule Frequency -->
-                  <div class="flex flex-col gap-1.5">
+                  <div class="flex flex-col gap-1">
                     <label class="text-xs text-muted-foreground">Payment Frequency</label>
                     <div class="toggle-group" role="group" aria-label="Payment frequency">
                       <button type="button" class="mortgage-freq-btn toggle-item active" data-freq="12" aria-pressed="true">Monthly (12/yr)</button>
@@ -601,15 +601,15 @@
               </div>
 
               <!-- Refinance Inputs -->
-              <div id="mortgage-refinance-inputs" class="flex flex-col gap-4 hidden">
-                <div class="flex flex-col gap-3">
+              <div id="mortgage-refinance-inputs" class="flex flex-col gap-3.5 hidden">
+                <div class="flex flex-col gap-2.5">
                   <span class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Current Mortgage</span>
                   
                   <div class="flex flex-col gap-1">
                     <label for="refi-current-balance-input" class="text-xs font-medium text-foreground">Current Balance</label>
                     <div class="input-group">
-                      <span class="input-group-addon pl-3 text-muted-foreground">$</span>
-                      <input id="refi-current-balance-input" type="text" inputmode="decimal" value="380000" class="num text-sm" />
+                      <span class="input-group-addon pl-2.5 text-muted-foreground">$</span>
+                      <input id="refi-current-balance-input" type="text" inputmode="decimal" value="380,000" class="num text-sm" />
                     </div>
                   </div>
 
@@ -633,8 +633,8 @@
 
                 <div class="shrink-0 bg-border h-px w-full my-0.5"></div>
 
-                <div class="flex flex-col gap-3">
-                  <span class="text-xs font-semibold text-primary uppercase tracking-wider">New Refinance Loan</span>
+                <div class="flex flex-col gap-2.5">
+                  <span class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">New Refinance Loan</span>
                   
                   <div class="grid grid-cols-2 gap-2">
                     <div class="flex flex-col gap-1">
@@ -656,8 +656,8 @@
                   <div class="flex flex-col gap-1">
                     <label for="refi-closing-costs-input" class="text-xs font-medium text-foreground">Closing Costs</label>
                     <div class="input-group">
-                      <span class="input-group-addon pl-3 text-muted-foreground">$</span>
-                      <input id="refi-closing-costs-input" type="text" inputmode="decimal" value="4500" class="num text-sm" />
+                      <span class="input-group-addon pl-2.5 text-muted-foreground">$</span>
+                      <input id="refi-closing-costs-input" type="text" inputmode="decimal" value="4,500" class="num text-sm" />
                     </div>
                   </div>
 
@@ -671,7 +671,7 @@
             </section>
           </div>
 
-          <!-- Column 2: Main Canvas (Executive Banner + Chart + Table) -->
+          <!-- Column 2: Main Canvas -->
           <div class="flex-1 min-w-0 flex flex-col gap-6 w-full">
             
             <!-- PAYDOWN EXECUTIVE BANNER -->
@@ -686,44 +686,44 @@
                       $2,728<span class="text-sm font-normal text-muted-foreground font-sans">/mo</span>
                     </p>
                     <span id="mortgage-badge-time-saved" class="badge-pill-success">
-                      🎉 7.7 yrs early!
+                      🎉 5 yrs 7 mos early!
                     </span>
                   </div>
                 </div>
                 <p id="mortgage-hero-payoff" class="text-xs text-muted-foreground max-w-md leading-relaxed">
-                  Standard payment is <span class="font-mono text-foreground font-medium">$2,528</span> plus <span class="font-mono text-primary font-medium">+$200</span> extra principal. Loan is paid off in <span class="font-semibold text-foreground">22 yrs 4 mos</span>.
+                  Standard payment is <span class="font-mono text-foreground font-medium">$2,528</span> plus <span class="font-mono text-primary font-medium">+$200</span> extra principal. Loan is paid off in <span class="font-semibold text-foreground">24 yrs 5 mos</span>.
                 </p>
               </div>
 
-              <!-- Composition Bar -->
+              <!-- Composition Bar with Explicit Values -->
               <div class="flex flex-col gap-1.5">
                 <div id="mortgage-composition-bar" role="img" aria-label="Composition: Principal vs Interest" class="flex h-2 w-full gap-1 overflow-hidden rounded-full bg-muted">
-                  <div id="mortgage-comp-bar-principal" class="bg-[var(--chart-1)] rounded-full transition-all duration-500" style="flex-grow: 0.59;"></div>
-                  <div id="mortgage-comp-bar-interest" class="bg-[var(--chart-2)] rounded-full transition-all duration-500" style="flex-grow: 0.41;"></div>
+                  <div id="mortgage-comp-bar-principal" class="bg-[var(--chart-1)] rounded-full transition-all duration-500" style="flex-grow: 0.501;"></div>
+                  <div id="mortgage-comp-bar-interest" class="bg-[var(--chart-2)] rounded-full transition-all duration-500" style="flex-grow: 0.499;"></div>
                 </div>
                 <div class="flex items-center justify-between font-mono text-[11px] text-muted-foreground">
-                  <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-[var(--chart-1)] inline-block"></span>Loan Principal</span>
-                  <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-[var(--chart-2)] inline-block"></span>Total Interest</span>
+                  <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-[var(--chart-1)] inline-block"></span>Loan Principal: <strong id="mortgage-stat-prin-val" class="text-foreground font-medium">$400,000</strong></span>
+                  <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-[var(--chart-2)] inline-block"></span>Total Interest: <strong id="mortgage-stat-int-val" class="text-foreground font-medium">$398,286</strong></span>
                 </div>
               </div>
 
               <!-- 4-Stat Grid -->
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+                <div class="p-3 rounded-lg bg-muted/40 border border-border/40 flex flex-col gap-0.5">
                   <span class="text-[11px] text-muted-foreground font-medium">Total Interest Saved</span>
-                  <span id="mortgage-stat-interest-saved" class="num font-mono text-base font-semibold text-primary">+$74,320</span>
+                  <span id="mortgage-stat-interest-saved" class="num font-mono text-base font-semibold text-primary">+$111,892</span>
                 </div>
-                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                <div class="p-3 rounded-lg bg-muted/40 border border-border/40 flex flex-col gap-0.5">
                   <span class="text-[11px] text-muted-foreground font-medium">Total Interest Paid</span>
-                  <span id="mortgage-stat-interest-paid" class="num font-mono text-base font-semibold text-foreground">$282,140</span>
+                  <span id="mortgage-stat-interest-paid" class="num font-mono text-base font-semibold text-foreground">$398,286</span>
                 </div>
-                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                <div class="p-3 rounded-lg bg-muted/40 border border-border/40 flex flex-col gap-0.5">
                   <span class="text-[11px] text-muted-foreground font-medium">Standard 30-Yr Interest</span>
-                  <span id="mortgage-stat-baseline-interest" class="num font-mono text-base font-semibold text-muted-foreground">$356,460</span>
+                  <span id="mortgage-stat-baseline-interest" class="num font-mono text-base font-semibold text-muted-foreground">$510,178</span>
                 </div>
-                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                <div class="p-3 rounded-lg bg-muted/40 border border-border/40 flex flex-col gap-0.5">
                   <span class="text-[11px] text-muted-foreground font-medium">Total Loan Cost</span>
-                  <span id="mortgage-stat-total-cost" class="num font-mono text-base font-semibold text-foreground">$682,140</span>
+                  <span id="mortgage-stat-total-cost" class="num font-mono text-base font-semibold text-foreground">$798,286</span>
                 </div>
               </div>
             </div>
@@ -750,20 +750,20 @@
               </div>
 
               <!-- 4-Stat Grid for Refinance -->
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+                <div class="p-3 rounded-lg bg-muted/40 border border-border/40 flex flex-col gap-0.5">
                   <span class="text-[11px] text-muted-foreground font-medium">Net Lifetime Savings</span>
                   <span id="refi-stat-net-savings" class="num font-mono text-base font-semibold text-primary">+$41,800</span>
                 </div>
-                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                <div class="p-3 rounded-lg bg-muted/40 border border-border/40 flex flex-col gap-0.5">
                   <span class="text-[11px] text-muted-foreground font-medium">Current Total Interest</span>
                   <span id="refi-stat-current-interest" class="num font-mono text-base font-semibold text-muted-foreground">$506,120</span>
                 </div>
-                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                <div class="p-3 rounded-lg bg-muted/40 border border-border/40 flex flex-col gap-0.5">
                   <span class="text-[11px] text-muted-foreground font-medium">New Refinance Interest</span>
                   <span id="refi-stat-new-interest" class="num font-mono text-base font-semibold text-foreground">$459,820</span>
                 </div>
-                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                <div class="p-3 rounded-lg bg-muted/40 border border-border/40 flex flex-col gap-0.5">
                   <span class="text-[11px] text-muted-foreground font-medium">Closing Fees</span>
                   <span id="refi-stat-closing-costs" class="num font-mono text-base font-semibold text-foreground">$4,500</span>
                 </div>
@@ -782,16 +782,17 @@
                   <h3 class="text-xs font-semibold text-foreground uppercase tracking-wider">
                     Amortization &amp; Paydown Trajectory
                   </h3>
+                  <span class="text-xs text-muted-foreground">· Loan Balance Curve</span>
                 </div>
 
                 <!-- Legend -->
                 <div class="flex flex-wrap items-center gap-4 text-xs select-none">
                   <div class="flex items-center gap-1.5">
-                    <span class="size-2 rounded-full bg-muted-foreground/60 inline-block"></span>
-                    <span class="text-muted-foreground font-medium">Standard Baseline</span>
+                    <span class="w-3 h-0.5 border-b border-dashed border-muted-foreground inline-block"></span>
+                    <span class="text-muted-foreground font-medium">Standard 30-Yr Baseline</span>
                   </div>
                   <div class="flex items-center gap-1.5">
-                    <span class="size-2.5 rounded-full" style="background-color: var(--chart-1);"></span>
+                    <span class="size-2 rounded-full" style="background-color: var(--chart-1);"></span>
                     <span class="text-foreground font-semibold">Accelerated Paydown</span>
                   </div>
                 </div>
@@ -889,27 +890,25 @@
       </div>
 
       <div class="flex flex-col gap-4">
-        <!-- Annual Contribution input -->
         <div class="flex flex-col gap-1.5">
           <div class="flex items-center justify-between">
             <label for="modal-contrib-input" class="text-xs font-medium text-foreground">Annual Contribution in this year</label>
             <span id="modal-default-contrib-hint" class="font-mono text-xs text-muted-foreground">Default: $6,000</span>
           </div>
           <div class="input-group">
-            <span class="input-group-addon pl-3 text-muted-foreground">$</span>
+            <span class="input-group-addon pl-2.5 text-muted-foreground">$</span>
             <input id="modal-contrib-input" type="text" inputmode="decimal" class="num text-sm" />
           </div>
         </div>
 
-        <!-- Annual Growth Rate input -->
         <div class="flex flex-col gap-1.5">
           <div class="flex items-center justify-between">
             <label for="modal-rate-input" class="text-xs font-medium text-foreground">Growth Rate in this year</label>
             <span id="modal-default-rate-hint" class="font-mono text-xs text-muted-foreground">Default: 7.0%</span>
           </div>
           <div class="input-group">
-            <input id="modal-rate-input" type="text" inputmode="decimal" class="num text-sm pl-3" />
-            <span class="input-group-addon pr-3 text-muted-foreground">%</span>
+            <input id="modal-rate-input" type="text" inputmode="decimal" class="num text-sm pl-2.5" />
+            <span class="input-group-addon pr-2.5 text-muted-foreground">%</span>
           </div>
         </div>
       </div>
@@ -944,27 +943,25 @@
       </div>
 
       <div class="flex flex-col gap-4">
-        <!-- Extra Lump Sum Payment in this year -->
         <div class="flex flex-col gap-1.5">
           <div class="flex items-center justify-between">
             <label for="mortgage-modal-extra-input" class="text-xs font-medium text-foreground">Extra Lump-Sum Prepayment</label>
             <span id="mortgage-modal-default-extra-hint" class="font-mono text-xs text-muted-foreground">Default: $0</span>
           </div>
           <div class="input-group">
-            <span class="input-group-addon pl-3 text-muted-foreground">$</span>
+            <span class="input-group-addon pl-2.5 text-muted-foreground">$</span>
             <input id="mortgage-modal-extra-input" type="text" inputmode="decimal" class="num text-sm" />
           </div>
         </div>
 
-        <!-- Custom Interest Rate in this year -->
         <div class="flex flex-col gap-1.5">
           <div class="flex items-center justify-between">
             <label for="mortgage-modal-rate-input" class="text-xs font-medium text-foreground">Interest Rate in this year</label>
             <span id="mortgage-modal-default-rate-hint" class="font-mono text-xs text-muted-foreground">Default: 6.5%</span>
           </div>
           <div class="input-group">
-            <input id="mortgage-modal-rate-input" type="text" inputmode="decimal" class="num text-sm pl-3" />
-            <span class="input-group-addon pr-3 text-muted-foreground">%</span>
+            <input id="mortgage-modal-rate-input" type="text" inputmode="decimal" class="num text-sm pl-2.5" />
+            <span class="input-group-addon pr-2.5 text-muted-foreground">%</span>
           </div>
         </div>
       </div>
@@ -988,13 +985,10 @@
   <!-- Creator Info Modal -->
   <div id="creator-modal-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-200 hidden opacity-0">
     <div id="creator-modal-card" class="bg-card border border-border rounded-xl shadow-2xl max-w-sm w-full p-6 flex flex-col items-center text-center gap-4 transform transition-all duration-200 scale-95 relative">
-      
-      <!-- Close Button -->
       <button id="creator-modal-close-btn" type="button" class="absolute top-3 right-3 text-muted-foreground hover:text-foreground rounded p-1 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Close modal">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
 
-      <!-- Clickable Avatar Photo with Zoom Hint -->
       <div class="relative mt-2">
         <button id="creator-avatar-btn" type="button" class="group relative size-20 rounded-full overflow-hidden border-2 border-primary/40 p-0.5 shadow-md bg-muted cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-ring" title="Click to view full photo" aria-label="View full photo of Rishi Ramchandani">
           <img src="./assets/images/rishi.png" alt="Rishi Ramchandani" class="size-full object-cover rounded-full transition-opacity duration-200 group-hover:opacity-90" />
@@ -1010,7 +1004,6 @@
         <span class="absolute bottom-0 right-0 size-3.5 bg-emerald-500 border-2 border-card rounded-full" title="Creator"></span>
       </div>
 
-      <!-- Creator Bio -->
       <div class="flex flex-col gap-1 items-center">
         <h3 class="font-semibold text-base text-foreground tracking-tight">Rishi Ramchandani</h3>
         <p class="text-xs text-primary font-medium">Creator &amp; Architect</p>
@@ -1019,7 +1012,6 @@
         </p>
       </div>
 
-      <!-- Social Links -->
       <div class="flex flex-wrap items-center justify-center gap-2 w-full pt-3 border-t border-border mt-1">
         <a href="https://x.com/1RishiR" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background hover:bg-muted text-xs font-mono text-foreground transition-all hover:scale-105 active:scale-95 shadow-xs" title="Follow on X">
           <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">

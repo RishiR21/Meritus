@@ -70,6 +70,19 @@ const formatCurrency = (val, maxDecimals = 0) => {
   }).format(val || 0);
 };
 
+const formatNumberWithCommas = (val) => {
+  if (val === undefined || val === null || isNaN(val)) return '0';
+  return Number(val).toLocaleString('en-US');
+};
+
+const parseFormattedNumber = (str) => {
+  if (typeof str === 'number') return str;
+  if (!str) return 0;
+  const clean = str.toString().replace(/[^0-9.]/g, '');
+  const num = parseFloat(clean);
+  return isNaN(num) ? 0 : num;
+};
+
 const formatCompactCurrency = (val) => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -205,27 +218,35 @@ function calculateMortgagePaydown(st) {
     standardMonthlyPayment = loanPrincipal / standardTermMonths;
   }
 
-  // Baseline standard simulation
+  // Baseline standard month-by-month trajectory
   let baseBalance = loanPrincipal;
   let standardTotalInterest = 0;
-  const baselineScheduleMonths = [];
+  const baselineMonthlyPoints = [{ month: 0, balance: loanPrincipal }];
 
   for (let m = 1; m <= standardTermMonths; m++) {
     const interest = baseBalance * monthlyRate;
     const principal = Math.min(baseBalance, standardMonthlyPayment - interest);
     standardTotalInterest += interest;
     baseBalance = Math.max(0, baseBalance - principal);
-    baselineScheduleMonths.push({ month: m, balance: baseBalance });
+    baselineMonthlyPoints.push({ month: m, balance: baseBalance });
     if (baseBalance <= 0) break;
   }
 
-  // Accelerated simulation
+  // Accelerated month-by-month trajectory
   let accBalance = loanPrincipal;
   let accTotalInterest = 0;
   let accTotalPrincipalPaid = 0;
   let accTotalExtraPaid = 0;
   let payoffMonth = standardTermMonths;
   let crossoverYear = null;
+
+  const acceleratedMonthlyPoints = [{
+    month: 0,
+    balance: loanPrincipal,
+    interestPaidToDate: 0,
+    principalPaidToDate: 0,
+    extraPaidToDate: 0
+  }];
 
   const yearRecords = [];
   let currentYearInterest = 0;
@@ -274,6 +295,14 @@ function calculateMortgagePaydown(st) {
     currentYearPrincipal += scheduledPrincipal;
     currentYearExtra += actualExtra;
 
+    acceleratedMonthlyPoints.push({
+      month: m,
+      balance: Math.max(0, accBalance),
+      interestPaidToDate: accTotalInterest,
+      principalPaidToDate: accTotalPrincipalPaid,
+      extraPaidToDate: accTotalExtraPaid
+    });
+
     if (!crossoverYear && scheduledPrincipal > monthlyInterest) {
       crossoverYear = currentYear;
     }
@@ -317,7 +346,8 @@ function calculateMortgagePaydown(st) {
     monthsSaved,
     crossoverYear,
     schedule: yearRecords,
-    baselineScheduleMonths
+    baselineMonthlyPoints,
+    acceleratedMonthlyPoints
   };
 }
 
@@ -386,10 +416,10 @@ function renderCompoundChart(schedule, crossoverYear) {
 
   const width = container.clientWidth || 800;
   const height = container.clientHeight || 380;
-  const margin = { top: 20, right: 16, bottom: 28, left: 60 };
+  const margin = { top: 24, right: 20, bottom: 36, left: 62 };
 
-  const plotWidth = width - margin.left - margin.right;
-  const plotHeight = height - margin.top - margin.bottom;
+  const plotWidth = Math.max(10, width - margin.left - margin.right);
+  const plotHeight = Math.max(10, height - margin.top - margin.bottom);
 
   const maxYear = schedule[schedule.length - 1].year;
   const maxBalance = Math.max(...schedule.map(d => d.balance)) * 1.05;
@@ -427,23 +457,26 @@ function renderCompoundChart(schedule, crossoverYear) {
     lineBalance += ` L ${getX(schedule[i].year)} ${getY(schedule[i].balance)}`;
   }
 
-  // Y Axis Ticks
+  // Y Ticks
   const yTicks = [0, maxBalance * 0.25, maxBalance * 0.5, maxBalance * 0.75, maxBalance];
   let gridSvg = yTicks.map(val => {
     const y = getY(val);
     return `
       <line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="var(--border)" stroke-dasharray="3 3" opacity="0.6" />
-      <text x="${margin.left - 8}" y="${y + 3.5}" text-anchor="end" fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="10.5" class="num select-none">${formatCompactCurrency(val)}</text>
+      <text x="${margin.left - 8}" y="${y + 4}" text-anchor="end" fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="10.5" class="num select-none">${formatCompactCurrency(val)}</text>
     `;
   }).join('');
 
-  // X Axis Ticks
+  // X Ticks
   const stepYr = maxYear <= 10 ? 2 : maxYear <= 30 ? 5 : 10;
   let xTicksSvg = '';
   for (let yr = 0; yr <= maxYear; yr += stepYr) {
     const x = getX(yr);
-    const label = yr === 0 ? 'Now' : `Yr ${yr}`;
-    xTicksSvg += `<text x="${x}" y="${height - 6}" text-anchor="middle" fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="10.5" class="num select-none">${label}</text>`;
+    const label = yr === 0 ? 'Start' : `Yr ${yr}`;
+    xTicksSvg += `
+      <line x1="${x}" y1="${margin.top + plotHeight}" x2="${x}" y2="${margin.top + plotHeight + 4}" stroke="var(--border)" opacity="0.8" />
+      <text x="${x}" y="${margin.top + plotHeight + 18}" text-anchor="middle" fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="10.5" class="num select-none">${label}</text>
+    `;
   }
 
   // Crossover Pin
@@ -464,11 +497,11 @@ function renderCompoundChart(schedule, crossoverYear) {
       <defs>
         <linearGradient id="interest-grad" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stop-color="var(--chart-1)" stop-opacity="0.75" />
-          <stop offset="100%" stop-color="var(--chart-1)" stop-opacity="0.25" />
+          <stop offset="100%" stop-color="var(--chart-1)" stop-opacity="0.2" />
         </linearGradient>
         <linearGradient id="contrib-grad" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stop-color="var(--chart-2)" stop-opacity="0.55" />
-          <stop offset="100%" stop-color="var(--chart-2)" stop-opacity="0.2" />
+          <stop offset="100%" stop-color="var(--chart-2)" stop-opacity="0.18" />
         </linearGradient>
         <linearGradient id="principal-grad" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stop-color="var(--chart-3)" stop-opacity="0.35" />
@@ -477,7 +510,10 @@ function renderCompoundChart(schedule, crossoverYear) {
       </defs>
 
       ${gridSvg}
+      <!-- X-Axis Baseline -->
+      <line x1="${margin.left}" y1="${margin.top + plotHeight}" x2="${width - margin.right}" y2="${margin.top + plotHeight}" stroke="var(--border)" stroke-width="1" />
       ${xTicksSvg}
+      
       <path d="${pathPrincipal}" fill="url(#principal-grad)" />
       <path d="${pathContributions}" fill="url(#contrib-grad)" />
       <path d="${pathInterest}" fill="url(#interest-grad)" />
@@ -492,7 +528,6 @@ function renderCompoundChart(schedule, crossoverYear) {
     <div id="chart-tooltip" class="chart-tooltip-wrapper"></div>
   `;
 
-  // Crosshair interactions
   const svg = container.querySelector('svg');
   const crosshair = document.getElementById('chart-crosshair');
   const crosshairLineX = document.getElementById('crosshair-line-x');
@@ -551,66 +586,69 @@ function renderMortgageChart(paydownResult, mortgageSt) {
 
   const width = container.clientWidth || 800;
   const height = container.clientHeight || 380;
-  const margin = { top: 20, right: 16, bottom: 28, left: 64 };
+  const margin = { top: 24, right: 20, bottom: 36, left: 64 };
 
-  const plotWidth = width - margin.left - margin.right;
-  const plotHeight = height - margin.top - margin.bottom;
+  const plotWidth = Math.max(10, width - margin.left - margin.right);
+  const plotHeight = Math.max(10, height - margin.top - margin.bottom);
 
-  const maxYears = mortgageSt.term;
-  const maxBalance = paydownResult.loanPrincipal * 1.05;
+  const totalTermYears = mortgageSt.term;
+  const maxBalance = paydownResult.loanPrincipal > 0 ? paydownResult.loanPrincipal : 100000;
 
-  const getX = (yr) => margin.left + (maxYears > 0 ? (yr / maxYears) * plotWidth : 0);
+  const getX = (yr) => margin.left + (totalTermYears > 0 ? (yr / totalTermYears) * plotWidth : 0);
   const getY = (val) => margin.top + plotHeight - (maxBalance > 0 ? (val / maxBalance) * plotHeight : 0);
 
-  // Baseline Curve
+  // Smooth Standard 30-Year Baseline Curve across all monthly points
+  const baselinePts = paydownResult.baselineMonthlyPoints || [];
   let pathBaseline = `M ${getX(0)} ${getY(paydownResult.loanPrincipal)}`;
-  paydownResult.baselineScheduleMonths.forEach(d => {
-    if (d.month % 12 === 0 || d.month === paydownResult.standardTermMonths) {
-      pathBaseline += ` L ${getX(d.month / 12)} ${getY(d.balance)}`;
-    }
+  baselinePts.forEach(pt => {
+    pathBaseline += ` L ${getX(pt.month / 12)} ${getY(pt.balance)}`;
   });
 
-  // Accelerated Curve
-  const schedule = paydownResult.schedule;
-  let pathAcceleratedArea = `M ${getX(0)} ${getY(0)}`;
-  let pathAcceleratedLine = `M ${getX(0)} ${getY(paydownResult.loanPrincipal)}`;
+  // Smooth Accelerated Paydown Curve across all accelerated points
+  const accPts = paydownResult.acceleratedMonthlyPoints || [];
+  let pathAccArea = `M ${getX(0)} ${getY(0)}`;
+  let pathAccLine = `M ${getX(0)} ${getY(paydownResult.loanPrincipal)}`;
 
-  schedule.forEach(d => {
-    pathAcceleratedArea += ` L ${getX(d.year)} ${getY(d.remainingBalance)}`;
-    pathAcceleratedLine += ` L ${getX(d.year)} ${getY(d.remainingBalance)}`;
+  accPts.forEach(pt => {
+    const yr = pt.month / 12;
+    pathAccArea += ` L ${getX(yr)} ${getY(pt.balance)}`;
+    pathAccLine += ` L ${getX(yr)} ${getY(pt.balance)}`;
   });
-  const payoffYearDecimal = paydownResult.payoffMonth / 12;
-  pathAcceleratedArea += ` L ${getX(payoffYearDecimal)} ${getY(0)} Z`;
+  const payoffYear = paydownResult.payoffMonth / 12;
+  pathAccArea += ` L ${getX(payoffYear)} ${getY(0)} Z`;
 
-  // Horizontal Grid Lines & Y Ticks
+  // Clean Y Ticks ($400k, $300k, $200k, $100k, $0)
   const yTicks = [0, maxBalance * 0.25, maxBalance * 0.5, maxBalance * 0.75, maxBalance];
   let gridSvg = yTicks.map(val => {
     const y = getY(val);
     return `
       <line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="var(--border)" stroke-dasharray="3 3" opacity="0.6" />
-      <text x="${margin.left - 8}" y="${y + 3.5}" text-anchor="end" fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="10.5" class="num select-none">${formatCompactCurrency(val)}</text>
+      <text x="${margin.left - 8}" y="${y + 4}" text-anchor="end" fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="10.5" class="num select-none">${formatCompactCurrency(val)}</text>
     `;
   }).join('');
 
-  // X Axis Ticks
-  const stepYr = maxYears <= 15 ? 2 : maxYears <= 30 ? 5 : 10;
+  // Clean X Ticks (0, 5, 10, 15, 20, 25, 30)
+  const stepYr = totalTermYears <= 15 ? 2 : totalTermYears <= 30 ? 5 : 10;
   let xTicksSvg = '';
-  for (let yr = 0; yr <= maxYears; yr += stepYr) {
+  for (let yr = 0; yr <= totalTermYears; yr += stepYr) {
     const x = getX(yr);
     const label = yr === 0 ? 'Start' : `Yr ${yr}`;
-    xTicksSvg += `<text x="${x}" y="${height - 6}" text-anchor="middle" fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="10.5" class="num select-none">${label}</text>`;
+    xTicksSvg += `
+      <line x1="${x}" y1="${margin.top + plotHeight}" x2="${x}" y2="${margin.top + plotHeight + 4}" stroke="var(--border)" opacity="0.8" />
+      <text x="${x}" y="${margin.top + plotHeight + 18}" text-anchor="middle" fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="10.5" class="num select-none">${label}</text>
+    `;
   }
 
-  // Payoff Pin
+  // Payoff Pin Marker
   let payoffMarkerSvg = '';
   if (paydownResult.payoffMonth < paydownResult.standardTermMonths) {
-    const px = getX(payoffYearDecimal);
+    const px = getX(payoffYear);
     payoffMarkerSvg = `
       <g class="payoff-marker">
-        <line x1="${px}" y1="${margin.top}" x2="${px}" y2="${margin.top + plotHeight}" stroke="var(--chart-1)" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.9" />
+        <line x1="${px}" y1="${margin.top + 8}" x2="${px}" y2="${margin.top + plotHeight}" stroke="var(--chart-1)" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.9" />
         <circle cx="${px}" cy="${getY(0)}" r="4.5" fill="var(--chart-1)" stroke="var(--card)" stroke-width="2" />
-        <rect x="${px - 44}" y="${margin.top + 2}" width="88" height="18" rx="4" fill="var(--card)" stroke="var(--chart-1)" stroke-width="1" />
-        <text x="${px}" y="${margin.top + 14}" text-anchor="middle" fill="var(--chart-1)" font-family="var(--font-mono)" font-size="9.5" font-weight="600" class="select-none">Paid in ${formatMonthsToYears(paydownResult.payoffMonth)}</text>
+        <rect x="${px - 58}" y="${margin.top + 4}" width="116" height="20" rx="4" fill="var(--card)" stroke="var(--chart-1)" stroke-width="1" />
+        <text x="${px}" y="${margin.top + 17}" text-anchor="middle" fill="var(--chart-1)" font-family="var(--font-mono)" font-size="10" font-weight="600" class="select-none">🎉 Debt Free: Yr ${payoffYear.toFixed(1)}</text>
       </g>
     `;
   }
@@ -619,18 +657,26 @@ function renderMortgageChart(paydownResult, mortgageSt) {
     <svg viewBox="0 0 ${width} ${height}" class="chart-svg select-none">
       <defs>
         <linearGradient id="mortgage-acc-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="var(--chart-1)" stop-opacity="0.3" />
-          <stop offset="100%" stop-color="var(--chart-1)" stop-opacity="0.05" />
+          <stop offset="0%" stop-color="var(--chart-1)" stop-opacity="0.35" />
+          <stop offset="100%" stop-color="var(--chart-1)" stop-opacity="0.04" />
         </linearGradient>
       </defs>
 
       ${gridSvg}
+      <!-- X-Axis Baseline -->
+      <line x1="${margin.left}" y1="${margin.top + plotHeight}" x2="${width - margin.right}" y2="${margin.top + plotHeight}" stroke="var(--border)" stroke-width="1" />
       ${xTicksSvg}
-      <path d="${pathBaseline}" fill="none" stroke="var(--muted-foreground)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.6" />
-      <path d="${pathAcceleratedArea}" fill="url(#mortgage-acc-grad)" />
-      <path d="${pathAcceleratedLine}" fill="none" stroke="var(--chart-1)" stroke-width="2.5" stroke-linecap="round" />
+      
+      <!-- Baseline Standard 30-Yr Line -->
+      <path d="${pathBaseline}" fill="none" stroke="var(--muted-foreground)" stroke-width="1.75" stroke-dasharray="4 4" opacity="0.65" />
+      
+      <!-- Accelerated Area & Curve -->
+      <path d="${pathAccArea}" fill="url(#mortgage-acc-grad)" />
+      <path d="${pathAccLine}" fill="none" stroke="var(--chart-1)" stroke-width="2.5" stroke-linecap="round" />
+      
       ${payoffMarkerSvg}
 
+      <!-- Interactive Crosshair -->
       <g id="mortgage-chart-crosshair" style="display: none;">
         <line id="m-crosshair-line-x" x1="0" y1="${margin.top}" x2="0" y2="${margin.top + plotHeight}" stroke="var(--foreground)" stroke-width="1" stroke-dasharray="2 2" opacity="0.6" />
         <circle id="m-crosshair-dot-balance" r="5" fill="var(--chart-1)" stroke="var(--card)" stroke-width="2" />
@@ -656,11 +702,14 @@ function renderMortgageChart(paydownResult, mortgageSt) {
     }
 
     const relX = (mouseX - margin.left) / plotWidth;
-    const approxYear = Math.max(1, Math.min(maxYears, Math.round(relX * maxYears)));
-    const dataPoint = schedule.find(d => d.year === approxYear) || schedule[schedule.length - 1];
+    const targetMonth = Math.max(0, Math.min(totalTermYears * 12, Math.round(relX * totalTermYears * 12)));
+    
+    // Find closest accelerated point
+    const accPoint = accPts.find(p => p.month === targetMonth) || (targetMonth > paydownResult.payoffMonth ? { month: targetMonth, balance: 0, interestPaidToDate: paydownResult.acceleratedTotalInterest } : accPts[accPts.length - 1]);
+    const basePoint = baselinePts.find(p => p.month === targetMonth) || baselinePts[baselinePts.length - 1];
 
-    const cx = getX(dataPoint.year);
-    const cy = getY(dataPoint.remainingBalance);
+    const cx = getX(targetMonth / 12);
+    const cy = getY(accPoint.balance);
 
     crosshair.style.display = 'block';
     crosshairLineX.setAttribute('x1', cx);
@@ -673,13 +722,13 @@ function renderMortgageChart(paydownResult, mortgageSt) {
     tooltip.innerHTML = `
       <div class="tooltip-card font-mono">
         <div class="flex items-center justify-between border-b border-border pb-1 text-xs">
-          <span class="font-semibold text-foreground">Year ${dataPoint.year}</span>
-          <span class="text-primary font-bold">${formatCurrency(dataPoint.remainingBalance)}</span>
+          <span class="font-semibold text-foreground">${formatMonthsToYears(targetMonth)}</span>
+          <span class="text-primary font-bold">${formatCurrency(accPoint.balance)}</span>
         </div>
         <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] text-muted-foreground pt-0.5">
-          <span>Principal Paid:</span><span class="text-right text-foreground font-medium">${formatCurrency(dataPoint.principalPaid)}</span>
-          <span>Interest Paid:</span><span class="text-right text-muted-foreground font-medium">${formatCurrency(dataPoint.interestPaid)}</span>
-          <span>Extra Prepaid:</span><span class="text-right text-primary font-semibold">${formatCurrency(dataPoint.extraPrepaid)}</span>
+          <span>Accelerated:</span><span class="text-right text-foreground font-medium">${formatCurrency(accPoint.balance)}</span>
+          <span>Baseline 30-Yr:</span><span class="text-right text-muted-foreground font-medium">${formatCurrency(basePoint.balance)}</span>
+          <span>Interest to Date:</span><span class="text-right text-primary font-semibold">${formatCurrency(accPoint.interestPaidToDate || 0)}</span>
         </div>
       </div>
     `;
@@ -699,16 +748,18 @@ function renderMortgageChart(paydownResult, mortgageSt) {
 function updateCompoundUI() {
   const result = calculateProjection(compoundState);
 
-  const setVal = (id, val) => {
+  const setVal = (id, val, formatCommas = false) => {
     const el = document.getElementById(id);
-    if (el && document.activeElement !== el) el.value = val;
+    if (el && document.activeElement !== el) {
+      el.value = formatCommas ? formatNumberWithCommas(val) : val;
+    }
   };
 
-  setVal('principal-input', compoundState.principal);
+  setVal('principal-input', compoundState.principal, true);
   setVal('principal-slider', compoundState.principal);
-  setVal('monthly-input', compoundState.monthly);
+  setVal('monthly-input', compoundState.monthly, true);
   setVal('monthly-slider', compoundState.monthly);
-  setVal('rate-input', compoundState.rate);
+  setVal('rate-input', compoundState.rate.toFixed(1));
   setVal('rate-slider', compoundState.rate);
   setVal('years-input', compoundState.years);
   setVal('years-slider', compoundState.years);
@@ -757,14 +808,19 @@ function updateCompoundUI() {
   // Composition Bar
   const barDep = document.getElementById('comp-bar-deposits');
   const barInt = document.getElementById('comp-bar-interest');
+  const elGrowthDepVal = document.getElementById('growth-stat-dep-val');
+  const elGrowthIntVal = document.getElementById('growth-stat-int-val');
+
   if (barDep && barInt && result.finalBalance > 0) {
     const depRatio = result.totalDeposited / result.finalBalance;
     const intRatio = result.totalInterest / result.finalBalance;
     barDep.style.flexGrow = depRatio.toFixed(4);
     barInt.style.flexGrow = intRatio.toFixed(4);
   }
+  if (elGrowthDepVal) elGrowthDepVal.textContent = formatCurrency(result.totalDeposited);
+  if (elGrowthIntVal) elGrowthIntVal.textContent = formatCurrency(result.totalInterest);
 
-  // Schedule Table
+  // Table
   const tbody = document.getElementById('schedule-tbody');
   const rowCountSpan = document.getElementById('table-row-count');
   const resetBtn = document.getElementById('reset-overrides-btn');
@@ -799,7 +855,6 @@ function updateCompoundUI() {
     });
   }
 
-  // Toggle button text
   const toggleText = document.getElementById('table-toggle-text');
   const toggleIcon = document.getElementById('table-toggle-icon');
   const totalRows = result.schedule.length - 1;
@@ -813,7 +868,6 @@ function updateCompoundUI() {
     }
   }
 
-  // Render SVG Chart
   renderCompoundChart(result.schedule, result.crossoverYear);
 }
 
@@ -821,22 +875,24 @@ function updateMortgageUI() {
   const paydownResult = calculateMortgagePaydown(mortgageState);
   const refiResult = calculateRefinance(mortgageState);
 
-  const setVal = (id, val) => {
+  const setVal = (id, val, formatCommas = false) => {
     const el = document.getElementById(id);
-    if (el && document.activeElement !== el) el.value = val;
+    if (el && document.activeElement !== el) {
+      el.value = formatCommas ? formatNumberWithCommas(val) : val;
+    }
   };
 
-  setVal('mortgage-price-input', mortgageState.price);
+  setVal('mortgage-price-input', mortgageState.price, true);
   setVal('mortgage-price-slider', mortgageState.price);
-  setVal('mortgage-down-amount', mortgageState.downPayment);
+  setVal('mortgage-down-amount', mortgageState.downPayment, true);
   setVal('mortgage-down-percent', mortgageState.downPercent);
   setVal('mortgage-down-slider', mortgageState.downPercent);
-  setVal('mortgage-rate-input', mortgageState.rate);
+  setVal('mortgage-rate-input', mortgageState.rate.toFixed(2));
   setVal('mortgage-rate-slider', mortgageState.rate);
   setVal('mortgage-term-slider', mortgageState.term);
-  setVal('mortgage-extra-monthly-input', mortgageState.extraMonthly);
+  setVal('mortgage-extra-monthly-input', mortgageState.extraMonthly, true);
   setVal('mortgage-extra-monthly-slider', mortgageState.extraMonthly);
-  setVal('mortgage-extra-annual-input', mortgageState.extraAnnual);
+  setVal('mortgage-extra-annual-input', mortgageState.extraAnnual, true);
   setVal('mortgage-extra-annual-slider', mortgageState.extraAnnual);
 
   const elLoanBadge = document.getElementById('mortgage-loan-principal-badge');
@@ -883,6 +939,8 @@ function updateMortgageUI() {
   const elStatIntPaid = document.getElementById('mortgage-stat-interest-paid');
   const elStatBaseInt = document.getElementById('mortgage-stat-baseline-interest');
   const elStatTotalCost = document.getElementById('mortgage-stat-total-cost');
+  const elMortgagePrinVal = document.getElementById('mortgage-stat-prin-val');
+  const elMortgageIntVal = document.getElementById('mortgage-stat-int-val');
 
   if (elHeroPayment) {
     elHeroPayment.innerHTML = `${formatCurrency(paydownResult.totalMonthlyPayment)}<span class="text-sm font-normal text-muted-foreground font-sans">/mo</span>`;
@@ -915,6 +973,8 @@ function updateMortgageUI() {
     mBarPrin.style.flexGrow = prinRatio.toFixed(4);
     mBarInt.style.flexGrow = intRatio.toFixed(4);
   }
+  if (elMortgagePrinVal) elMortgagePrinVal.textContent = formatCurrency(paydownResult.loanPrincipal);
+  if (elMortgageIntVal) elMortgageIntVal.textContent = formatCurrency(paydownResult.acceleratedTotalInterest);
 
   // Refinance Banner Metrics
   const elRefiSavings = document.getElementById('refi-hero-monthly-savings');
@@ -1047,7 +1107,7 @@ function openCompoundYearModal(year) {
   const currentContrib = compoundState.yearOverrides[year]?.contribution !== undefined ? compoundState.yearOverrides[year].contribution : compoundState.monthly * 12;
 
   if (title) title.textContent = `Customize Growth Year ${year}`;
-  if (contribInput) contribInput.value = currentContrib;
+  if (contribInput) contribInput.value = formatNumberWithCommas(currentContrib);
   if (rateInput) rateInput.value = currentRate;
   if (contribHint) contribHint.textContent = `Default: ${formatCurrency(compoundState.monthly * 12)}`;
   if (rateHint) rateHint.textContent = `Default: ${compoundState.rate}%`;
@@ -1078,15 +1138,13 @@ function saveCompoundYearModal() {
   const year = compoundState.activeModalYear;
   if (!year) return;
 
-  const contrib = Number(document.getElementById('modal-contrib-input').value.replace(/[^0-9.]/g, ''));
-  const rate = Number(document.getElementById('modal-rate-input').value.replace(/[^0-9.]/g, ''));
+  const contrib = parseFormattedNumber(document.getElementById('modal-contrib-input').value);
+  const rate = parseFormattedNumber(document.getElementById('modal-rate-input').value);
 
-  if (!isNaN(contrib) && !isNaN(rate)) {
-    compoundState.yearOverrides[year] = {
-      contribution: Math.max(0, contrib),
-      rate: Math.max(0, rate)
-    };
-  }
+  compoundState.yearOverrides[year] = {
+    contribution: Math.max(0, contrib),
+    rate: Math.max(0, rate)
+  };
 
   closeCompoundYearModal();
   updateUI();
@@ -1117,7 +1175,7 @@ function openMortgageYearModal(year) {
   const currentExtra = mortgageState.yearOverrides[year]?.extraPrepayment !== undefined ? mortgageState.yearOverrides[year].extraPrepayment : 0;
 
   if (title) title.textContent = `Customize Mortgage Year ${year}`;
-  if (extraInput) extraInput.value = currentExtra;
+  if (extraInput) extraInput.value = formatNumberWithCommas(currentExtra);
   if (rateInput) rateInput.value = currentRate;
   if (extraHint) extraHint.textContent = `Default extra: $0`;
   if (rateHint) rateHint.textContent = `Default rate: ${mortgageState.rate}%`;
@@ -1148,15 +1206,13 @@ function saveMortgageYearModal() {
   const year = mortgageState.activeModalYear;
   if (!year) return;
 
-  const extra = Number(document.getElementById('mortgage-modal-extra-input').value.replace(/[^0-9.]/g, ''));
-  const rate = Number(document.getElementById('mortgage-modal-rate-input').value.replace(/[^0-9.]/g, ''));
+  const extra = parseFormattedNumber(document.getElementById('mortgage-modal-extra-input').value);
+  const rate = parseFormattedNumber(document.getElementById('mortgage-modal-rate-input').value);
 
-  if (!isNaN(extra) && !isNaN(rate)) {
-    mortgageState.yearOverrides[year] = {
-      extraPrepayment: Math.max(0, extra),
-      rate: Math.max(0, rate)
-    };
-  }
+  mortgageState.yearOverrides[year] = {
+    extraPrepayment: Math.max(0, extra),
+    rate: Math.max(0, rate)
+  };
 
   closeMortgageYearModal();
   updateUI();
@@ -1317,16 +1373,19 @@ function setupEventListeners() {
 
     if (input) {
       input.addEventListener('input', (e) => {
-        let val = Number(e.target.value.replace(/[^0-9.]/g, ''));
-        if (!isNaN(val)) {
-          compoundState[key] = val;
-          if (val > compoundState.ranges[key].max) {
-            compoundState.ranges[key].max = val;
-            if (slider) slider.max = val;
-          }
-          if (slider) slider.value = val;
-          updateCompoundUI();
+        let val = parseFormattedNumber(e.target.value);
+        compoundState[key] = val;
+        if (val > compoundState.ranges[key].max) {
+          compoundState.ranges[key].max = val;
+          if (slider) slider.max = val;
         }
+        if (slider) slider.value = val;
+        updateCompoundUI();
+      });
+
+      input.addEventListener('blur', (e) => {
+        let val = parseFormattedNumber(e.target.value);
+        e.target.value = (key === 'rate') ? val.toFixed(1) : (key === 'years') ? val : formatNumberWithCommas(val);
       });
     }
 
@@ -1334,7 +1393,7 @@ function setupEventListeners() {
       slider.addEventListener('input', (e) => {
         const val = Number(e.target.value);
         compoundState[key] = val;
-        if (input) input.value = val;
+        if (input) input.value = (key === 'rate') ? val.toFixed(1) : (key === 'years') ? val : formatNumberWithCommas(val);
         updateCompoundUI();
       });
     }
@@ -1356,7 +1415,7 @@ function setupEventListeners() {
           if (slider) slider.max = num;
           if (compoundState[key] > num) {
             compoundState[key] = num;
-            if (input) input.value = num;
+            if (input) input.value = (key === 'rate') ? num.toFixed(1) : (key === 'years') ? num : formatNumberWithCommas(num);
           }
           updateCompoundUI();
         }
@@ -1407,13 +1466,16 @@ function setupEventListeners() {
 
   if (priceInput) {
     priceInput.addEventListener('input', (e) => {
-      const val = Number(e.target.value.replace(/[^0-9.]/g, ''));
-      if (!isNaN(val) && val >= 0) {
-        mortgageState.price = val;
-        mortgageState.downPayment = Math.round(val * (mortgageState.downPercent / 100));
-        if (priceSlider) priceSlider.value = val;
-        updateMortgageUI();
-      }
+      const val = parseFormattedNumber(e.target.value);
+      mortgageState.price = val;
+      mortgageState.downPayment = Math.round(val * (mortgageState.downPercent / 100));
+      if (priceSlider) priceSlider.value = val;
+      updateMortgageUI();
+    });
+
+    priceInput.addEventListener('blur', (e) => {
+      const val = parseFormattedNumber(e.target.value);
+      e.target.value = formatNumberWithCommas(val);
     });
   }
   if (priceSlider) {
@@ -1452,22 +1514,23 @@ function setupEventListeners() {
 
   if (downAmtInput) {
     downAmtInput.addEventListener('input', (e) => {
-      const val = Number(e.target.value.replace(/[^0-9.]/g, ''));
-      if (!isNaN(val) && val >= 0) {
-        mortgageState.downPayment = val;
-        mortgageState.downPercent = mortgageState.price > 0 ? Number(((val / mortgageState.price) * 100).toFixed(1)) : 0;
-        updateMortgageUI();
-      }
+      const val = parseFormattedNumber(e.target.value);
+      mortgageState.downPayment = val;
+      mortgageState.downPercent = mortgageState.price > 0 ? Number(((val / mortgageState.price) * 100).toFixed(1)) : 0;
+      updateMortgageUI();
+    });
+
+    downAmtInput.addEventListener('blur', (e) => {
+      const val = parseFormattedNumber(e.target.value);
+      e.target.value = formatNumberWithCommas(val);
     });
   }
   if (downPctInput) {
     downPctInput.addEventListener('input', (e) => {
-      const val = Number(e.target.value.replace(/[^0-9.]/g, ''));
-      if (!isNaN(val) && val >= 0) {
-        mortgageState.downPercent = Math.min(100, val);
-        mortgageState.downPayment = Math.round(mortgageState.price * (mortgageState.downPercent / 100));
-        updateMortgageUI();
-      }
+      const val = parseFormattedNumber(e.target.value);
+      mortgageState.downPercent = Math.min(100, val);
+      mortgageState.downPayment = Math.round(mortgageState.price * (mortgageState.downPercent / 100));
+      updateMortgageUI();
     });
   }
   if (downSlider) {
@@ -1486,12 +1549,14 @@ function setupEventListeners() {
 
   if (mRateInput) {
     mRateInput.addEventListener('input', (e) => {
-      const val = Number(e.target.value.replace(/[^0-9.]/g, ''));
-      if (!isNaN(val) && val >= 0) {
-        mortgageState.rate = val;
-        if (mRateSlider) mRateSlider.value = val;
-        updateMortgageUI();
-      }
+      const val = parseFormattedNumber(e.target.value);
+      mortgageState.rate = val;
+      if (mRateSlider) mRateSlider.value = val;
+      updateMortgageUI();
+    });
+    mRateInput.addEventListener('blur', (e) => {
+      const val = parseFormattedNumber(e.target.value);
+      e.target.value = val.toFixed(2);
     });
   }
   if (mRateSlider) {
@@ -1546,12 +1611,14 @@ function setupEventListeners() {
 
   if (extraMonInput) {
     extraMonInput.addEventListener('input', (e) => {
-      const val = Number(e.target.value.replace(/[^0-9.]/g, ''));
-      if (!isNaN(val) && val >= 0) {
-        mortgageState.extraMonthly = val;
-        if (extraMonSlider) extraMonSlider.value = val;
-        updateMortgageUI();
-      }
+      const val = parseFormattedNumber(e.target.value);
+      mortgageState.extraMonthly = val;
+      if (extraMonSlider) extraMonSlider.value = val;
+      updateMortgageUI();
+    });
+    extraMonInput.addEventListener('blur', (e) => {
+      const val = parseFormattedNumber(e.target.value);
+      e.target.value = formatNumberWithCommas(val);
     });
   }
   if (extraMonSlider) {
@@ -1578,12 +1645,14 @@ function setupEventListeners() {
 
   if (extraAnnInput) {
     extraAnnInput.addEventListener('input', (e) => {
-      const val = Number(e.target.value.replace(/[^0-9.]/g, ''));
-      if (!isNaN(val) && val >= 0) {
-        mortgageState.extraAnnual = val;
-        if (extraAnnSlider) extraAnnSlider.value = val;
-        updateMortgageUI();
-      }
+      const val = parseFormattedNumber(e.target.value);
+      mortgageState.extraAnnual = val;
+      if (extraAnnSlider) extraAnnSlider.value = val;
+      updateMortgageUI();
+    });
+    extraAnnInput.addEventListener('blur', (e) => {
+      const val = parseFormattedNumber(e.target.value);
+      e.target.value = formatNumberWithCommas(val);
     });
   }
   if (extraAnnSlider) {
@@ -1618,25 +1687,27 @@ function setupEventListeners() {
   });
 
   // Refinance Inputs
-  const bindRefiField = (id, key) => {
+  const bindRefiField = (id, key, isFloat = false) => {
     const el = document.getElementById(id);
     if (el) {
       el.addEventListener('input', (e) => {
-        const val = Number(e.target.value.replace(/[^0-9.]/g, ''));
-        if (!isNaN(val) && val >= 0) {
-          mortgageState[key] = val;
-          updateMortgageUI();
-        }
+        const val = parseFormattedNumber(e.target.value);
+        mortgageState[key] = val;
+        updateMortgageUI();
+      });
+      el.addEventListener('blur', (e) => {
+        const val = parseFormattedNumber(e.target.value);
+        e.target.value = isFloat ? val.toFixed(2) : (key === 'refiCurrentTerm' || key === 'refiNewTerm') ? val : formatNumberWithCommas(val);
       });
     }
   };
 
-  bindRefiField('refi-current-balance-input', 'refiCurrentBalance');
-  bindRefiField('refi-current-rate-input', 'refiCurrentRate');
-  bindRefiField('refi-current-term-input', 'refiCurrentTerm');
-  bindRefiField('refi-new-rate-input', 'refiNewRate');
-  bindRefiField('refi-new-term-input', 'refiNewTerm');
-  bindRefiField('refi-closing-costs-input', 'refiClosingCosts');
+  bindRefiField('refi-current-balance-input', 'refiCurrentBalance', false);
+  bindRefiField('refi-current-rate-input', 'refiCurrentRate', true);
+  bindRefiField('refi-current-term-input', 'refiCurrentTerm', false);
+  bindRefiField('refi-new-rate-input', 'refiNewRate', true);
+  bindRefiField('refi-new-term-input', 'refiNewTerm', false);
+  bindRefiField('refi-closing-costs-input', 'refiClosingCosts', false);
 
   const refiRollCheckbox = document.getElementById('refi-roll-costs-checkbox');
   if (refiRollCheckbox) {
