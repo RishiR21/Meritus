@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Meritus — Wealth Growth & Mortgage Decision Suite</title>
   <meta name="description" content="Meritus: High-fidelity financial models for compound wealth appreciation, mortgage paydown acceleration, prepayment strategies, and refinancing decisions." />
-  <meta name="theme-color" content="#eff1f4" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#1b1f26" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#090d14" media="(prefers-color-scheme: dark)" />
 
   <!-- Favicon: Green Currency Bill -->
   <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
@@ -74,23 +74,47 @@
 <body class="antialiased bg-background text-foreground min-h-screen selection:bg-primary/20">
 
   <main class="min-h-svh">
-    <div class="mx-auto max-w-[1440px] px-4 py-8 sm:px-8 sm:py-12 xl:px-10">
+    <div class="mx-auto max-w-[1400px] px-4 py-6 sm:px-8 sm:py-8">
       
-      <!-- Top Header -->
-      <header class="mb-6 flex flex-col gap-4 border-b border-border pb-6 relative">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <span class="font-mono text-xs tracking-[0.24em] font-semibold text-primary uppercase">Meritus</span>
-            <span class="text-border text-xs">/</span>
-            <p id="header-category-label" class="font-mono text-[0.6875rem] tracking-[0.24em] text-muted-foreground uppercase">
-              Financial Decision Suite
+      <!-- Top Integrated Navigation Bar -->
+      <header class="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-border pb-5">
+        <div class="flex items-center gap-3">
+          <div class="size-8 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center text-primary font-mono font-bold text-sm">
+            M
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-sans text-base font-semibold text-foreground tracking-tight">Meritus</span>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-mono font-medium">v2.0</span>
+            </div>
+            <p id="header-category-label" class="text-xs text-muted-foreground">
+              Compound Growth &amp; Mortgage Decision Suite
             </p>
           </div>
-          
+        </div>
+
+        <!-- Center Tabs & Header Actions -->
+        <div class="flex items-center gap-3 flex-wrap">
+          <nav class="nav-segmented" role="tablist" aria-label="Tool Selection">
+            <button id="tab-btn-growth" role="tab" aria-selected="true" aria-controls="view-growth" class="nav-tab-btn active">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                <polyline points="16 7 22 7 22 13"></polyline>
+              </svg>
+              <span>Compound Growth</span>
+            </button>
+            <button id="tab-btn-mortgage" role="tab" aria-selected="false" aria-controls="view-mortgage" class="nav-tab-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+              <span>Mortgage &amp; Debt</span>
+            </button>
+          </nav>
+
           <!-- Theme Toggle Button -->
-          <button id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme" class="inline-flex items-center justify-center size-8 rounded-md border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-ring hover:scale-105 active:scale-95 shadow-xs">
-            <!-- Sun icon for dark mode -->
-            <svg id="theme-sun-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden dark:block transition-transform duration-200">
+          <button id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme" class="inline-flex items-center justify-center size-8 rounded-lg border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-all outline-none focus-visible:ring-2 focus-visible:ring-ring shadow-xs">
+            <svg id="theme-sun-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden dark:block">
               <circle cx="12" cy="12" r="4"></circle>
               <path d="M12 2v2"></path>
               <path d="M12 20v2"></path>
@@ -101,78 +125,47 @@
               <path d="m6.34 17.66-1.41 1.41"></path>
               <path d="m19.07 4.93-1.41 1.41"></path>
             </svg>
-            <!-- Moon icon for light mode (Chic Crescent Moon) -->
-            <svg id="theme-moon-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block dark:hidden transition-transform duration-200">
+            <svg id="theme-moon-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block dark:hidden">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
             </svg>
           </button>
         </div>
-
-        <div class="flex flex-col gap-2">
-          <h1 id="main-hero-title" class="max-w-3xl text-2xl leading-[1.15] font-medium tracking-tight text-balance sm:text-3xl lg:text-4xl">
-            Watch capital turn into decades of growth.
-          </h1>
-          <p id="main-hero-desc" class="max-w-2xl text-sm leading-relaxed text-muted-foreground text-pretty">
-            Adjust the assumptions and the projection updates instantly — separating what you put in from the value generated through compound returns across equity, real estate, and investments.
-          </p>
-        </div>
-
-        <!-- Top-Level Tab Switcher -->
-        <nav class="flex items-center gap-1.5 p-1 bg-card border border-border rounded-lg max-w-fit shadow-xs mt-2" role="tablist" aria-label="Tool Selection">
-          <button id="tab-btn-growth" role="tab" aria-selected="true" aria-controls="view-growth" class="tab-pill-btn active">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
-              <polyline points="16 7 22 7 22 13"></polyline>
-            </svg>
-            <span>Compound Growth &amp; Wealth</span>
-          </button>
-          <button id="tab-btn-mortgage" role="tab" aria-selected="false" aria-controls="view-mortgage" class="tab-pill-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-              <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            </svg>
-            <span>Mortgage Paydown &amp; Refinancing</span>
-          </button>
-        </nav>
       </header>
 
       <!-- ========================================== -->
       <!-- TAB 1: COMPOUND GROWTH VIEW                -->
       <!-- ========================================== -->
       <div id="view-growth" class="tab-view block">
-        <!-- Main 3-Column Layout Grid -->
-        <div class="grid gap-8 xl:grid-cols-[19rem_minmax(0,1fr)_18.5rem] lg:gap-8 xl:gap-8 items-start">
+        <div class="flex flex-col lg:flex-row gap-6 items-start">
           
-          <!-- Column 1: Assumptions (01) -->
-          <div class="xl:sticky xl:top-8 xl:self-start">
-            <section aria-labelledby="assumptions-heading" class="flex flex-col gap-6 rounded-sm border border-border bg-card p-5 sm:p-6 shadow-sm">
-              <header class="flex items-baseline justify-between gap-4">
-                <h2 id="assumptions-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
+          <!-- Column 1: Assumptions Studio (Sidebar) -->
+          <div class="w-full lg:w-[21rem] xl:w-[22rem] shrink-0 lg:sticky lg:top-6">
+            <section aria-labelledby="growth-assumptions-heading" class="studio-card p-5 sm:p-6 flex flex-col gap-5">
+              <div class="flex items-center justify-between border-b border-border pb-3">
+                <h2 id="growth-assumptions-heading" class="font-sans text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Assumptions
                 </h2>
-                <span class="num font-mono text-[0.6875rem] text-muted-foreground">01</span>
-              </header>
+                <span class="font-mono text-xs text-muted-foreground">01</span>
+              </div>
 
               <!-- Starting amount -->
-              <div class="flex flex-col gap-2">
-                <div class="flex items-baseline justify-between gap-4">
-                  <label for="principal-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
-                    Initial capital
+              <div class="flex flex-col gap-1.5">
+                <div class="flex items-center justify-between">
+                  <label for="principal-input" class="text-xs font-medium text-foreground">
+                    Initial Capital
                   </label>
-                  <div class="flex items-center">
-                    <select id="principal-range-select" class="range-select num" aria-label="Initial capital scale range">
-                      <option value="50000">$0 – $50,000</option>
-                      <option value="250000">$0 – $250,000</option>
-                      <option value="1000000" selected>$0 – $1,000,000</option>
-                      <option value="5000000">$0 – $5,000,000</option>
-                      <option value="10000000">$0 – $10,000,000</option>
-                      <option value="custom">Custom scale...</option>
-                    </select>
-                  </div>
+                  <select id="principal-range-select" class="range-chip-select" aria-label="Initial capital scale">
+                    <option value="50000">$0 – $50k</option>
+                    <option value="250000">$0 – $250k</option>
+                    <option value="1000000" selected>$0 – $1M</option>
+                    <option value="5000000">$0 – $5M</option>
+                    <option value="10000000">$0 – $10M</option>
+                    <option value="custom">Custom...</option>
+                  </select>
                 </div>
                 <div class="input-group">
-                  <div class="input-group-addon pl-2 pr-1 text-muted-foreground">$</div>
-                  <input id="principal-input" type="text" inputmode="decimal" value="10000" class="num font-mono text-base" />
+                  <span class="input-group-addon pl-3 text-muted-foreground">$</span>
+                  <input id="principal-input" type="text" inputmode="decimal" value="10000" class="num text-sm" />
                 </div>
                 <div class="slider-container">
                   <div class="slider-track-bg"></div>
@@ -182,26 +175,25 @@
               </div>
 
               <!-- Monthly contribution -->
-              <div class="flex flex-col gap-2">
-                <div class="flex items-baseline justify-between gap-4">
-                  <label for="monthly-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
-                    Monthly contribution
+              <div class="flex flex-col gap-1.5">
+                <div class="flex items-center justify-between">
+                  <label for="monthly-input" class="text-xs font-medium text-foreground">
+                    Monthly Contribution
                   </label>
-                  <div class="flex items-center">
-                    <select id="monthly-range-select" class="range-select num" aria-label="Monthly contribution scale range">
-                      <option value="2500">$0 – $2,500</option>
-                      <option value="5000">$0 – $5,000</option>
-                      <option value="25000">$0 – $25,000</option>
-                      <option value="50000">$0 – $50,000</option>
-                      <option value="100000" selected>$0 – $100,000</option>
-                      <option value="500000">$0 – $500,000</option>
-                      <option value="custom">Custom scale...</option>
-                    </select>
-                  </div>
+                  <select id="monthly-range-select" class="range-chip-select" aria-label="Monthly contribution scale">
+                    <option value="2500">$0 – $2.5k</option>
+                    <option value="5000">$0 – $5k</option>
+                    <option value="25000">$0 – $25k</option>
+                    <option value="50000">$0 – $50k</option>
+                    <option value="100000" selected>$0 – $100k</option>
+                    <option value="500000">$0 – $500k</option>
+                    <option value="custom">Custom...</option>
+                  </select>
                 </div>
                 <div class="input-group">
-                  <div class="input-group-addon pl-2 pr-1 text-muted-foreground">$</div>
-                  <input id="monthly-input" type="text" inputmode="decimal" value="500" class="num font-mono text-base" />
+                  <span class="input-group-addon pl-3 text-muted-foreground">$</span>
+                  <input id="monthly-input" type="text" inputmode="decimal" value="500" class="num text-sm" />
+                  <span class="input-group-addon pr-3 text-muted-foreground text-xs">/mo</span>
                 </div>
                 <div class="slider-container">
                   <div class="slider-track-bg"></div>
@@ -211,56 +203,52 @@
               </div>
 
               <!-- Annual return / Growth Rate -->
-              <div class="flex flex-col gap-2">
-                <div class="flex items-baseline justify-between gap-4">
-                  <label for="rate-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
-                    Annual growth rate
+              <div class="flex flex-col gap-1.5">
+                <div class="flex items-center justify-between">
+                  <label for="rate-input" class="text-xs font-medium text-foreground">
+                    Annual Growth Rate
                   </label>
-                  <div class="flex items-center">
-                    <select id="rate-range-select" class="range-select num" aria-label="Annual growth rate scale range">
-                      <option value="15">0 – 15%</option>
-                      <option value="30">0 – 30%</option>
-                      <option value="50">0 – 50%</option>
-                      <option value="100">0 – 100%</option>
-                      <option value="800" selected>0 – 800%</option>
-                      <option value="custom">Custom scale...</option>
-                    </select>
-                  </div>
+                  <select id="rate-range-select" class="range-chip-select" aria-label="Annual growth rate scale">
+                    <option value="15">0 – 15%</option>
+                    <option value="30">0 – 30%</option>
+                    <option value="50">0 – 50%</option>
+                    <option value="100">0 – 100%</option>
+                    <option value="800" selected>0 – 800%</option>
+                    <option value="custom">Custom...</option>
+                  </select>
                 </div>
                 <div class="input-group">
-                  <input id="rate-input" type="text" inputmode="decimal" value="7" aria-describedby="rate-hint" class="num font-mono text-base" />
-                  <div class="input-group-addon pr-2 pl-1 text-muted-foreground">%</div>
+                  <input id="rate-input" type="text" inputmode="decimal" value="7" class="num text-sm pl-3" />
+                  <span class="input-group-addon pr-3 text-muted-foreground">%</span>
                 </div>
                 <div class="slider-container">
                   <div class="slider-track-bg"></div>
                   <div id="rate-fill" class="slider-track-fill" style="width: 0.875%;"></div>
                   <input id="rate-slider" type="range" min="0" max="800" step="0.1" value="7" class="custom-range-slider" aria-label="Annual growth rate" />
                 </div>
-                <p id="rate-hint" class="text-left font-normal text-muted-foreground text-xs leading-normal">
-                  Reflects expected annualized asset appreciation, equity returns, or investment yield.
+                <p class="text-[11px] text-muted-foreground leading-tight mt-0.5">
+                  Expected annualized asset appreciation, equity returns, or portfolio yield.
                 </p>
               </div>
 
               <!-- Time invested -->
-              <div class="flex flex-col gap-2">
-                <div class="flex items-baseline justify-between gap-4">
-                  <label for="years-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
-                    Time invested
+              <div class="flex flex-col gap-1.5">
+                <div class="flex items-center justify-between">
+                  <label for="years-input" class="text-xs font-medium text-foreground">
+                    Investment Horizon
                   </label>
-                  <div class="flex items-center">
-                    <select id="years-range-select" class="range-select num" aria-label="Time invested scale range">
-                      <option value="20">0 – 20 yrs</option>
-                      <option value="30">0 – 30 yrs</option>
-                      <option value="50">0 – 50 yrs</option>
-                      <option value="80" selected>0 – 80 yrs</option>
-                      <option value="100">0 – 100 yrs</option>
-                      <option value="custom">Custom scale...</option>
-                    </select>
-                  </div>
+                  <select id="years-range-select" class="range-chip-select" aria-label="Time invested scale">
+                    <option value="20">0 – 20 yrs</option>
+                    <option value="30">0 – 30 yrs</option>
+                    <option value="50">0 – 50 yrs</option>
+                    <option value="80" selected>0 – 80 yrs</option>
+                    <option value="100">0 – 100 yrs</option>
+                    <option value="custom">Custom...</option>
+                  </select>
                 </div>
                 <div class="input-group">
-                  <input id="years-input" type="text" inputmode="decimal" value="30" class="num font-mono text-base" />
-                  <div class="input-group-addon pr-2 pl-1 text-muted-foreground">yrs</div>
+                  <input id="years-input" type="text" inputmode="decimal" value="30" class="num text-sm pl-3" />
+                  <span class="input-group-addon pr-3 text-muted-foreground text-xs">years</span>
                 </div>
                 <div class="slider-container">
                   <div class="slider-track-bg"></div>
@@ -269,18 +257,17 @@
                 </div>
               </div>
 
-              <!-- Separator -->
-              <div class="shrink-0 bg-border h-px w-full my-1"></div>
+              <div class="shrink-0 bg-border h-px w-full my-0.5"></div>
 
               <!-- Compounding Frequency -->
-              <div class="flex flex-col gap-2">
-                <label class="text-[0.8125rem] tracking-tight font-medium select-none">
-                  Compounding frequency
+              <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-medium text-foreground">
+                  Compounding Frequency
                 </label>
                 <div class="toggle-group" role="group" aria-label="Compounding frequency">
-                  <button type="button" class="toggle-item" data-value="1" aria-pressed="false">Annually</button>
+                  <button type="button" class="toggle-item" data-value="1" aria-pressed="false">Annual</button>
                   <button type="button" class="toggle-item" data-value="4" aria-pressed="false">Quarterly</button>
-                  <button type="button" class="toggle-item" data-value="12" aria-pressed="true">Monthly</button>
+                  <button type="button" class="toggle-item active" data-value="12" aria-pressed="true">Monthly</button>
                   <button type="button" class="toggle-item" data-value="365" aria-pressed="false">Daily</button>
                 </div>
               </div>
@@ -288,149 +275,139 @@
             </section>
           </div>
 
-          <!-- Column 2: Center Canvas (Expansive Grand Chart & Full-Width Table) -->
-          <div class="flex flex-col gap-8 min-w-0">
+          <!-- Column 2: Main Canvas (Executive Banner + Chart + Table) -->
+          <div class="flex-1 min-w-0 flex flex-col gap-6 w-full">
             
-            <!-- Interactive Chart Card -->
-            <div class="flex flex-col gap-4 bg-card rounded-sm border border-border p-5 sm:p-6 shadow-sm">
-              <div class="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4 select-none">
+            <!-- Executive Outcome & Performance Summary Banner -->
+            <section aria-labelledby="growth-summary-heading" class="studio-card p-5 sm:p-6 flex flex-col gap-4">
+              <div class="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-4">
                 <div>
-                  <h2 class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
-                    Growth Projection
-                  </h2>
+                  <span id="hero-heading" class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Portfolio Balance After 30 Years
+                  </span>
+                  <div class="flex items-baseline gap-3 mt-1 flex-wrap">
+                    <p id="hero-balance" class="num font-mono text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
+                      $691,150
+                    </p>
+                    <span id="hero-net-growth-badge" class="badge-pill-success">
+                      +$501,150 Appreciation (73%)
+                    </span>
+                  </div>
                 </div>
-                
+                <p id="hero-description" class="text-xs text-muted-foreground max-w-md leading-relaxed">
+                  You contribute <span class="font-mono text-foreground font-medium">$190,000</span> and compound appreciation generates <span class="font-mono text-primary font-medium">$501,150</span> on top.
+                </p>
+              </div>
+
+              <!-- Composition Progress Bar -->
+              <div class="flex flex-col gap-1.5">
+                <div id="composition-bar" role="img" aria-label="Composition: Contributions vs Growth" class="flex h-2 w-full gap-1 overflow-hidden rounded-full bg-muted">
+                  <div id="comp-bar-deposits" class="bg-[var(--chart-2)] rounded-full transition-all duration-500" style="flex-grow: 0.2749;"></div>
+                  <div id="comp-bar-interest" class="bg-[var(--chart-1)] rounded-full transition-all duration-500" style="flex-grow: 0.7251;"></div>
+                </div>
+                <div class="flex items-center justify-between font-mono text-[11px] text-muted-foreground">
+                  <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-[var(--chart-2)] inline-block"></span>Principal &amp; Deposits</span>
+                  <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-[var(--chart-1)] inline-block"></span>Capital Appreciation</span>
+                </div>
+              </div>
+
+              <!-- 4-Stat Grid -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                  <span class="text-[11px] text-muted-foreground font-medium">Total Contributed</span>
+                  <span id="stat-total-deposited" class="num font-mono text-base font-semibold text-foreground">$190,000</span>
+                </div>
+                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                  <span class="text-[11px] text-muted-foreground font-medium">Capital Growth</span>
+                  <span id="stat-total-interest" class="num font-mono text-base font-semibold text-primary">$501,150</span>
+                </div>
+                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                  <span class="text-[11px] text-muted-foreground font-medium">Return Multiple</span>
+                  <span id="stat-growth-multiple" class="num font-mono text-base font-semibold text-foreground">3.64×</span>
+                </div>
+                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                  <span class="text-[11px] text-muted-foreground font-medium">Growth in Final Year</span>
+                  <span id="stat-final-year-interest" class="num font-mono text-base font-semibold text-foreground">$46,374</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- Grand Interactive Area Chart -->
+            <section class="studio-card p-5 sm:p-6 flex flex-col gap-4">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-xs font-semibold text-foreground uppercase tracking-wider">
+                    Growth Projection Curve
+                  </h3>
+                  <span class="text-xs text-muted-foreground">· Stacked Area</span>
+                </div>
+
                 <!-- Legend -->
-                <div class="flex flex-wrap items-center gap-x-5 gap-y-2 select-none">
-                  <div class="flex items-center gap-2">
-                    <span aria-hidden="true" class="size-2.5 rounded-[1px]" style="background-color: var(--chart-3);"></span>
-                    <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Initial capital</span>
+                <div class="flex flex-wrap items-center gap-4 text-xs select-none">
+                  <div class="flex items-center gap-1.5">
+                    <span class="size-2.5 rounded-full" style="background-color: var(--chart-3);"></span>
+                    <span class="text-muted-foreground font-medium">Initial Capital</span>
                   </div>
-                  <div class="flex items-center gap-2">
-                    <span aria-hidden="true" class="size-2.5 rounded-[1px]" style="background-color: var(--chart-2);"></span>
-                    <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Contributions</span>
+                  <div class="flex items-center gap-1.5">
+                    <span class="size-2.5 rounded-full" style="background-color: var(--chart-2);"></span>
+                    <span class="text-muted-foreground font-medium">Contributions</span>
                   </div>
-                  <div class="flex items-center gap-2">
-                    <span aria-hidden="true" class="size-2.5 rounded-[1px]" style="background-color: var(--chart-1);"></span>
-                    <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Capital Growth</span>
+                  <div class="flex items-center gap-1.5">
+                    <span class="size-2.5 rounded-full" style="background-color: var(--chart-1);"></span>
+                    <span class="text-foreground font-semibold">Capital Growth</span>
                   </div>
                 </div>
               </div>
 
-              <!-- SVG Chart -->
-              <div id="chart-container" class="chart-container w-full min-h-[340px] sm:min-h-[400px]">
+              <!-- SVG Chart Container -->
+              <div id="chart-container" class="chart-container w-full min-h-[340px] sm:min-h-[380px]">
                 <!-- Rendered via JS -->
               </div>
-            </div>
+            </section>
 
             <!-- Year by Year Schedule Table -->
-            <section aria-labelledby="schedule-heading" class="flex flex-col gap-4">
-              <div class="flex items-baseline justify-between gap-4">
-                <h2 id="schedule-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
-                  Year by year breakdown
-                </h2>
+            <section class="studio-card p-5 sm:p-6 flex flex-col gap-4">
+              <div class="flex items-center justify-between border-b border-border pb-3">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-xs font-semibold text-foreground uppercase tracking-wider">
+                    Year-by-Year Schedule
+                  </h3>
+                  <span class="text-xs text-muted-foreground">· Click any row to customize</span>
+                </div>
                 <div class="flex items-center gap-3">
-                  <button id="reset-overrides-btn" type="button" style="display: none;" class="text-[0.6875rem] font-mono text-primary hover:underline font-medium cursor-pointer">
+                  <button id="reset-overrides-btn" type="button" style="display: none;" class="text-xs font-mono text-primary hover:underline font-medium cursor-pointer">
                     Reset custom years
                   </button>
-                  <span id="table-row-count" class="num font-mono text-[0.6875rem] text-muted-foreground">30 rows</span>
+                  <span id="table-row-count" class="num font-mono text-xs text-muted-foreground">30 rows</span>
                 </div>
               </div>
 
-              <div class="overflow-x-auto rounded-sm border border-border bg-card shadow-sm">
-                <table class="w-full caption-bottom text-sm">
+              <div class="overflow-x-auto rounded-lg border border-border/70">
+                <table class="w-full text-xs">
                   <thead>
-                    <tr class="border-b border-border hover:bg-transparent">
-                      <th class="h-10 px-3 text-left align-middle font-medium whitespace-nowrap text-foreground font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                        Year
-                      </th>
-                      <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                        Contributed
-                      </th>
-                      <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                        Growth this year
-                      </th>
-                      <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                        Total growth
-                      </th>
-                      <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                        Portfolio Value
-                      </th>
+                    <tr class="border-b border-border bg-muted/40 text-muted-foreground">
+                      <th class="h-9 px-3 text-left font-medium">Year</th>
+                      <th class="h-9 px-3 text-right font-medium">Deposited</th>
+                      <th class="h-9 px-3 text-right font-medium">Year Growth</th>
+                      <th class="h-9 px-3 text-right font-medium">Total Growth</th>
+                      <th class="h-9 px-3 text-right font-medium">Portfolio Balance</th>
                     </tr>
                   </thead>
-                  <tbody id="schedule-tbody" class="[&_tr:last-child]:border-0">
+                  <tbody id="schedule-tbody">
                     <!-- Rendered via JS -->
                   </tbody>
                 </table>
               </div>
 
-              <!-- Expand/Collapse Button -->
-              <button id="table-toggle-btn" type="button" class="group inline-flex shrink-0 items-center justify-center border border-border bg-background hover:bg-muted hover:text-foreground h-7 gap-1.5 rounded-md px-2.5 self-start font-mono text-xs font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                <svg id="table-toggle-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200">
+              <!-- Table Toggle Button -->
+              <button id="table-toggle-btn" type="button" class="inline-flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-foreground self-start p-1 rounded hover:bg-muted transition-colors">
+                <svg id="table-toggle-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="m6 9 6 6 6-6"></path>
                 </svg>
                 <span id="table-toggle-text">Show 20 more years</span>
               </button>
             </section>
 
-          </div>
-
-          <!-- Column 3: Dedicated Vertical Right Summary (02) -->
-          <div class="xl:sticky xl:top-8 xl:self-start">
-            <section aria-labelledby="summary-heading" class="flex flex-col rounded-sm border border-border bg-card p-5 sm:p-6 shadow-sm divide-y divide-border">
-              <header class="flex items-baseline justify-between gap-4 pb-4">
-                <h2 id="summary-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
-                  Summary
-                </h2>
-                <span class="num font-mono text-[0.6875rem] text-muted-foreground">02</span>
-              </header>
-
-              <!-- Big Balance Section -->
-              <div class="flex flex-col gap-2.5 py-5">
-                <span id="hero-heading" class="font-mono text-[0.6875rem] tracking-[0.14em] text-muted-foreground uppercase">
-                  Portfolio balance after 30 years
-                </span>
-                <p id="hero-balance" class="num font-mono text-[clamp(2.25rem,4vw,3.25rem)] leading-none font-medium text-foreground tracking-tight">
-                  $691,150
-                </p>
-                <p id="hero-description" class="text-xs leading-relaxed text-muted-foreground text-pretty mt-1">
-                  You put in $190,000 and capital growth added <span class="num font-mono text-foreground font-medium">$501,150</span> on top — 73% of the final balance is money generated from investment appreciation.
-                </p>
-
-                <!-- Composition Progress Bar -->
-                <div class="mt-2 flex flex-col gap-1.5">
-                  <div id="composition-bar" role="img" aria-label="Composition of final value: 27 percent contributions, 73 percent capital growth" class="flex h-2 w-full gap-px overflow-hidden rounded-[1px]">
-                    <div id="comp-bar-deposits" class="bg-[var(--chart-2)] transition-[flex-grow] duration-500" style="flex-grow: 0.2749;"></div>
-                    <div id="comp-bar-interest" class="bg-[var(--chart-1)] transition-[flex-grow] duration-500" style="flex-grow: 0.7251;"></div>
-                  </div>
-                  <div class="flex items-center justify-between font-mono text-[0.625rem] text-muted-foreground">
-                    <span>Deposits</span>
-                    <span>Growth</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Key Metric Rows (Vertical Stack) -->
-              <div class="flex flex-col divide-y divide-border pt-2">
-                <div class="flex items-baseline justify-between py-3">
-                  <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Total contributed</span>
-                  <span id="stat-total-deposited" class="num font-mono text-base font-medium text-foreground">$190,000</span>
-                </div>
-                <div class="flex items-baseline justify-between py-3">
-                  <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Capital growth</span>
-                  <span id="stat-total-interest" class="num font-mono text-base font-semibold text-primary">$501,150</span>
-                </div>
-                <div class="flex items-baseline justify-between py-3">
-                  <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Return multiple</span>
-                  <span id="stat-growth-multiple" class="num font-mono text-base font-medium text-foreground">3.64×</span>
-                </div>
-                <div class="flex items-baseline justify-between py-3">
-                  <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Growth in final yr</span>
-                  <span id="stat-final-year-interest" class="num font-mono text-base font-medium text-foreground">$46,374</span>
-                </div>
-              </div>
-
-            </section>
           </div>
 
         </div>
@@ -440,18 +417,17 @@
       <!-- TAB 2: MORTGAGE PAYDOWN & REFINANCING VIEW  -->
       <!-- ========================================== -->
       <div id="view-mortgage" class="tab-view hidden">
-        <!-- Main 3-Column Layout Grid -->
-        <div class="grid gap-8 xl:grid-cols-[20rem_minmax(0,1fr)_18.5rem] lg:gap-8 xl:gap-8 items-start">
+        <div class="flex flex-col lg:flex-row gap-6 items-start">
           
-          <!-- Column 1: Assumptions (01) -->
-          <div class="xl:sticky xl:top-8 xl:self-start">
-            <section aria-labelledby="mortgage-assumptions-heading" class="flex flex-col gap-5 rounded-sm border border-border bg-card p-5 sm:p-6 shadow-sm">
-              <header class="flex items-baseline justify-between gap-4">
-                <h2 id="mortgage-assumptions-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
+          <!-- Column 1: Loan Assumptions Studio (Sidebar) -->
+          <div class="w-full lg:w-[21rem] xl:w-[22rem] shrink-0 lg:sticky lg:top-6">
+            <section aria-labelledby="mortgage-assumptions-heading" class="studio-card p-5 sm:p-6 flex flex-col gap-5">
+              <div class="flex items-center justify-between border-b border-border pb-3">
+                <h2 id="mortgage-assumptions-heading" class="font-sans text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Loan Assumptions
                 </h2>
-                <span class="num font-mono text-[0.6875rem] text-muted-foreground">01</span>
-              </header>
+                <span class="font-mono text-xs text-muted-foreground">01</span>
+              </div>
 
               <!-- Submode Switcher: Paydown vs Refinance -->
               <div class="submode-toggle" role="tablist" aria-label="Mortgage Mode">
@@ -463,30 +439,26 @@
                 </button>
               </div>
 
-              <!-- ========================================== -->
-              <!-- SUBMODE 1: PAYDOWN & PREPAYMENT INPUTS     -->
-              <!-- ========================================== -->
-              <div id="mortgage-paydown-inputs" class="flex flex-col gap-5">
-                <!-- Property Price -->
-                <div class="flex flex-col gap-2">
-                  <div class="flex items-baseline justify-between gap-4">
-                    <label for="mortgage-price-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
-                      Home purchase price
+              <!-- Paydown Inputs -->
+              <div id="mortgage-paydown-inputs" class="flex flex-col gap-4">
+                <!-- Home Price -->
+                <div class="flex flex-col gap-1.5">
+                  <div class="flex items-center justify-between">
+                    <label for="mortgage-price-input" class="text-xs font-medium text-foreground">
+                      Home Purchase Price
                     </label>
-                    <div class="flex items-center">
-                      <select id="mortgage-price-range-select" class="range-select num" aria-label="Home price scale range">
-                        <option value="300000">$0 – $300,000</option>
-                        <option value="600000">$0 – $600,000</option>
-                        <option value="1000000" selected>$0 – $1,000,000</option>
-                        <option value="2500000">$0 – $2,500,000</option>
-                        <option value="5000000">$0 – $5,000,000</option>
-                        <option value="custom">Custom scale...</option>
-                      </select>
-                    </div>
+                    <select id="mortgage-price-range-select" class="range-chip-select" aria-label="Home price scale">
+                      <option value="300000">$0 – $300k</option>
+                      <option value="600000">$0 – $600k</option>
+                      <option value="1000000" selected>$0 – $1M</option>
+                      <option value="2500000">$0 – $2.5M</option>
+                      <option value="5000000">$0 – $5M</option>
+                      <option value="custom">Custom...</option>
+                    </select>
                   </div>
                   <div class="input-group">
-                    <div class="input-group-addon pl-2 pr-1 text-muted-foreground">$</div>
-                    <input id="mortgage-price-input" type="text" inputmode="decimal" value="500000" class="num font-mono text-base" />
+                    <span class="input-group-addon pl-3 text-muted-foreground">$</span>
+                    <input id="mortgage-price-input" type="text" inputmode="decimal" value="500000" class="num text-sm" />
                   </div>
                   <div class="slider-container">
                     <div class="slider-track-bg"></div>
@@ -496,23 +468,23 @@
                 </div>
 
                 <!-- Down Payment -->
-                <div class="flex flex-col gap-2">
-                  <div class="flex items-baseline justify-between gap-4">
-                    <label for="mortgage-down-amount" class="text-[0.8125rem] tracking-tight font-medium select-none">
-                      Down payment
+                <div class="flex flex-col gap-1.5">
+                  <div class="flex items-center justify-between">
+                    <label for="mortgage-down-amount" class="text-xs font-medium text-foreground">
+                      Down Payment
                     </label>
-                    <span id="mortgage-loan-principal-badge" class="font-mono text-[0.6875rem] text-primary font-medium">
+                    <span id="mortgage-loan-principal-badge" class="font-mono text-xs text-primary font-medium">
                       Loan: $400,000
                     </span>
                   </div>
                   <div class="grid grid-cols-[1fr_5rem] gap-2">
                     <div class="input-group">
-                      <div class="input-group-addon pl-2 pr-1 text-muted-foreground">$</div>
-                      <input id="mortgage-down-amount" type="text" inputmode="decimal" value="100000" class="num font-mono text-base" />
+                      <span class="input-group-addon pl-3 text-muted-foreground">$</span>
+                      <input id="mortgage-down-amount" type="text" inputmode="decimal" value="100000" class="num text-sm" />
                     </div>
                     <div class="input-group">
-                      <input id="mortgage-down-percent" type="text" inputmode="decimal" value="20" class="num font-mono text-base" />
-                      <div class="input-group-addon pr-2 pl-1 text-muted-foreground">%</div>
+                      <input id="mortgage-down-percent" type="text" inputmode="decimal" value="20" class="num text-sm pl-2" />
+                      <span class="input-group-addon pr-2 text-muted-foreground">%</span>
                     </div>
                   </div>
                   <div class="slider-container">
@@ -523,40 +495,35 @@
                 </div>
 
                 <!-- Interest Rate -->
-                <div class="flex flex-col gap-2">
-                  <div class="flex items-baseline justify-between gap-4">
-                    <label for="mortgage-rate-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
-                      Mortgage interest rate
+                <div class="flex flex-col gap-1.5">
+                  <div class="flex items-center justify-between">
+                    <label for="mortgage-rate-input" class="text-xs font-medium text-foreground">
+                      Mortgage Interest Rate
                     </label>
-                    <div class="flex items-center">
-                      <select id="mortgage-rate-range-select" class="range-select num" aria-label="Interest rate scale range">
-                        <option value="8">0 – 8%</option>
-                        <option value="12" selected>0 – 12%</option>
-                        <option value="18">0 – 18%</option>
-                        <option value="custom">Custom scale...</option>
-                      </select>
-                    </div>
+                    <select id="mortgage-rate-range-select" class="range-chip-select" aria-label="Interest rate scale">
+                      <option value="8">0 – 8%</option>
+                      <option value="12" selected>0 – 12%</option>
+                      <option value="18">0 – 18%</option>
+                      <option value="custom">Custom...</option>
+                    </select>
                   </div>
                   <div class="input-group">
-                    <input id="mortgage-rate-input" type="text" inputmode="decimal" value="6.5" class="num font-mono text-base" />
-                    <div class="input-group-addon pr-2 pl-1 text-muted-foreground">%</div>
+                    <input id="mortgage-rate-input" type="text" inputmode="decimal" value="6.5" class="num text-sm pl-3" />
+                    <span class="input-group-addon pr-3 text-muted-foreground">%</span>
                   </div>
                   <div class="slider-container">
                     <div class="slider-track-bg"></div>
                     <div id="mortgage-rate-fill" class="slider-track-fill" style="width: 54.16%;"></div>
-                    <input id="mortgage-rate-slider" type="range" min="0" max="12" step="0.05" value="6.5" class="custom-range-slider" aria-label="Mortgage interest rate" />
+                    <input id="mortgage-rate-slider" type="range" min="0" max="12" step="0.05" value="6.5" class="custom-range-slider" aria-label="Mortgage rate" />
                   </div>
                 </div>
 
                 <!-- Loan Term -->
-                <div class="flex flex-col gap-2">
-                  <div class="flex items-baseline justify-between gap-4">
-                    <label for="mortgage-term-input" class="text-[0.8125rem] tracking-tight font-medium select-none">
-                      Loan term
-                    </label>
+                <div class="flex flex-col gap-1.5">
+                  <div class="flex items-center justify-between">
+                    <label class="text-xs font-medium text-foreground">Loan Term</label>
                     <span id="mortgage-term-display" class="font-mono text-xs text-muted-foreground">30 years (360 mos)</span>
                   </div>
-                  <!-- Quick Term Presets -->
                   <div class="grid grid-cols-4 gap-1.5">
                     <button type="button" class="term-preset-btn text-xs font-mono py-1 rounded border border-border bg-card hover:bg-muted text-muted-foreground" data-term="15">15 yr</button>
                     <button type="button" class="term-preset-btn text-xs font-mono py-1 rounded border border-border bg-card hover:bg-muted text-muted-foreground" data-term="20">20 yr</button>
@@ -570,33 +537,28 @@
                   </div>
                 </div>
 
-                <!-- Prepayment Strategies Section -->
-                <div class="shrink-0 bg-border h-px w-full my-1"></div>
+                <div class="shrink-0 bg-border h-px w-full my-0.5"></div>
 
+                <!-- Prepayment Strategies -->
                 <div class="flex flex-col gap-3">
-                  <div class="flex items-center justify-between">
-                    <span class="font-mono text-[0.6875rem] tracking-[0.14em] text-primary uppercase font-semibold">
-                      Prepayment Acceleration
-                    </span>
-                    <span class="text-[0.625rem] font-mono text-muted-foreground">Optional</span>
-                  </div>
+                  <span class="text-xs font-semibold text-primary uppercase tracking-wider">
+                    Prepayment Acceleration
+                  </span>
 
                   <!-- Extra Monthly Principal -->
                   <div class="flex flex-col gap-1.5">
-                    <div class="flex items-baseline justify-between gap-4">
-                      <label for="mortgage-extra-monthly-input" class="text-xs tracking-tight text-muted-foreground select-none">
-                        Extra monthly principal
-                      </label>
-                      <select id="mortgage-extra-monthly-range-select" class="range-select num text-[0.6875rem]">
-                        <option value="1000">$0 – $1,000/mo</option>
-                        <option value="3000" selected>$0 – $3,000/mo</option>
-                        <option value="10000">$0 – $10,000/mo</option>
+                    <div class="flex items-center justify-between">
+                      <label for="mortgage-extra-monthly-input" class="text-xs text-muted-foreground">Extra Monthly Principal</label>
+                      <select id="mortgage-extra-monthly-range-select" class="range-chip-select">
+                        <option value="1000">$0 – $1k</option>
+                        <option value="3000" selected>$0 – $3k</option>
+                        <option value="10000">$0 – $10k</option>
                       </select>
                     </div>
                     <div class="input-group">
-                      <div class="input-group-addon pl-2 pr-1 text-muted-foreground text-xs">$</div>
-                      <input id="mortgage-extra-monthly-input" type="text" inputmode="decimal" value="200" class="num font-mono text-sm" />
-                      <div class="input-group-addon pr-2 pl-1 text-muted-foreground text-xs">/mo</div>
+                      <span class="input-group-addon pl-3 text-muted-foreground">$</span>
+                      <input id="mortgage-extra-monthly-input" type="text" inputmode="decimal" value="200" class="num text-sm" />
+                      <span class="input-group-addon pr-3 text-muted-foreground text-xs">/mo</span>
                     </div>
                     <div class="slider-container">
                       <div class="slider-track-bg"></div>
@@ -605,22 +567,20 @@
                     </div>
                   </div>
 
-                  <!-- Annual Bonus / Lump Sum Prepayment -->
-                  <div class="flex flex-col gap-1.5 mt-1">
-                    <div class="flex items-baseline justify-between gap-4">
-                      <label for="mortgage-extra-annual-input" class="text-xs tracking-tight text-muted-foreground select-none">
-                        Annual lump sum prepayment
-                      </label>
-                      <select id="mortgage-extra-annual-range-select" class="range-select num text-[0.6875rem]">
-                        <option value="5000">$0 – $5,000/yr</option>
-                        <option value="20000" selected>$0 – $20,000/yr</option>
-                        <option value="50000">$0 – $50,000/yr</option>
+                  <!-- Annual Lump Sum Prepayment -->
+                  <div class="flex flex-col gap-1.5">
+                    <div class="flex items-center justify-between">
+                      <label for="mortgage-extra-annual-input" class="text-xs text-muted-foreground">Annual Lump Sum</label>
+                      <select id="mortgage-extra-annual-range-select" class="range-chip-select">
+                        <option value="5000">$0 – $5k</option>
+                        <option value="20000" selected>$0 – $20k</option>
+                        <option value="50000">$0 – $50k</option>
                       </select>
                     </div>
                     <div class="input-group">
-                      <div class="input-group-addon pl-2 pr-1 text-muted-foreground text-xs">$</div>
-                      <input id="mortgage-extra-annual-input" type="text" inputmode="decimal" value="0" class="num font-mono text-sm" />
-                      <div class="input-group-addon pr-2 pl-1 text-muted-foreground text-xs">/yr</div>
+                      <span class="input-group-addon pl-3 text-muted-foreground">$</span>
+                      <input id="mortgage-extra-annual-input" type="text" inputmode="decimal" value="0" class="num text-sm" />
+                      <span class="input-group-addon pr-3 text-muted-foreground text-xs">/yr</span>
                     </div>
                     <div class="slider-container">
                       <div class="slider-track-bg"></div>
@@ -630,45 +590,42 @@
                   </div>
 
                   <!-- Payment Schedule Frequency -->
-                  <div class="flex flex-col gap-1.5 mt-1">
-                    <label class="text-xs tracking-tight text-muted-foreground select-none">Payment frequency</label>
+                  <div class="flex flex-col gap-1.5">
+                    <label class="text-xs text-muted-foreground">Payment Frequency</label>
                     <div class="toggle-group" role="group" aria-label="Payment frequency">
-                      <button type="button" class="mortgage-freq-btn toggle-item" data-freq="12" aria-pressed="true">Monthly (12 / yr)</button>
-                      <button type="button" class="mortgage-freq-btn toggle-item" data-freq="26" aria-pressed="false">Bi-Weekly (26 / yr)</button>
+                      <button type="button" class="mortgage-freq-btn toggle-item active" data-freq="12" aria-pressed="true">Monthly (12/yr)</button>
+                      <button type="button" class="mortgage-freq-btn toggle-item" data-freq="26" aria-pressed="false">Bi-Weekly (26/yr)</button>
                     </div>
                   </div>
-
                 </div>
               </div>
 
-              <!-- ========================================== -->
-              <!-- SUBMODE 2: REFINANCE ANALYSIS INPUTS       -->
-              <!-- ========================================== -->
-              <div id="mortgage-refinance-inputs" class="flex flex-col gap-5 hidden">
+              <!-- Refinance Inputs -->
+              <div id="mortgage-refinance-inputs" class="flex flex-col gap-4 hidden">
                 <div class="flex flex-col gap-3">
-                  <span class="font-mono text-[0.6875rem] tracking-[0.14em] text-muted-foreground uppercase">Current Mortgage</span>
+                  <span class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Current Mortgage</span>
                   
-                  <div class="flex flex-col gap-1.5">
-                    <label for="refi-current-balance-input" class="text-xs font-medium text-foreground">Current principal balance</label>
+                  <div class="flex flex-col gap-1">
+                    <label for="refi-current-balance-input" class="text-xs font-medium text-foreground">Current Balance</label>
                     <div class="input-group">
-                      <div class="input-group-addon pl-2 pr-1 text-muted-foreground text-xs">$</div>
-                      <input id="refi-current-balance-input" type="text" inputmode="decimal" value="380000" class="num font-mono text-sm" />
+                      <span class="input-group-addon pl-3 text-muted-foreground">$</span>
+                      <input id="refi-current-balance-input" type="text" inputmode="decimal" value="380000" class="num text-sm" />
                     </div>
                   </div>
 
                   <div class="grid grid-cols-2 gap-2">
-                    <div class="flex flex-col gap-1.5">
-                      <label for="refi-current-rate-input" class="text-xs font-medium text-foreground">Current rate</label>
+                    <div class="flex flex-col gap-1">
+                      <label for="refi-current-rate-input" class="text-xs font-medium text-foreground">Current Rate</label>
                       <div class="input-group">
-                        <input id="refi-current-rate-input" type="text" inputmode="decimal" value="7.25" class="num font-mono text-sm" />
-                        <div class="input-group-addon pr-2 pl-1 text-muted-foreground text-xs">%</div>
+                        <input id="refi-current-rate-input" type="text" inputmode="decimal" value="7.25" class="num text-sm pl-2" />
+                        <span class="input-group-addon pr-2 text-muted-foreground">%</span>
                       </div>
                     </div>
-                    <div class="flex flex-col gap-1.5">
-                      <label for="refi-current-term-input" class="text-xs font-medium text-foreground">Years remaining</label>
+                    <div class="flex flex-col gap-1">
+                      <label for="refi-current-term-input" class="text-xs font-medium text-foreground">Yrs Left</label>
                       <div class="input-group">
-                        <input id="refi-current-term-input" type="text" inputmode="decimal" value="27" class="num font-mono text-sm" />
-                        <div class="input-group-addon pr-2 pl-1 text-muted-foreground text-xs">yrs</div>
+                        <input id="refi-current-term-input" type="text" inputmode="decimal" value="27" class="num text-sm pl-2" />
+                        <span class="input-group-addon pr-2 text-muted-foreground">yrs</span>
                       </div>
                     </div>
                   </div>
@@ -677,36 +634,36 @@
                 <div class="shrink-0 bg-border h-px w-full my-0.5"></div>
 
                 <div class="flex flex-col gap-3">
-                  <span class="font-mono text-[0.6875rem] tracking-[0.14em] text-primary uppercase font-semibold">New Refinance Loan</span>
+                  <span class="text-xs font-semibold text-primary uppercase tracking-wider">New Refinance Loan</span>
                   
                   <div class="grid grid-cols-2 gap-2">
-                    <div class="flex flex-col gap-1.5">
-                      <label for="refi-new-rate-input" class="text-xs font-medium text-foreground">New rate</label>
+                    <div class="flex flex-col gap-1">
+                      <label for="refi-new-rate-input" class="text-xs font-medium text-foreground">New Rate</label>
                       <div class="input-group">
-                        <input id="refi-new-rate-input" type="text" inputmode="decimal" value="5.75" class="num font-mono text-sm" />
-                        <div class="input-group-addon pr-2 pl-1 text-muted-foreground text-xs">%</div>
+                        <input id="refi-new-rate-input" type="text" inputmode="decimal" value="5.75" class="num text-sm pl-2" />
+                        <span class="input-group-addon pr-2 text-muted-foreground">%</span>
                       </div>
                     </div>
-                    <div class="flex flex-col gap-1.5">
-                      <label for="refi-new-term-input" class="text-xs font-medium text-foreground">New term</label>
+                    <div class="flex flex-col gap-1">
+                      <label for="refi-new-term-input" class="text-xs font-medium text-foreground">New Term</label>
                       <div class="input-group">
-                        <input id="refi-new-term-input" type="text" inputmode="decimal" value="30" class="num font-mono text-sm" />
-                        <div class="input-group-addon pr-2 pl-1 text-muted-foreground text-xs">yrs</div>
+                        <input id="refi-new-term-input" type="text" inputmode="decimal" value="30" class="num text-sm pl-2" />
+                        <span class="input-group-addon pr-2 text-muted-foreground">yrs</span>
                       </div>
                     </div>
                   </div>
 
-                  <div class="flex flex-col gap-1.5">
-                    <label for="refi-closing-costs-input" class="text-xs font-medium text-foreground">Closing costs &amp; fees</label>
+                  <div class="flex flex-col gap-1">
+                    <label for="refi-closing-costs-input" class="text-xs font-medium text-foreground">Closing Costs</label>
                     <div class="input-group">
-                      <div class="input-group-addon pl-2 pr-1 text-muted-foreground text-xs">$</div>
-                      <input id="refi-closing-costs-input" type="text" inputmode="decimal" value="4500" class="num font-mono text-sm" />
+                      <span class="input-group-addon pl-3 text-muted-foreground">$</span>
+                      <input id="refi-closing-costs-input" type="text" inputmode="decimal" value="4500" class="num text-sm" />
                     </div>
                   </div>
 
                   <label class="flex items-center gap-2 cursor-pointer mt-1 select-none">
                     <input id="refi-roll-costs-checkbox" type="checkbox" checked class="rounded border-border text-primary focus:ring-primary size-4" />
-                    <span class="text-xs text-muted-foreground leading-tight">Roll closing costs into new loan balance</span>
+                    <span class="text-xs text-muted-foreground">Roll costs into loan balance</span>
                   </label>
                 </div>
               </div>
@@ -714,85 +671,175 @@
             </section>
           </div>
 
-          <!-- Column 2: Center Visual Canvas -->
-          <div class="flex flex-col gap-8 min-w-0">
+          <!-- Column 2: Main Canvas (Executive Banner + Chart + Table) -->
+          <div class="flex-1 min-w-0 flex flex-col gap-6 w-full">
             
-            <!-- Interactive Chart Card -->
-            <div class="flex flex-col gap-4 bg-card rounded-sm border border-border p-5 sm:p-6 shadow-sm">
-              <div class="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4 select-none">
+            <!-- PAYDOWN EXECUTIVE BANNER -->
+            <div id="mortgage-summary-paydown" class="studio-card p-5 sm:p-6 flex flex-col gap-4">
+              <div class="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-4">
                 <div>
-                  <h2 id="mortgage-chart-title" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
-                    Amortization &amp; Paydown Trajectory
-                  </h2>
+                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Monthly Principal &amp; Interest Payment
+                  </span>
+                  <div class="flex items-baseline gap-3 mt-1 flex-wrap">
+                    <p id="mortgage-hero-payment" class="num font-mono text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
+                      $2,728<span class="text-sm font-normal text-muted-foreground font-sans">/mo</span>
+                    </p>
+                    <span id="mortgage-badge-time-saved" class="badge-pill-success">
+                      🎉 7.7 yrs early!
+                    </span>
+                  </div>
                 </div>
-                
-                <!-- Legend -->
-                <div class="flex flex-wrap items-center gap-x-5 gap-y-2 select-none">
-                  <div class="flex items-center gap-2">
-                    <span aria-hidden="true" class="size-2.5 rounded-[1px] bg-border border border-muted-foreground"></span>
-                    <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Standard Baseline</span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <span aria-hidden="true" class="size-2.5 rounded-[1px]" style="background-color: var(--chart-1);"></span>
-                    <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Accelerated Balance</span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <span aria-hidden="true" class="size-2.5 rounded-[1px]" style="background-color: var(--chart-2);"></span>
-                    <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Cumulative Interest</span>
-                  </div>
+                <p id="mortgage-hero-payoff" class="text-xs text-muted-foreground max-w-md leading-relaxed">
+                  Standard payment is <span class="font-mono text-foreground font-medium">$2,528</span> plus <span class="font-mono text-primary font-medium">+$200</span> extra principal. Loan is paid off in <span class="font-semibold text-foreground">22 yrs 4 mos</span>.
+                </p>
+              </div>
+
+              <!-- Composition Bar -->
+              <div class="flex flex-col gap-1.5">
+                <div id="mortgage-composition-bar" role="img" aria-label="Composition: Principal vs Interest" class="flex h-2 w-full gap-1 overflow-hidden rounded-full bg-muted">
+                  <div id="mortgage-comp-bar-principal" class="bg-[var(--chart-1)] rounded-full transition-all duration-500" style="flex-grow: 0.59;"></div>
+                  <div id="mortgage-comp-bar-interest" class="bg-[var(--chart-2)] rounded-full transition-all duration-500" style="flex-grow: 0.41;"></div>
+                </div>
+                <div class="flex items-center justify-between font-mono text-[11px] text-muted-foreground">
+                  <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-[var(--chart-1)] inline-block"></span>Loan Principal</span>
+                  <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-[var(--chart-2)] inline-block"></span>Total Interest</span>
                 </div>
               </div>
 
-              <!-- SVG Chart -->
-              <div id="mortgage-chart-container" class="chart-container w-full min-h-[340px] sm:min-h-[400px]">
-                <!-- Rendered via JS -->
+              <!-- 4-Stat Grid -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                  <span class="text-[11px] text-muted-foreground font-medium">Total Interest Saved</span>
+                  <span id="mortgage-stat-interest-saved" class="num font-mono text-base font-semibold text-primary">+$74,320</span>
+                </div>
+                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                  <span class="text-[11px] text-muted-foreground font-medium">Total Interest Paid</span>
+                  <span id="mortgage-stat-interest-paid" class="num font-mono text-base font-semibold text-foreground">$282,140</span>
+                </div>
+                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                  <span class="text-[11px] text-muted-foreground font-medium">Standard 30-Yr Interest</span>
+                  <span id="mortgage-stat-baseline-interest" class="num font-mono text-base font-semibold text-muted-foreground">$356,460</span>
+                </div>
+                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                  <span class="text-[11px] text-muted-foreground font-medium">Total Loan Cost</span>
+                  <span id="mortgage-stat-total-cost" class="num font-mono text-base font-semibold text-foreground">$682,140</span>
+                </div>
               </div>
             </div>
 
-            <!-- Year by Year Schedule Table -->
-            <section aria-labelledby="mortgage-schedule-heading" class="flex flex-col gap-4">
-              <div class="flex items-baseline justify-between gap-4">
-                <h2 id="mortgage-schedule-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
-                  Amortization Breakdown (Year by Year)
-                </h2>
-                <div class="flex items-center gap-3">
-                  <button id="mortgage-reset-overrides-btn" type="button" style="display: none;" class="text-[0.6875rem] font-mono text-primary hover:underline font-medium cursor-pointer">
-                    Reset custom years
-                  </button>
-                  <span id="mortgage-table-row-count" class="num font-mono text-[0.6875rem] text-muted-foreground">30 rows</span>
+            <!-- REFINANCE EXECUTIVE BANNER -->
+            <div id="mortgage-summary-refinance" class="studio-card p-5 sm:p-6 flex flex-col gap-4 hidden">
+              <div class="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-4">
+                <div>
+                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Monthly Payment Delta
+                  </span>
+                  <div class="flex items-baseline gap-3 mt-1 flex-wrap">
+                    <p id="refi-hero-monthly-savings" class="num font-mono text-3xl sm:text-4xl font-bold text-primary tracking-tight">
+                      Save $312<span class="text-sm font-normal text-muted-foreground font-sans">/mo</span>
+                    </p>
+                    <span id="refi-breakeven-badge" class="badge-pill-success">
+                      14 Months to Break Even
+                    </span>
+                  </div>
+                </div>
+                <p id="refi-hero-desc" class="text-xs text-muted-foreground max-w-md leading-relaxed">
+                  Monthly payment drops from <span class="font-mono text-foreground font-medium">$2,735</span> to <span class="font-mono text-primary font-medium">$2,423</span>.
+                </p>
+              </div>
+
+              <!-- 4-Stat Grid for Refinance -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                  <span class="text-[11px] text-muted-foreground font-medium">Net Lifetime Savings</span>
+                  <span id="refi-stat-net-savings" class="num font-mono text-base font-semibold text-primary">+$41,800</span>
+                </div>
+                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                  <span class="text-[11px] text-muted-foreground font-medium">Current Total Interest</span>
+                  <span id="refi-stat-current-interest" class="num font-mono text-base font-semibold text-muted-foreground">$506,120</span>
+                </div>
+                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                  <span class="text-[11px] text-muted-foreground font-medium">New Refinance Interest</span>
+                  <span id="refi-stat-new-interest" class="num font-mono text-base font-semibold text-foreground">$459,820</span>
+                </div>
+                <div class="p-3 rounded-lg bg-muted/50 border border-border/40 flex flex-col gap-0.5">
+                  <span class="text-[11px] text-muted-foreground font-medium">Closing Fees</span>
+                  <span id="refi-stat-closing-costs" class="num font-mono text-base font-semibold text-foreground">$4,500</span>
                 </div>
               </div>
 
-              <div class="overflow-x-auto rounded-sm border border-border bg-card shadow-sm">
-                <table class="w-full caption-bottom text-sm">
+              <div class="p-3 rounded-lg bg-muted/60 border border-border/60 flex items-center gap-2 text-xs text-muted-foreground">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary shrink-0"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span id="refi-verdict-narrative">Refinancing is financially favorable with an attractive rate reduction and rapid break-even.</span>
+              </div>
+            </div>
+
+            <!-- Grand SVG Amortization Chart -->
+            <section class="studio-card p-5 sm:p-6 flex flex-col gap-4">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-xs font-semibold text-foreground uppercase tracking-wider">
+                    Amortization &amp; Paydown Trajectory
+                  </h3>
+                </div>
+
+                <!-- Legend -->
+                <div class="flex flex-wrap items-center gap-4 text-xs select-none">
+                  <div class="flex items-center gap-1.5">
+                    <span class="size-2 rounded-full bg-muted-foreground/60 inline-block"></span>
+                    <span class="text-muted-foreground font-medium">Standard Baseline</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="size-2.5 rounded-full" style="background-color: var(--chart-1);"></span>
+                    <span class="text-foreground font-semibold">Accelerated Paydown</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SVG Chart Container -->
+              <div id="mortgage-chart-container" class="chart-container w-full min-h-[340px] sm:min-h-[380px]">
+                <!-- Rendered via JS -->
+              </div>
+            </section>
+
+            <!-- Year by Year Schedule Table for Mortgage -->
+            <section class="studio-card p-5 sm:p-6 flex flex-col gap-4">
+              <div class="flex items-center justify-between border-b border-border pb-3">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-xs font-semibold text-foreground uppercase tracking-wider">
+                    Amortization Schedule
+                  </h3>
+                  <span class="text-xs text-muted-foreground">· Click any row to inject custom prepayments</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <button id="mortgage-reset-overrides-btn" type="button" style="display: none;" class="text-xs font-mono text-primary hover:underline font-medium cursor-pointer">
+                    Reset custom years
+                  </button>
+                  <span id="mortgage-table-row-count" class="num font-mono text-xs text-muted-foreground">30 rows</span>
+                </div>
+              </div>
+
+              <div class="overflow-x-auto rounded-lg border border-border/70">
+                <table class="w-full text-xs">
                   <thead>
-                    <tr class="border-b border-border hover:bg-transparent">
-                      <th class="h-10 px-3 text-left align-middle font-medium whitespace-nowrap text-foreground font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                        Year
-                      </th>
-                      <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                        Principal Paid
-                      </th>
-                      <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                        Interest Paid
-                      </th>
-                      <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                        Extra Prepaid
-                      </th>
-                      <th class="h-10 px-3 align-middle font-medium whitespace-nowrap text-foreground text-right font-mono text-[0.625rem] tracking-[0.12em] uppercase">
-                        Remaining Balance
-                      </th>
+                    <tr class="border-b border-border bg-muted/40 text-muted-foreground">
+                      <th class="h-9 px-3 text-left font-medium">Year</th>
+                      <th class="h-9 px-3 text-right font-medium">Principal Paid</th>
+                      <th class="h-9 px-3 text-right font-medium">Interest Paid</th>
+                      <th class="h-9 px-3 text-right font-medium">Extra Prepaid</th>
+                      <th class="h-9 px-3 text-right font-medium">Remaining Balance</th>
                     </tr>
                   </thead>
-                  <tbody id="mortgage-schedule-tbody" class="[&_tr:last-child]:border-0">
+                  <tbody id="mortgage-schedule-tbody">
                     <!-- Rendered via JS -->
                   </tbody>
                 </table>
               </div>
 
-              <!-- Expand/Collapse Button -->
-              <button id="mortgage-table-toggle-btn" type="button" class="group inline-flex shrink-0 items-center justify-center border border-border bg-background hover:bg-muted hover:text-foreground h-7 gap-1.5 rounded-md px-2.5 self-start font-mono text-xs font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                <svg id="mortgage-table-toggle-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200">
+              <!-- Mortgage Table Toggle Button -->
+              <button id="mortgage-table-toggle-btn" type="button" class="inline-flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-foreground self-start p-1 rounded hover:bg-muted transition-colors">
+                <svg id="mortgage-table-toggle-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="m6 9 6 6 6-6"></path>
                 </svg>
                 <span id="mortgage-table-toggle-text">Show 20 more years</span>
@@ -801,137 +848,16 @@
 
           </div>
 
-          <!-- Column 3: Vertical Right Summary (02) -->
-          <div class="xl:sticky xl:top-8 xl:self-start">
-            <section aria-labelledby="mortgage-summary-heading" class="flex flex-col rounded-sm border border-border bg-card p-5 sm:p-6 shadow-sm divide-y divide-border">
-              <header class="flex items-baseline justify-between gap-4 pb-4">
-                <h2 id="mortgage-summary-heading" class="font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase">
-                  Decision &amp; Summary
-                </h2>
-                <span class="num font-mono text-[0.6875rem] text-muted-foreground">02</span>
-              </header>
-
-              <!-- PAYDOWN SUMMARY VIEW -->
-              <div id="mortgage-summary-paydown" class="flex flex-col">
-                <!-- Big Hero Section -->
-                <div class="flex flex-col gap-2 py-5">
-                  <div class="flex items-center justify-between">
-                    <span class="font-mono text-[0.6875rem] tracking-[0.14em] text-muted-foreground uppercase">
-                      Monthly Payment (P&amp;I)
-                    </span>
-                    <span id="mortgage-badge-time-saved" class="badge-success">
-                      🎉 7.7 yrs early!
-                    </span>
-                  </div>
-                  <p id="mortgage-hero-payment" class="num font-mono text-[clamp(2rem,3.5vw,2.75rem)] leading-none font-medium text-foreground tracking-tight">
-                    $2,728<span class="text-sm text-muted-foreground font-normal">/mo</span>
-                  </p>
-                  <p id="mortgage-hero-payoff" class="text-xs leading-relaxed text-muted-foreground text-pretty mt-1">
-                    Standard payment is <span class="font-medium text-foreground font-mono">$2,528</span> plus <span class="text-primary font-medium font-mono">+$200</span> extra principal. Loan is paid off in <span class="text-foreground font-semibold">22 yrs 4 mos</span>.
-                  </p>
-
-                  <!-- Composition Progress Bar -->
-                  <div class="mt-3 flex flex-col gap-1.5">
-                    <div id="mortgage-composition-bar" role="img" aria-label="Composition: Principal vs Interest" class="flex h-2 w-full gap-px overflow-hidden rounded-[1px]">
-                      <div id="mortgage-comp-bar-principal" class="bg-[var(--chart-1)] transition-[flex-grow] duration-500" style="flex-grow: 0.59;"></div>
-                      <div id="mortgage-comp-bar-interest" class="bg-[var(--chart-2)] transition-[flex-grow] duration-500" style="flex-grow: 0.41;"></div>
-                    </div>
-                    <div class="flex items-center justify-between font-mono text-[0.625rem] text-muted-foreground">
-                      <span>Principal ($400,000)</span>
-                      <span>Total Interest ($282,140)</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Key Metric Rows (Vertical Stack) -->
-                <div class="flex flex-col divide-y divide-border pt-2">
-                  <div class="flex items-baseline justify-between py-3">
-                    <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Total Interest Saved</span>
-                    <span id="mortgage-stat-interest-saved" class="num font-mono text-base font-semibold text-primary">+$74,320</span>
-                  </div>
-                  <div class="flex items-baseline justify-between py-3">
-                    <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Total Interest Paid</span>
-                    <span id="mortgage-stat-interest-paid" class="num font-mono text-base font-medium text-foreground">$282,140</span>
-                  </div>
-                  <div class="flex items-baseline justify-between py-3">
-                    <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Baseline 30-Yr Interest</span>
-                    <span id="mortgage-stat-baseline-interest" class="num font-mono text-base font-medium text-muted-foreground">$356,460</span>
-                  </div>
-                  <div class="flex items-baseline justify-between py-3">
-                    <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Total Loan Cost</span>
-                    <span id="mortgage-stat-total-cost" class="num font-mono text-base font-medium text-foreground">$682,140</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- REFINANCE SUMMARY VIEW -->
-              <div id="mortgage-summary-refinance" class="flex flex-col hidden">
-                <!-- Big Hero Section -->
-                <div class="flex flex-col gap-2 py-5">
-                  <span class="font-mono text-[0.6875rem] tracking-[0.14em] text-muted-foreground uppercase">
-                    Monthly Payment Delta
-                  </span>
-                  <p id="refi-hero-monthly-savings" class="num font-mono text-[clamp(2rem,3.5vw,2.75rem)] leading-none font-medium text-primary tracking-tight">
-                    Save $312<span class="text-sm text-muted-foreground font-normal">/mo</span>
-                  </p>
-                  <p id="refi-hero-desc" class="text-xs leading-relaxed text-muted-foreground text-pretty mt-1">
-                    Monthly payment drops from <span class="font-mono text-foreground font-medium">$2,735</span> to <span class="font-mono text-primary font-medium">$2,423</span>.
-                  </p>
-
-                  <!-- Break-even Badge & Callout -->
-                  <div class="verdict-box mt-3 flex flex-col gap-2">
-                    <div class="flex items-center justify-between">
-                      <span class="font-mono text-[0.6875rem] text-muted-foreground uppercase font-semibold">Break-Even Horizon</span>
-                      <span id="refi-breakeven-badge" class="badge-success">14 Months</span>
-                    </div>
-                    <p id="refi-breakeven-text" class="text-xs text-muted-foreground leading-relaxed">
-                      Recoups $4,500 in closing costs within 14 months of lower monthly payments.
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Key Metric Rows (Vertical Stack) -->
-                <div class="flex flex-col divide-y divide-border pt-2">
-                  <div class="flex items-baseline justify-between py-3">
-                    <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Lifetime Net Savings</span>
-                    <span id="refi-stat-net-savings" class="num font-mono text-base font-semibold text-primary">+$41,800</span>
-                  </div>
-                  <div class="flex items-baseline justify-between py-3">
-                    <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Remaining Interest (Current)</span>
-                    <span id="refi-stat-current-interest" class="num font-mono text-base font-medium text-muted-foreground">$506,120</span>
-                  </div>
-                  <div class="flex items-baseline justify-between py-3">
-                    <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Total Interest (New Refi)</span>
-                    <span id="refi-stat-new-interest" class="num font-mono text-base font-medium text-foreground">$459,820</span>
-                  </div>
-                  <div class="flex items-baseline justify-between py-3">
-                    <span class="font-mono text-[0.6875rem] tracking-[0.08em] text-muted-foreground uppercase">Estimated Closing Costs</span>
-                    <span id="refi-stat-closing-costs" class="num font-mono text-base font-medium text-foreground">$4,500</span>
-                  </div>
-                </div>
-
-                <!-- Refinance Verdict Box -->
-                <div class="mt-4 p-3 rounded bg-muted border border-border flex flex-col gap-1">
-                  <span class="font-mono text-[0.6875rem] font-semibold text-foreground uppercase flex items-center gap-1.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Borrower Recommendation
-                  </span>
-                  <p id="refi-verdict-narrative" class="text-xs text-muted-foreground leading-relaxed">
-                    Refinancing is financially favorable with an attractive rate reduction and rapid break-even.
-                  </p>
-                </div>
-              </div>
-
-            </section>
-          </div>
-
         </div>
       </div>
 
       <!-- Footer -->
-      <footer class="mt-16 border-t border-border pt-6">
-        <p class="max-w-3xl font-mono text-[0.6875rem] leading-relaxed text-muted-foreground">
-          Meritus models compound growth and amortization schedules for educational and financial scenario planning. Real estate tax rates, insurance, PMI, and amortization terms vary by lender; consult a licensed financial or mortgage advisor for binding quotes.
+      <footer class="mt-12 border-t border-border pt-6 flex flex-wrap items-center justify-between gap-4 text-xs text-muted-foreground">
+        <p class="max-w-2xl leading-relaxed">
+          Meritus models compound growth and amortization schedules for educational and financial scenario planning. Real estate tax rates, insurance, PMI, and loan terms vary by lender.
+        </p>
+        <p class="font-mono text-[11px]">
+          Designed by Rishi Ramchandani
         </p>
       </footer>
 
@@ -940,7 +866,7 @@
 
   <!-- Discrete Floating Creator Info Button in Corner -->
   <div class="fixed bottom-4 right-4 z-40 sm:bottom-5 sm:right-5">
-    <button id="creator-info-btn" type="button" aria-label="About Creator" title="About Creator" class="inline-flex items-center justify-center size-8 rounded-full border border-border/80 bg-card/75 backdrop-blur-md text-muted-foreground hover:text-foreground hover:bg-card hover:border-border opacity-60 hover:opacity-100 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-ring shadow-xs hover:shadow-md hover:scale-110 active:scale-95">
+    <button id="creator-info-btn" type="button" aria-label="About Creator" title="About Creator" class="inline-flex items-center justify-center size-8 rounded-full border border-border/80 bg-card/85 backdrop-blur-md text-muted-foreground hover:text-foreground hover:bg-card hover:border-border opacity-70 hover:opacity-100 transition-all outline-none focus-visible:ring-2 focus-visible:ring-ring shadow-sm hover:shadow-md hover:scale-110 active:scale-95">
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"></circle>
         <path d="M12 16v-4"></path>
@@ -951,10 +877,10 @@
 
   <!-- Year Customization Modal for Compound Growth -->
   <div id="year-modal-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-200 hidden opacity-0">
-    <div id="year-modal-card" class="bg-card border border-border rounded-lg shadow-2xl max-w-md w-full p-6 flex flex-col gap-5 transform transition-all duration-200 scale-95">
+    <div id="year-modal-card" class="bg-card border border-border rounded-xl shadow-2xl max-w-md w-full p-6 flex flex-col gap-5 transform transition-all duration-200 scale-95">
       <div class="flex items-center justify-between border-b border-border pb-3">
         <div>
-          <h3 id="modal-year-title" class="font-mono text-sm font-semibold text-foreground uppercase tracking-wider">Customize Year 1</h3>
+          <h3 id="modal-year-title" class="text-sm font-semibold text-foreground uppercase tracking-wider">Customize Year 1</h3>
           <p class="text-xs text-muted-foreground mt-0.5">Adjust assumptions for this specific year. Changes cascade prospectively.</p>
         </div>
         <button id="modal-close-btn" type="button" class="text-muted-foreground hover:text-foreground rounded p-1 transition-colors">
@@ -967,11 +893,11 @@
         <div class="flex flex-col gap-1.5">
           <div class="flex items-center justify-between">
             <label for="modal-contrib-input" class="text-xs font-medium text-foreground">Annual Contribution in this year</label>
-            <span id="modal-default-contrib-hint" class="font-mono text-[0.6875rem] text-muted-foreground">Default: $6,000</span>
+            <span id="modal-default-contrib-hint" class="font-mono text-xs text-muted-foreground">Default: $6,000</span>
           </div>
           <div class="input-group">
-            <div class="input-group-addon pl-2 pr-1 text-muted-foreground">$</div>
-            <input id="modal-contrib-input" type="text" inputmode="decimal" class="num font-mono text-sm" />
+            <span class="input-group-addon pl-3 text-muted-foreground">$</span>
+            <input id="modal-contrib-input" type="text" inputmode="decimal" class="num text-sm" />
           </div>
         </div>
 
@@ -979,11 +905,11 @@
         <div class="flex flex-col gap-1.5">
           <div class="flex items-center justify-between">
             <label for="modal-rate-input" class="text-xs font-medium text-foreground">Growth Rate in this year</label>
-            <span id="modal-default-rate-hint" class="font-mono text-[0.6875rem] text-muted-foreground">Default: 7.0%</span>
+            <span id="modal-default-rate-hint" class="font-mono text-xs text-muted-foreground">Default: 7.0%</span>
           </div>
           <div class="input-group">
-            <input id="modal-rate-input" type="text" inputmode="decimal" class="num font-mono text-sm" />
-            <div class="input-group-addon pr-2 pl-1 text-muted-foreground">%</div>
+            <input id="modal-rate-input" type="text" inputmode="decimal" class="num text-sm pl-3" />
+            <span class="input-group-addon pr-3 text-muted-foreground">%</span>
           </div>
         </div>
       </div>
@@ -1006,10 +932,10 @@
 
   <!-- Year Customization Modal for Mortgage -->
   <div id="mortgage-year-modal-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-200 hidden opacity-0">
-    <div id="mortgage-year-modal-card" class="bg-card border border-border rounded-lg shadow-2xl max-w-md w-full p-6 flex flex-col gap-5 transform transition-all duration-200 scale-95">
+    <div id="mortgage-year-modal-card" class="bg-card border border-border rounded-xl shadow-2xl max-w-md w-full p-6 flex flex-col gap-5 transform transition-all duration-200 scale-95">
       <div class="flex items-center justify-between border-b border-border pb-3">
         <div>
-          <h3 id="mortgage-modal-year-title" class="font-mono text-sm font-semibold text-foreground uppercase tracking-wider">Customize Mortgage Year 1</h3>
+          <h3 id="mortgage-modal-year-title" class="text-sm font-semibold text-foreground uppercase tracking-wider">Customize Mortgage Year 1</h3>
           <p class="text-xs text-muted-foreground mt-0.5">Inject lump-sum prepayments or adjust rate for this specific year.</p>
         </div>
         <button id="mortgage-modal-close-btn" type="button" class="text-muted-foreground hover:text-foreground rounded p-1 transition-colors">
@@ -1021,12 +947,12 @@
         <!-- Extra Lump Sum Payment in this year -->
         <div class="flex flex-col gap-1.5">
           <div class="flex items-center justify-between">
-            <label for="mortgage-modal-extra-input" class="text-xs font-medium text-foreground">Extra Lump-Sum Prepayment in this year</label>
-            <span id="mortgage-modal-default-extra-hint" class="font-mono text-[0.6875rem] text-muted-foreground">Default: $0</span>
+            <label for="mortgage-modal-extra-input" class="text-xs font-medium text-foreground">Extra Lump-Sum Prepayment</label>
+            <span id="mortgage-modal-default-extra-hint" class="font-mono text-xs text-muted-foreground">Default: $0</span>
           </div>
           <div class="input-group">
-            <div class="input-group-addon pl-2 pr-1 text-muted-foreground">$</div>
-            <input id="mortgage-modal-extra-input" type="text" inputmode="decimal" class="num font-mono text-sm" />
+            <span class="input-group-addon pl-3 text-muted-foreground">$</span>
+            <input id="mortgage-modal-extra-input" type="text" inputmode="decimal" class="num text-sm" />
           </div>
         </div>
 
@@ -1034,11 +960,11 @@
         <div class="flex flex-col gap-1.5">
           <div class="flex items-center justify-between">
             <label for="mortgage-modal-rate-input" class="text-xs font-medium text-foreground">Interest Rate in this year</label>
-            <span id="mortgage-modal-default-rate-hint" class="font-mono text-[0.6875rem] text-muted-foreground">Default: 6.5%</span>
+            <span id="mortgage-modal-default-rate-hint" class="font-mono text-xs text-muted-foreground">Default: 6.5%</span>
           </div>
           <div class="input-group">
-            <input id="mortgage-modal-rate-input" type="text" inputmode="decimal" class="num font-mono text-sm" />
-            <div class="input-group-addon pr-2 pl-1 text-muted-foreground">%</div>
+            <input id="mortgage-modal-rate-input" type="text" inputmode="decimal" class="num text-sm pl-3" />
+            <span class="input-group-addon pr-3 text-muted-foreground">%</span>
           </div>
         </div>
       </div>
@@ -1061,7 +987,7 @@
 
   <!-- Creator Info Modal -->
   <div id="creator-modal-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-200 hidden opacity-0">
-    <div id="creator-modal-card" class="bg-card border border-border rounded-lg shadow-2xl max-w-sm w-full p-6 flex flex-col items-center text-center gap-4 transform transition-all duration-200 scale-95 relative">
+    <div id="creator-modal-card" class="bg-card border border-border rounded-xl shadow-2xl max-w-sm w-full p-6 flex flex-col items-center text-center gap-4 transform transition-all duration-200 scale-95 relative">
       
       <!-- Close Button -->
       <button id="creator-modal-close-btn" type="button" class="absolute top-3 right-3 text-muted-foreground hover:text-foreground rounded p-1 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Close modal">
@@ -1072,7 +998,6 @@
       <div class="relative mt-2">
         <button id="creator-avatar-btn" type="button" class="group relative size-20 rounded-full overflow-hidden border-2 border-primary/40 p-0.5 shadow-md bg-muted cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-ring" title="Click to view full photo" aria-label="View full photo of Rishi Ramchandani">
           <img src="./assets/images/rishi.png" alt="Rishi Ramchandani" class="size-full object-cover rounded-full transition-opacity duration-200 group-hover:opacity-90" />
-          <!-- Hover Zoom Overlay -->
           <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="8"></circle>
@@ -1087,8 +1012,8 @@
 
       <!-- Creator Bio -->
       <div class="flex flex-col gap-1 items-center">
-        <h3 class="font-medium text-base text-foreground tracking-tight">Rishi Ramchandani</h3>
-        <p class="font-mono text-xs text-primary font-medium">Creator &amp; Architect</p>
+        <h3 class="font-semibold text-base text-foreground tracking-tight">Rishi Ramchandani</h3>
+        <p class="text-xs text-primary font-medium">Creator &amp; Architect</p>
         <p class="text-xs text-muted-foreground mt-1 px-2 leading-relaxed">
           Designing intuitive, high-fidelity visual tools for compound wealth generation, mortgage paydowns, and capital growth modeling.
         </p>
@@ -1096,21 +1021,21 @@
 
       <!-- Social Links -->
       <div class="flex flex-wrap items-center justify-center gap-2 w-full pt-3 border-t border-border mt-1">
-        <a href="https://x.com/1RishiR" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-background hover:bg-muted text-xs font-mono text-foreground transition-all hover:scale-105 active:scale-95 shadow-xs" title="Follow on X">
+        <a href="https://x.com/1RishiR" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background hover:bg-muted text-xs font-mono text-foreground transition-all hover:scale-105 active:scale-95 shadow-xs" title="Follow on X">
           <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
           </svg>
           <span>X (@1RishiR)</span>
         </a>
 
-        <a href="https://www.linkedin.com/in/rishi-ramchandani-73a74916b/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-background hover:bg-muted text-xs font-mono text-foreground transition-all hover:scale-105 active:scale-95 shadow-xs" title="Connect on LinkedIn">
+        <a href="https://www.linkedin.com/in/rishi-ramchandani-73a74916b/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background hover:bg-muted text-xs font-mono text-foreground transition-all hover:scale-105 active:scale-95 shadow-xs" title="Connect on LinkedIn">
           <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
             <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.45a1.6 1.6 0 0 0-1.6 1.6a1.6 1.6 0 0 0 1.6 1.6a1.6 1.6 0 0 0 1.6-1.6a1.6 1.6 0 0 0-1.6-1.6z"/>
           </svg>
           <span>LinkedIn</span>
         </a>
 
-        <a href="https://github.com/RishiR21" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-background hover:bg-muted text-xs font-mono text-foreground transition-all hover:scale-105 active:scale-95 shadow-xs" title="View GitHub Profile">
+        <a href="https://github.com/RishiR21" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background hover:bg-muted text-xs font-mono text-foreground transition-all hover:scale-105 active:scale-95 shadow-xs" title="View GitHub Profile">
           <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
           </svg>
@@ -1124,34 +1049,31 @@
   <!-- Full Photo Lightbox Modal -->
   <div id="photo-lightbox-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[60] flex items-center justify-center p-4 transition-opacity duration-200 hidden opacity-0">
     <div id="photo-lightbox-card" class="relative max-w-md w-full bg-card border border-border rounded-xl shadow-2xl overflow-hidden flex flex-col transform transition-all duration-200 scale-95">
-      <!-- Close Button -->
       <button id="photo-lightbox-close-btn" type="button" class="absolute top-3 right-3 z-10 size-8 rounded-full bg-black/50 hover:bg-black/75 text-white flex items-center justify-center transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Close photo preview">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
       
-      <!-- Full High-Res Image -->
       <div class="w-full bg-black/20 flex items-center justify-center max-h-[68vh] overflow-hidden">
         <img src="./assets/images/rishi.png" alt="Rishi Ramchandani" class="w-full h-auto max-h-[68vh] object-contain" />
       </div>
 
-      <!-- Lightbox Caption Footer -->
       <div class="p-4 bg-card border-t border-border flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h4 class="font-medium text-sm text-foreground">Rishi Ramchandani</h4>
-          <p class="text-xs text-muted-foreground font-mono">Creator &amp; Architect · Meritus</p>
+          <h4 class="font-semibold text-sm text-foreground">Rishi Ramchandani</h4>
+          <p class="text-xs text-muted-foreground">Creator &amp; Architect · Meritus</p>
         </div>
         <div class="flex items-center gap-2">
-          <a href="https://x.com/1RishiR" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-md border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="X Profile">
+          <a href="https://x.com/1RishiR" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="X Profile">
             <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
             </svg>
           </a>
-          <a href="https://www.linkedin.com/in/rishi-ramchandani-73a74916b/" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-md border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="LinkedIn Profile">
+          <a href="https://www.linkedin.com/in/rishi-ramchandani-73a74916b/" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="LinkedIn Profile">
             <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
               <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.45a1.6 1.6 0 0 0-1.6 1.6a1.6 1.6 0 0 0 1.6 1.6a1.6 1.6 0 0 0 1.6-1.6a1.6 1.6 0 0 0-1.6-1.6z"/>
             </svg>
           </a>
-          <a href="https://github.com/RishiR21" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-md border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="GitHub Profile">
+          <a href="https://github.com/RishiR21" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="GitHub Profile">
             <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
               <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
             </svg>

@@ -39,7 +39,7 @@ const mortgageState = {
   extraAnnual: 0,
   frequency: 12, // 12 monthly, 26 bi-weekly
   isTableExpanded: false,
-  yearOverrides: {}, // { [year]: { extraPrepayment?: number, rate?: number } }
+  yearOverrides: {},
   activeModalYear: null,
   ranges: {
     price: { min: 0, max: 1000000, step: 5000, precision: 0, prefix: '$', suffix: '' },
@@ -137,7 +137,6 @@ function calculateProjection({ principal, monthly, rate, years, frequency, yearO
       }
     }
 
-    const startOfYearBalance = balance;
     let interestThisYear = 0;
     let depositsThisYear = 0;
 
@@ -199,7 +198,6 @@ function calculateMortgagePaydown(st) {
   const standardTermMonths = Math.max(1, st.term * 12);
   const monthlyRate = (annualRate / 100) / 12;
   
-  // Standard monthly P&I payment formula: M = P * [r(1+r)^n] / [(1+r)^n - 1]
   let standardMonthlyPayment = 0;
   if (monthlyRate > 0) {
     standardMonthlyPayment = loanPrincipal * (monthlyRate * Math.pow(1 + monthlyRate, standardTermMonths)) / (Math.pow(1 + monthlyRate, standardTermMonths) - 1);
@@ -207,7 +205,7 @@ function calculateMortgagePaydown(st) {
     standardMonthlyPayment = loanPrincipal / standardTermMonths;
   }
 
-  // Standard Baseline Simulation (Without extra prepayments)
+  // Baseline standard simulation
   let baseBalance = loanPrincipal;
   let standardTotalInterest = 0;
   const baselineScheduleMonths = [];
@@ -221,7 +219,7 @@ function calculateMortgagePaydown(st) {
     if (baseBalance <= 0) break;
   }
 
-  // Accelerated Simulation (With extra monthly, annual prepayments & year overrides)
+  // Accelerated simulation
   let accBalance = loanPrincipal;
   let accTotalInterest = 0;
   let accTotalPrincipalPaid = 0;
@@ -241,7 +239,6 @@ function calculateMortgagePaydown(st) {
     const currentYear = Math.ceil(m / 12);
     const isFirstMonthOfYear = (m % 12 === 1);
 
-    // Apply Year Overrides if present
     if (isFirstMonthOfYear && st.yearOverrides[currentYear]) {
       if (st.yearOverrides[currentYear].rate !== undefined) {
         currentAnnualRate = st.yearOverrides[currentYear].rate;
@@ -253,17 +250,14 @@ function calculateMortgagePaydown(st) {
     let scheduledPrincipal = Math.min(accBalance, standardMonthlyPayment - monthlyInterest);
     if (scheduledPrincipal < 0) scheduledPrincipal = 0;
 
-    // Prepayment additions
     let extraPayment = st.extraMonthly;
     if (m % 12 === 0) {
       extraPayment += st.extraAnnual;
     }
-    // Custom year extra prepayment injected at start of year
     if (isFirstMonthOfYear && st.yearOverrides[currentYear]?.extraPrepayment) {
       extraPayment += st.yearOverrides[currentYear].extraPrepayment;
     }
 
-    // If bi-weekly frequency: 26 half-payments per year = 1 extra full payment per year
     if (st.frequency === 26) {
       extraPayment += (standardMonthlyPayment / 12);
     }
@@ -284,7 +278,6 @@ function calculateMortgagePaydown(st) {
       crossoverYear = currentYear;
     }
 
-    // End of year or payoff reached
     if (m % 12 === 0 || accBalance <= 0 || m === maxSimMonths) {
       const isCustomYear = Boolean(st.yearOverrides[currentYear]);
       yearRecords.push({
@@ -334,7 +327,6 @@ function calculateRefinance(st) {
   const currentMonths = st.refiCurrentTerm * 12;
   const currentMonthlyRate = (currentRate / 100) / 12;
 
-  // Current Monthly Payment & Total Remaining Cost
   let currentMonthlyPayment = 0;
   if (currentMonthlyRate > 0 && currentMonths > 0) {
     currentMonthlyPayment = currentBalance * (currentMonthlyRate * Math.pow(1 + currentMonthlyRate, currentMonths)) / (Math.pow(1 + currentMonthlyRate, currentMonths) - 1);
@@ -344,7 +336,6 @@ function calculateRefinance(st) {
   const currentTotalRemainingPayments = currentMonthlyPayment * currentMonths;
   const currentTotalRemainingInterest = currentTotalRemainingPayments - currentBalance;
 
-  // New Refinanced Loan
   const newPrincipal = currentBalance + (st.refiRollCosts ? st.refiClosingCosts : 0);
   const newRate = st.refiNewRate;
   const newMonths = st.refiNewTerm * 12;
@@ -394,14 +385,14 @@ function renderCompoundChart(schedule, crossoverYear) {
   if (!container || !schedule || schedule.length === 0) return;
 
   const width = container.clientWidth || 800;
-  const height = container.clientHeight || 400;
-  const margin = { top: 24, right: 20, bottom: 32, left: 64 };
+  const height = container.clientHeight || 380;
+  const margin = { top: 20, right: 16, bottom: 28, left: 60 };
 
   const plotWidth = width - margin.left - margin.right;
   const plotHeight = height - margin.top - margin.bottom;
 
   const maxYear = schedule[schedule.length - 1].year;
-  const maxBalance = Math.max(...schedule.map(d => d.balance)) * 1.08;
+  const maxBalance = Math.max(...schedule.map(d => d.balance)) * 1.05;
 
   const getX = (yr) => margin.left + (maxYear > 0 ? (yr / maxYear) * plotWidth : 0);
   const getY = (val) => margin.top + plotHeight - (maxBalance > 0 ? (val / maxBalance) * plotHeight : 0);
@@ -436,13 +427,13 @@ function renderCompoundChart(schedule, crossoverYear) {
     lineBalance += ` L ${getX(schedule[i].year)} ${getY(schedule[i].balance)}`;
   }
 
-  // Horizontal Grid Lines & Y Ticks
+  // Y Axis Ticks
   const yTicks = [0, maxBalance * 0.25, maxBalance * 0.5, maxBalance * 0.75, maxBalance];
   let gridSvg = yTicks.map(val => {
     const y = getY(val);
     return `
-      <line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="var(--border)" stroke-dasharray="2 4" opacity="0.6" />
-      <text x="${margin.left - 8}" y="${y + 4}" text-anchor="end" fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="11" class="num select-none">${formatCompactCurrency(val)}</text>
+      <line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="var(--border)" stroke-dasharray="3 3" opacity="0.6" />
+      <text x="${margin.left - 8}" y="${y + 3.5}" text-anchor="end" fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="10.5" class="num select-none">${formatCompactCurrency(val)}</text>
     `;
   }).join('');
 
@@ -452,18 +443,18 @@ function renderCompoundChart(schedule, crossoverYear) {
   for (let yr = 0; yr <= maxYear; yr += stepYr) {
     const x = getX(yr);
     const label = yr === 0 ? 'Now' : `Yr ${yr}`;
-    xTicksSvg += `<text x="${x}" y="${height - 8}" text-anchor="middle" fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="11" class="num select-none">${label}</text>`;
+    xTicksSvg += `<text x="${x}" y="${height - 6}" text-anchor="middle" fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="10.5" class="num select-none">${label}</text>`;
   }
 
-  // Crossover Point Annotation
+  // Crossover Pin
   let crossoverSvg = '';
   if (crossoverYear && crossoverYear <= maxYear) {
     const crossX = getX(crossoverYear);
     crossoverSvg = `
       <g class="crossover-marker">
-        <line x1="${crossX}" y1="${margin.top}" x2="${crossX}" y2="${margin.top + plotHeight}" stroke="var(--chart-1)" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.85" />
-        <rect x="${crossX - 52}" y="${margin.top + 4}" width="104" height="20" rx="3" fill="var(--card)" stroke="var(--chart-1)" stroke-width="1" />
-        <text x="${crossX}" y="${margin.top + 17}" text-anchor="middle" fill="var(--chart-1)" font-family="var(--font-mono)" font-size="10" font-weight="600" class="select-none">Growth Crossover</text>
+        <line x1="${crossX}" y1="${margin.top}" x2="${crossX}" y2="${margin.top + plotHeight}" stroke="var(--chart-1)" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.8" />
+        <rect x="${crossX - 48}" y="${margin.top + 2}" width="96" height="18" rx="4" fill="var(--card)" stroke="var(--chart-1)" stroke-width="1" />
+        <text x="${crossX}" y="${margin.top + 14}" text-anchor="middle" fill="var(--chart-1)" font-family="var(--font-mono)" font-size="9.5" font-weight="600" class="select-none">Growth Crossover</text>
       </g>
     `;
   }
@@ -472,16 +463,16 @@ function renderCompoundChart(schedule, crossoverYear) {
     <svg viewBox="0 0 ${width} ${height}" class="chart-svg select-none">
       <defs>
         <linearGradient id="interest-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="var(--chart-1)" stop-opacity="0.8" />
-          <stop offset="100%" stop-color="var(--chart-1)" stop-opacity="0.35" />
+          <stop offset="0%" stop-color="var(--chart-1)" stop-opacity="0.75" />
+          <stop offset="100%" stop-color="var(--chart-1)" stop-opacity="0.25" />
         </linearGradient>
         <linearGradient id="contrib-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="var(--chart-2)" stop-opacity="0.6" />
-          <stop offset="100%" stop-color="var(--chart-2)" stop-opacity="0.3" />
+          <stop offset="0%" stop-color="var(--chart-2)" stop-opacity="0.55" />
+          <stop offset="100%" stop-color="var(--chart-2)" stop-opacity="0.2" />
         </linearGradient>
         <linearGradient id="principal-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="var(--chart-3)" stop-opacity="0.4" />
-          <stop offset="100%" stop-color="var(--chart-3)" stop-opacity="0.15" />
+          <stop offset="0%" stop-color="var(--chart-3)" stop-opacity="0.35" />
+          <stop offset="100%" stop-color="var(--chart-3)" stop-opacity="0.1" />
         </linearGradient>
       </defs>
 
@@ -493,7 +484,6 @@ function renderCompoundChart(schedule, crossoverYear) {
       <path d="${lineBalance}" fill="none" stroke="var(--chart-1)" stroke-width="2.5" stroke-linecap="round" />
       ${crossoverSvg}
 
-      <!-- Interactive Crosshair Overlay -->
       <g id="chart-crosshair" style="display: none;">
         <line id="crosshair-line-x" x1="0" y1="${margin.top}" x2="0" y2="${margin.top + plotHeight}" stroke="var(--foreground)" stroke-width="1" stroke-dasharray="2 2" opacity="0.6" />
         <circle id="crosshair-dot-balance" r="5" fill="var(--chart-1)" stroke="var(--card)" stroke-width="2" />
@@ -502,7 +492,7 @@ function renderCompoundChart(schedule, crossoverYear) {
     <div id="chart-tooltip" class="chart-tooltip-wrapper"></div>
   `;
 
-  // Crosshair & Tooltip Mouse Interactions
+  // Crosshair interactions
   const svg = container.querySelector('svg');
   const crosshair = document.getElementById('chart-crosshair');
   const crosshairLineX = document.getElementById('crosshair-line-x');
@@ -560,8 +550,8 @@ function renderMortgageChart(paydownResult, mortgageSt) {
   if (!container || !paydownResult) return;
 
   const width = container.clientWidth || 800;
-  const height = container.clientHeight || 400;
-  const margin = { top: 24, right: 20, bottom: 32, left: 68 };
+  const height = container.clientHeight || 380;
+  const margin = { top: 20, right: 16, bottom: 28, left: 64 };
 
   const plotWidth = width - margin.left - margin.right;
   const plotHeight = height - margin.top - margin.bottom;
@@ -572,7 +562,7 @@ function renderMortgageChart(paydownResult, mortgageSt) {
   const getX = (yr) => margin.left + (maxYears > 0 ? (yr / maxYears) * plotWidth : 0);
   const getY = (val) => margin.top + plotHeight - (maxBalance > 0 ? (val / maxBalance) * plotHeight : 0);
 
-  // Standard Baseline Balance Curve
+  // Baseline Curve
   let pathBaseline = `M ${getX(0)} ${getY(paydownResult.loanPrincipal)}`;
   paydownResult.baselineScheduleMonths.forEach(d => {
     if (d.month % 12 === 0 || d.month === paydownResult.standardTermMonths) {
@@ -580,7 +570,7 @@ function renderMortgageChart(paydownResult, mortgageSt) {
     }
   });
 
-  // Accelerated Balance Curve & Fill
+  // Accelerated Curve
   const schedule = paydownResult.schedule;
   let pathAcceleratedArea = `M ${getX(0)} ${getY(0)}`;
   let pathAcceleratedLine = `M ${getX(0)} ${getY(paydownResult.loanPrincipal)}`;
@@ -597,8 +587,8 @@ function renderMortgageChart(paydownResult, mortgageSt) {
   let gridSvg = yTicks.map(val => {
     const y = getY(val);
     return `
-      <line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="var(--border)" stroke-dasharray="2 4" opacity="0.6" />
-      <text x="${margin.left - 8}" y="${y + 4}" text-anchor="end" fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="11" class="num select-none">${formatCompactCurrency(val)}</text>
+      <line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="var(--border)" stroke-dasharray="3 3" opacity="0.6" />
+      <text x="${margin.left - 8}" y="${y + 3.5}" text-anchor="end" fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="10.5" class="num select-none">${formatCompactCurrency(val)}</text>
     `;
   }).join('');
 
@@ -607,11 +597,11 @@ function renderMortgageChart(paydownResult, mortgageSt) {
   let xTicksSvg = '';
   for (let yr = 0; yr <= maxYears; yr += stepYr) {
     const x = getX(yr);
-    const label = yr === 0 ? 'Origination' : `Yr ${yr}`;
-    xTicksSvg += `<text x="${x}" y="${height - 8}" text-anchor="middle" fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="11" class="num select-none">${label}</text>`;
+    const label = yr === 0 ? 'Start' : `Yr ${yr}`;
+    xTicksSvg += `<text x="${x}" y="${height - 6}" text-anchor="middle" fill="var(--muted-foreground)" font-family="var(--font-mono)" font-size="10.5" class="num select-none">${label}</text>`;
   }
 
-  // Payoff Milestone Pin
+  // Payoff Pin
   let payoffMarkerSvg = '';
   if (paydownResult.payoffMonth < paydownResult.standardTermMonths) {
     const px = getX(payoffYearDecimal);
@@ -619,8 +609,8 @@ function renderMortgageChart(paydownResult, mortgageSt) {
       <g class="payoff-marker">
         <line x1="${px}" y1="${margin.top}" x2="${px}" y2="${margin.top + plotHeight}" stroke="var(--chart-1)" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.9" />
         <circle cx="${px}" cy="${getY(0)}" r="4.5" fill="var(--chart-1)" stroke="var(--card)" stroke-width="2" />
-        <rect x="${px - 46}" y="${margin.top + 4}" width="92" height="20" rx="3" fill="var(--card)" stroke="var(--chart-1)" stroke-width="1" />
-        <text x="${px}" y="${margin.top + 17}" text-anchor="middle" fill="var(--chart-1)" font-family="var(--font-mono)" font-size="10" font-weight="600" class="select-none">Paid in ${formatMonthsToYears(paydownResult.payoffMonth)}</text>
+        <rect x="${px - 44}" y="${margin.top + 2}" width="88" height="18" rx="4" fill="var(--card)" stroke="var(--chart-1)" stroke-width="1" />
+        <text x="${px}" y="${margin.top + 14}" text-anchor="middle" fill="var(--chart-1)" font-family="var(--font-mono)" font-size="9.5" font-weight="600" class="select-none">Paid in ${formatMonthsToYears(paydownResult.payoffMonth)}</text>
       </g>
     `;
   }
@@ -629,24 +619,18 @@ function renderMortgageChart(paydownResult, mortgageSt) {
     <svg viewBox="0 0 ${width} ${height}" class="chart-svg select-none">
       <defs>
         <linearGradient id="mortgage-acc-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="var(--chart-1)" stop-opacity="0.35" />
+          <stop offset="0%" stop-color="var(--chart-1)" stop-opacity="0.3" />
           <stop offset="100%" stop-color="var(--chart-1)" stop-opacity="0.05" />
         </linearGradient>
       </defs>
 
       ${gridSvg}
       ${xTicksSvg}
-      
-      <!-- Baseline Standard 30-Yr Line -->
-      <path d="${pathBaseline}" fill="none" stroke="var(--muted-foreground)" stroke-width="2" stroke-dasharray="4 4" opacity="0.65" />
-      
-      <!-- Accelerated Area & Curve -->
+      <path d="${pathBaseline}" fill="none" stroke="var(--muted-foreground)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.6" />
       <path d="${pathAcceleratedArea}" fill="url(#mortgage-acc-grad)" />
       <path d="${pathAcceleratedLine}" fill="none" stroke="var(--chart-1)" stroke-width="2.5" stroke-linecap="round" />
-      
       ${payoffMarkerSvg}
 
-      <!-- Interactive Crosshair -->
       <g id="mortgage-chart-crosshair" style="display: none;">
         <line id="m-crosshair-line-x" x1="0" y1="${margin.top}" x2="0" y2="${margin.top + plotHeight}" stroke="var(--foreground)" stroke-width="1" stroke-dasharray="2 2" opacity="0.6" />
         <circle id="m-crosshair-dot-balance" r="5" fill="var(--chart-1)" stroke="var(--card)" stroke-width="2" />
@@ -715,7 +699,6 @@ function renderMortgageChart(paydownResult, mortgageSt) {
 function updateCompoundUI() {
   const result = calculateProjection(compoundState);
 
-  // Sync Input Fields & Sliders
   const setVal = (id, val) => {
     const el = document.getElementById(id);
     if (el && document.activeElement !== el) el.value = val;
@@ -730,7 +713,6 @@ function updateCompoundUI() {
   setVal('years-input', compoundState.years);
   setVal('years-slider', compoundState.years);
 
-  // Update slider fill tracks
   const updateTrack = (sliderId, fillId, stateKey) => {
     const slider = document.getElementById(sliderId);
     const fill = document.getElementById(fillId);
@@ -748,6 +730,7 @@ function updateCompoundUI() {
 
   // Summary Metrics
   const elHeroBal = document.getElementById('hero-balance');
+  const elHeroBadge = document.getElementById('hero-net-growth-badge');
   const elHeroDesc = document.getElementById('hero-description');
   const elHeroHeading = document.getElementById('hero-heading');
   const elStatDeposited = document.getElementById('stat-total-deposited');
@@ -756,11 +739,14 @@ function updateCompoundUI() {
   const elStatFinalYr = document.getElementById('stat-final-year-interest');
 
   if (elHeroBal) elHeroBal.textContent = formatCurrency(result.finalBalance);
-  if (elHeroHeading) elHeroHeading.textContent = `Portfolio balance after ${compoundState.years} years`;
+  if (elHeroHeading) elHeroHeading.textContent = `Portfolio Balance After ${compoundState.years} Years`;
   
+  const growthPercent = result.finalBalance > 0 ? Math.round((result.totalInterest / result.finalBalance) * 100) : 0;
+  if (elHeroBadge) {
+    elHeroBadge.textContent = `+${formatCurrency(result.totalInterest)} Appreciation (${growthPercent}%)`;
+  }
   if (elHeroDesc) {
-    const growthPercent = result.finalBalance > 0 ? Math.round((result.totalInterest / result.finalBalance) * 100) : 0;
-    elHeroDesc.innerHTML = `You put in ${formatCurrency(result.totalDeposited)} and capital growth added <span class="num font-mono text-foreground font-medium">${formatCurrency(result.totalInterest)}</span> on top — ${growthPercent}% of the final balance is money generated from investment appreciation.`;
+    elHeroDesc.innerHTML = `You contribute <span class="font-mono text-foreground font-medium">${formatCurrency(result.totalDeposited)}</span> and compound appreciation generates <span class="font-mono text-primary font-semibold">${formatCurrency(result.totalInterest)}</span> on top.`;
   }
 
   if (elStatDeposited) elStatDeposited.textContent = formatCurrency(result.totalDeposited);
@@ -768,7 +754,7 @@ function updateCompoundUI() {
   if (elStatMultiple) elStatMultiple.textContent = `${result.growthMultiple}×`;
   if (elStatFinalYr) elStatFinalYr.textContent = formatCurrency(result.finalYearInterest);
 
-  // Composition Progress Bar
+  // Composition Bar
   const barDep = document.getElementById('comp-bar-deposits');
   const barInt = document.getElementById('comp-bar-interest');
   if (barDep && barInt && result.finalBalance > 0) {
@@ -778,7 +764,7 @@ function updateCompoundUI() {
     barInt.style.flexGrow = intRatio.toFixed(4);
   }
 
-  // Render Table Rows
+  // Schedule Table
   const tbody = document.getElementById('schedule-tbody');
   const rowCountSpan = document.getElementById('table-row-count');
   const resetBtn = document.getElementById('reset-overrides-btn');
@@ -794,18 +780,17 @@ function updateCompoundUI() {
     }
 
     tbody.innerHTML = visibleRows.map(r => `
-      <tr class="border-b border-border/50 hover:bg-muted/40 transition-colors cursor-pointer group" data-year="${r.year}">
-        <td class="p-3 font-mono text-xs font-medium text-foreground">
+      <tr class="border-b border-border/40 hover:bg-muted/40 transition-colors cursor-pointer group" data-year="${r.year}">
+        <td class="p-2.5 font-mono text-xs font-medium text-foreground">
           ${r.isCustom ? '<span class="custom-row-badge" title="Custom assumptions active"></span>' : ''}Year ${r.year}
         </td>
-        <td class="p-3 font-mono text-xs text-right text-muted-foreground">${formatCurrency(r.depositThisYear)}</td>
-        <td class="p-3 font-mono text-xs text-right text-muted-foreground">${formatCurrency(r.interestThisYear)}</td>
-        <td class="p-3 font-mono text-xs text-right font-medium text-primary">${formatCurrency(r.interest)}</td>
-        <td class="p-3 font-mono text-xs text-right font-semibold text-foreground">${formatCurrency(r.balance)}</td>
+        <td class="p-2.5 font-mono text-xs text-right text-muted-foreground">${formatCurrency(r.depositThisYear)}</td>
+        <td class="p-2.5 font-mono text-xs text-right text-muted-foreground">${formatCurrency(r.interestThisYear)}</td>
+        <td class="p-2.5 font-mono text-xs text-right font-medium text-primary">${formatCurrency(r.interest)}</td>
+        <td class="p-2.5 font-mono text-xs text-right font-semibold text-foreground">${formatCurrency(r.balance)}</td>
       </tr>
     `).join('');
 
-    // Attach row click to modal
     tbody.querySelectorAll('tr').forEach(tr => {
       tr.addEventListener('click', () => {
         const yr = Number(tr.getAttribute('data-year'));
@@ -814,7 +799,7 @@ function updateCompoundUI() {
     });
   }
 
-  // Update Toggle Button text
+  // Toggle button text
   const toggleText = document.getElementById('table-toggle-text');
   const toggleIcon = document.getElementById('table-toggle-icon');
   const totalRows = result.schedule.length - 1;
@@ -828,7 +813,7 @@ function updateCompoundUI() {
     }
   }
 
-  // Render SVG Area Chart
+  // Render SVG Chart
   renderCompoundChart(result.schedule, result.crossoverYear);
 }
 
@@ -836,7 +821,6 @@ function updateMortgageUI() {
   const paydownResult = calculateMortgagePaydown(mortgageState);
   const refiResult = calculateRefinance(mortgageState);
 
-  // Sync Input Fields & Sliders
   const setVal = (id, val) => {
     const el = document.getElementById(id);
     if (el && document.activeElement !== el) el.value = val;
@@ -855,14 +839,12 @@ function updateMortgageUI() {
   setVal('mortgage-extra-annual-input', mortgageState.extraAnnual);
   setVal('mortgage-extra-annual-slider', mortgageState.extraAnnual);
 
-  // Update computed badges
   const elLoanBadge = document.getElementById('mortgage-loan-principal-badge');
   if (elLoanBadge) elLoanBadge.textContent = `Loan: ${formatCurrency(paydownResult.loanPrincipal)}`;
 
   const elTermDisplay = document.getElementById('mortgage-term-display');
   if (elTermDisplay) elTermDisplay.textContent = `${mortgageState.term} years (${mortgageState.term * 12} mos)`;
 
-  // Update slider fill tracks
   const updateTrack = (sliderId, fillId, stateKey) => {
     const slider = document.getElementById(sliderId);
     const fill = document.getElementById(fillId);
@@ -884,7 +866,6 @@ function updateMortgageUI() {
   const termFill = document.getElementById('mortgage-term-fill');
   if (termFill) termFill.style.width = `${((mortgageState.term - 5) / (40 - 5)) * 100}%`;
 
-  // Term Presets Button Styling
   document.querySelectorAll('.term-preset-btn').forEach(btn => {
     const t = Number(btn.getAttribute('data-term'));
     if (t === mortgageState.term) {
@@ -894,7 +875,7 @@ function updateMortgageUI() {
     }
   });
 
-  // Paydown Summary Metrics
+  // Paydown Banner Metrics
   const elHeroPayment = document.getElementById('mortgage-hero-payment');
   const elHeroPayoff = document.getElementById('mortgage-hero-payoff');
   const elBadgeTimeSaved = document.getElementById('mortgage-badge-time-saved');
@@ -904,18 +885,18 @@ function updateMortgageUI() {
   const elStatTotalCost = document.getElementById('mortgage-stat-total-cost');
 
   if (elHeroPayment) {
-    elHeroPayment.innerHTML = `${formatCurrency(paydownResult.totalMonthlyPayment)}<span class="text-sm text-muted-foreground font-normal font-sans">/mo</span>`;
+    elHeroPayment.innerHTML = `${formatCurrency(paydownResult.totalMonthlyPayment)}<span class="text-sm font-normal text-muted-foreground font-sans">/mo</span>`;
   }
   if (elHeroPayoff) {
-    elHeroPayoff.innerHTML = `Standard payment is <span class="font-mono font-medium text-foreground">${formatCurrency(paydownResult.standardMonthlyPayment)}</span> plus <span class="font-mono text-primary font-medium">+${formatCurrency(mortgageState.extraMonthly)}</span> extra principal. Loan is paid off in <span class="text-foreground font-semibold font-mono">${formatMonthsToYears(paydownResult.payoffMonth)}</span>.`;
+    elHeroPayoff.innerHTML = `Standard payment is <span class="font-mono text-foreground font-medium">${formatCurrency(paydownResult.standardMonthlyPayment)}</span> plus <span class="font-mono text-primary font-medium">+${formatCurrency(mortgageState.extraMonthly)}</span> extra principal. Loan is paid off in <span class="font-semibold text-foreground">${formatMonthsToYears(paydownResult.payoffMonth)}</span>.`;
   }
   if (elBadgeTimeSaved) {
     if (paydownResult.monthsSaved > 0) {
       elBadgeTimeSaved.textContent = `🎉 ${formatMonthsToYears(paydownResult.monthsSaved)} early!`;
-      elBadgeTimeSaved.className = 'badge-success';
+      elBadgeTimeSaved.className = 'badge-pill-success';
     } else {
       elBadgeTimeSaved.textContent = 'Standard term';
-      elBadgeTimeSaved.className = 'badge-neutral';
+      elBadgeTimeSaved.className = 'badge-pill-neutral';
     }
   }
 
@@ -935,11 +916,10 @@ function updateMortgageUI() {
     mBarInt.style.flexGrow = intRatio.toFixed(4);
   }
 
-  // Refinance Summary Metrics
+  // Refinance Banner Metrics
   const elRefiSavings = document.getElementById('refi-hero-monthly-savings');
   const elRefiDesc = document.getElementById('refi-hero-desc');
   const elRefiBadge = document.getElementById('refi-breakeven-badge');
-  const elRefiBreakevenText = document.getElementById('refi-breakeven-text');
   const elRefiNetSavings = document.getElementById('refi-stat-net-savings');
   const elRefiCurrentInt = document.getElementById('refi-stat-current-interest');
   const elRefiNewInt = document.getElementById('refi-stat-new-interest');
@@ -948,27 +928,25 @@ function updateMortgageUI() {
 
   if (elRefiSavings) {
     if (refiResult.monthlySavings > 0) {
-      elRefiSavings.innerHTML = `Save ${formatCurrency(refiResult.monthlySavings)}<span class="text-sm text-muted-foreground font-normal font-sans">/mo</span>`;
-      elRefiSavings.className = 'num font-mono text-[clamp(2rem,3.5vw,2.75rem)] leading-none font-medium text-primary tracking-tight';
+      elRefiSavings.innerHTML = `Save ${formatCurrency(refiResult.monthlySavings)}<span class="text-sm font-normal text-muted-foreground font-sans">/mo</span>`;
+      elRefiSavings.className = 'num font-mono text-3xl sm:text-4xl font-bold text-primary tracking-tight';
     } else {
-      elRefiSavings.innerHTML = `+${formatCurrency(Math.abs(refiResult.monthlySavings))}<span class="text-sm text-muted-foreground font-normal font-sans">/mo</span>`;
-      elRefiSavings.className = 'num font-mono text-[clamp(2rem,3.5vw,2.75rem)] leading-none font-medium text-foreground tracking-tight';
+      elRefiSavings.innerHTML = `+${formatCurrency(Math.abs(refiResult.monthlySavings))}<span class="text-sm font-normal text-muted-foreground font-sans">/mo</span>`;
+      elRefiSavings.className = 'num font-mono text-3xl sm:text-4xl font-bold text-foreground tracking-tight';
     }
   }
 
   if (elRefiDesc) {
-    elRefiDesc.innerHTML = `Monthly payment moves from <span class="font-mono text-foreground font-medium">${formatCurrency(refiResult.currentMonthlyPayment)}</span> to <span class="font-mono text-primary font-medium">${formatCurrency(refiResult.newMonthlyPayment)}</span>.`;
+    elRefiDesc.innerHTML = `Monthly payment drops from <span class="font-mono text-foreground font-medium">${formatCurrency(refiResult.currentMonthlyPayment)}</span> to <span class="font-mono text-primary font-medium">${formatCurrency(refiResult.newMonthlyPayment)}</span>.`;
   }
 
-  if (elRefiBadge && elRefiBreakevenText) {
+  if (elRefiBadge) {
     if (refiResult.breakEvenMonths !== Infinity && refiResult.breakEvenMonths > 0) {
-      elRefiBadge.textContent = `${refiResult.breakEvenMonths} Months`;
-      elRefiBadge.className = refiResult.breakEvenMonths <= 24 ? 'badge-success' : 'badge-neutral';
-      elRefiBreakevenText.textContent = `Recoups ${formatCurrency(refiResult.closingCosts)} in closing costs within ${refiResult.breakEvenMonths} months of monthly savings.`;
+      elRefiBadge.textContent = `${refiResult.breakEvenMonths} Months to Break Even`;
+      elRefiBadge.className = refiResult.breakEvenMonths <= 24 ? 'badge-pill-success' : 'badge-pill-neutral';
     } else {
       elRefiBadge.textContent = 'No Break-Even';
-      elRefiBadge.className = 'badge-neutral';
-      elRefiBreakevenText.textContent = 'Monthly payment does not decrease with these refinance terms.';
+      elRefiBadge.className = 'badge-pill-neutral';
     }
   }
 
@@ -984,13 +962,13 @@ function updateMortgageUI() {
     if (refiResult.isFavorable) {
       elRefiVerdict.textContent = `Refinancing is financially favorable with ${formatCurrency(refiResult.monthlySavings)}/mo savings, rapid ${refiResult.breakEvenMonths}-month break-even, and +${formatCurrency(refiResult.netLifetimeSavings)} net lifetime savings.`;
     } else if (refiResult.netLifetimeSavings > 0) {
-      elRefiVerdict.textContent = `Refinancing produces positive net lifetime savings (+${formatCurrency(refiResult.netLifetimeSavings)}), but break-even takes ${refiResult.breakEvenMonths} months. Best if staying long-term.`;
+      elRefiVerdict.textContent = `Refinancing produces positive net lifetime savings (+${formatCurrency(refiResult.netLifetimeSavings)}), but break-even takes ${refiResult.breakEvenMonths} months.`;
     } else {
-      elRefiVerdict.textContent = `Caution: With closing costs and term adjustments, this refinance scenario results in higher lifetime costs. Consider negotiating lower rates or closing fees.`;
+      elRefiVerdict.textContent = `Caution: With closing costs and term adjustments, this refinance scenario results in higher lifetime costs.`;
     }
   }
 
-  // Render Mortgage Table
+  // Mortgage Table
   const tbody = document.getElementById('mortgage-schedule-tbody');
   const rowCountSpan = document.getElementById('mortgage-table-row-count');
   const resetBtn = document.getElementById('mortgage-reset-overrides-btn');
@@ -1006,14 +984,14 @@ function updateMortgageUI() {
     }
 
     tbody.innerHTML = visibleRows.map(r => `
-      <tr class="border-b border-border/50 hover:bg-muted/40 transition-colors cursor-pointer group" data-year="${r.year}">
-        <td class="p-3 font-mono text-xs font-medium text-foreground">
+      <tr class="border-b border-border/40 hover:bg-muted/40 transition-colors cursor-pointer group" data-year="${r.year}">
+        <td class="p-2.5 font-mono text-xs font-medium text-foreground">
           ${r.isCustom ? '<span class="custom-row-badge" title="Custom prepayment active"></span>' : ''}Year ${r.year}
         </td>
-        <td class="p-3 font-mono text-xs text-right text-foreground font-medium">${formatCurrency(r.principalPaid)}</td>
-        <td class="p-3 font-mono text-xs text-right text-muted-foreground">${formatCurrency(r.interestPaid)}</td>
-        <td class="p-3 font-mono text-xs text-right font-medium text-primary">${r.extraPrepaid > 0 ? `+${formatCurrency(r.extraPrepaid)}` : '$0'}</td>
-        <td class="p-3 font-mono text-xs text-right font-semibold text-foreground">${formatCurrency(r.remainingBalance)}</td>
+        <td class="p-2.5 font-mono text-xs text-right text-foreground font-medium">${formatCurrency(r.principalPaid)}</td>
+        <td class="p-2.5 font-mono text-xs text-right text-muted-foreground">${formatCurrency(r.interestPaid)}</td>
+        <td class="p-2.5 font-mono text-xs text-right font-medium text-primary">${r.extraPrepaid > 0 ? `+${formatCurrency(r.extraPrepaid)}` : '$0'}</td>
+        <td class="p-2.5 font-mono text-xs text-right font-semibold text-foreground">${formatCurrency(r.remainingBalance)}</td>
       </tr>
     `).join('');
 
@@ -1025,7 +1003,6 @@ function updateMortgageUI() {
     });
   }
 
-  // Update Mortgage Toggle Button Text
   const toggleText = document.getElementById('mortgage-table-toggle-text');
   const toggleIcon = document.getElementById('mortgage-table-toggle-icon');
   const totalRows = paydownResult.schedule.length;
@@ -1039,7 +1016,6 @@ function updateMortgageUI() {
     }
   }
 
-  // Render SVG Mortgage Chart
   renderMortgageChart(paydownResult, mortgageState);
 }
 
@@ -1055,7 +1031,6 @@ function updateUI() {
 // 7. MODAL CONTROLLERS
 // ==========================================
 
-// Compound Growth Modal
 function openCompoundYearModal(year) {
   compoundState.activeModalYear = year;
   const modal = document.getElementById('year-modal-backdrop');
@@ -1126,7 +1101,6 @@ function resetCompoundCurrentYearModal() {
   updateUI();
 }
 
-// Mortgage Year Modal
 function openMortgageYearModal(year) {
   mortgageState.activeModalYear = year;
   const modal = document.getElementById('mortgage-year-modal-backdrop');
@@ -1197,7 +1171,6 @@ function resetMortgageCurrentYearModal() {
   updateUI();
 }
 
-// Creator Info Modal
 function openCreatorModal() {
   const modal = document.getElementById('creator-modal-backdrop');
   const card = document.getElementById('creator-modal-card');
@@ -1224,7 +1197,6 @@ function closeCreatorModal() {
   }, 200);
 }
 
-// Photo Lightbox Modal
 function openPhotoLightbox() {
   const modal = document.getElementById('photo-lightbox-backdrop');
   const card = document.getElementById('photo-lightbox-card');
@@ -1256,13 +1228,11 @@ function closePhotoLightbox() {
 // ==========================================
 
 function setupEventListeners() {
-  // Top-level Navigation Tabs
+  // Navigation Tabs
   const tabGrowth = document.getElementById('tab-btn-growth');
   const tabMortgage = document.getElementById('tab-btn-mortgage');
   const viewGrowth = document.getElementById('view-growth');
   const viewMortgage = document.getElementById('view-mortgage');
-  const heroTitle = document.getElementById('main-hero-title');
-  const heroDesc = document.getElementById('main-hero-desc');
   const categoryLabel = document.getElementById('header-category-label');
 
   if (tabGrowth && tabMortgage) {
@@ -1279,9 +1249,6 @@ function setupEventListeners() {
       viewMortgage.classList.add('hidden');
 
       if (categoryLabel) categoryLabel.textContent = 'Investment Growth & Appreciation';
-      if (heroTitle) heroTitle.textContent = 'Watch capital turn into decades of growth.';
-      if (heroDesc) heroDesc.textContent = 'Adjust the assumptions and the projection updates instantly — separating what you put in from the value generated through compound returns across equity, real estate, and investments.';
-
       updateUI();
     });
 
@@ -1298,14 +1265,11 @@ function setupEventListeners() {
       viewGrowth.classList.add('hidden');
 
       if (categoryLabel) categoryLabel.textContent = 'Mortgage Paydowns & Refinancing';
-      if (heroTitle) heroTitle.textContent = 'Optimize borrowing, prepayment & refinancing.';
-      if (heroDesc) heroDesc.textContent = 'Model how regular extra principal payments save tens of thousands in interest and shave years off your mortgage — or evaluate break-even horizons for refinancing.';
-
       updateUI();
     });
   }
 
-  // Mortgage Submode Toggles (Paydown vs Refinance)
+  // Mortgage Submodes
   const subPaydown = document.getElementById('submode-btn-paydown');
   const subRefi = document.getElementById('submode-btn-refinance');
   const paydownInputs = document.getElementById('mortgage-paydown-inputs');
@@ -1345,9 +1309,7 @@ function setupEventListeners() {
     });
   }
 
-  // ----------------------------------------
-  // Binding Helper for Compound Fields
-  // ----------------------------------------
+  // Binding for Compound Fields
   const bindCompoundField = (key) => {
     const input = document.getElementById(`${key}-input`);
     const slider = document.getElementById(`${key}-slider`);
@@ -1407,10 +1369,14 @@ function setupEventListeners() {
   bindCompoundField('rate');
   bindCompoundField('years');
 
-  // Compounding Frequency Toggles
+  // Compounding Frequency
   document.querySelectorAll('.toggle-item:not(.mortgage-freq-btn)').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.toggle-item:not(.mortgage-freq-btn)').forEach(b => b.setAttribute('aria-pressed', 'false'));
+      document.querySelectorAll('.toggle-item:not(.mortgage-freq-btn)').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('active');
       btn.setAttribute('aria-pressed', 'true');
       compoundState.frequency = Number(btn.getAttribute('data-value'));
       updateCompoundUI();
@@ -1426,7 +1392,6 @@ function setupEventListeners() {
     });
   }
 
-  // Reset Overrides for Growth
   const resetOverridesBtn = document.getElementById('reset-overrides-btn');
   if (resetOverridesBtn) {
     resetOverridesBtn.addEventListener('click', () => {
@@ -1435,11 +1400,7 @@ function setupEventListeners() {
     });
   }
 
-  // ----------------------------------------
-  // Binding Helpers for Mortgage Fields
-  // ----------------------------------------
-  
-  // Home Price
+  // Mortgage Inputs
   const priceInput = document.getElementById('mortgage-price-input');
   const priceSlider = document.getElementById('mortgage-price-slider');
   const priceRange = document.getElementById('mortgage-price-range-select');
@@ -1484,7 +1445,7 @@ function setupEventListeners() {
     });
   }
 
-  // Down Payment ($ vs %)
+  // Down Payment
   const downAmtInput = document.getElementById('mortgage-down-amount');
   const downPctInput = document.getElementById('mortgage-down-percent');
   const downSlider = document.getElementById('mortgage-down-slider');
@@ -1518,7 +1479,7 @@ function setupEventListeners() {
     });
   }
 
-  // Mortgage Interest Rate
+  // Mortgage Rate
   const mRateInput = document.getElementById('mortgage-rate-input');
   const mRateSlider = document.getElementById('mortgage-rate-slider');
   const mRateRange = document.getElementById('mortgage-rate-range-select');
@@ -1544,7 +1505,7 @@ function setupEventListeners() {
     mRateRange.addEventListener('change', (e) => {
       const val = e.target.value;
       if (val === 'custom') {
-        const customMax = prompt('Enter custom maximum interest rate scale (%):', mortgageState.ranges.rate.max);
+        const customMax = prompt('Enter custom maximum rate scale (%):', mortgageState.ranges.rate.max);
         const num = Number(customMax);
         if (num > 0) {
           mortgageState.ranges.rate.max = num;
@@ -1561,7 +1522,7 @@ function setupEventListeners() {
     });
   }
 
-  // Loan Term Preset Buttons & Slider
+  // Loan Term Presets
   document.querySelectorAll('.term-preset-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const t = Number(btn.getAttribute('data-term'));
@@ -1642,10 +1603,14 @@ function setupEventListeners() {
     });
   }
 
-  // Payment Frequency (Monthly vs Bi-Weekly)
+  // Payment Frequency
   document.querySelectorAll('.mortgage-freq-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.mortgage-freq-btn').forEach(b => b.setAttribute('aria-pressed', 'false'));
+      document.querySelectorAll('.mortgage-freq-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('active');
       btn.setAttribute('aria-pressed', 'true');
       mortgageState.frequency = Number(btn.getAttribute('data-freq'));
       updateMortgageUI();
@@ -1681,7 +1646,7 @@ function setupEventListeners() {
     });
   }
 
-  // Mortgage Table Toggle Button
+  // Mortgage Table Toggle
   const mTableToggleBtn = document.getElementById('mortgage-table-toggle-btn');
   if (mTableToggleBtn) {
     mTableToggleBtn.addEventListener('click', () => {
@@ -1690,7 +1655,6 @@ function setupEventListeners() {
     });
   }
 
-  // Mortgage Reset Overrides
   const mResetOverridesBtn = document.getElementById('mortgage-reset-overrides-btn');
   if (mResetOverridesBtn) {
     mResetOverridesBtn.addEventListener('click', () => {
@@ -1699,11 +1663,7 @@ function setupEventListeners() {
     });
   }
 
-  // ----------------------------------------
-  // Modal Event Listeners
-  // ----------------------------------------
-  
-  // Compound Growth Year Modal
+  // Modal Listeners
   document.getElementById('modal-close-btn')?.addEventListener('click', closeCompoundYearModal);
   document.getElementById('modal-cancel-btn')?.addEventListener('click', closeCompoundYearModal);
   document.getElementById('modal-save-btn')?.addEventListener('click', saveCompoundYearModal);
@@ -1712,7 +1672,6 @@ function setupEventListeners() {
     if (e.target.id === 'year-modal-backdrop') closeCompoundYearModal();
   });
 
-  // Mortgage Year Modal
   document.getElementById('mortgage-modal-close-btn')?.addEventListener('click', closeMortgageYearModal);
   document.getElementById('mortgage-modal-cancel-btn')?.addEventListener('click', closeMortgageYearModal);
   document.getElementById('mortgage-modal-save-btn')?.addEventListener('click', saveMortgageYearModal);
@@ -1735,7 +1694,6 @@ function setupEventListeners() {
     if (e.target.id === 'photo-lightbox-backdrop') closePhotoLightbox();
   });
 
-  // Keyboard Escape Listener for all modals
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closePhotoLightbox();
@@ -1767,7 +1725,6 @@ function setupEventListeners() {
     });
   }
 
-  // Responsive Resize Observers
   if (typeof ResizeObserver !== 'undefined') {
     const chartGrowth = document.getElementById('chart-container');
     const chartMortgage = document.getElementById('mortgage-chart-container');
