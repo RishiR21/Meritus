@@ -645,10 +645,10 @@ function renderMortgageChart(paydownResult, mortgageSt) {
     const px = getX(payoffYear);
     payoffMarkerSvg = `
       <g class="payoff-marker">
-        <line x1="${px}" y1="${margin.top + 8}" x2="${px}" y2="${margin.top + plotHeight}" stroke="var(--chart-1)" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.9" />
-        <circle cx="${px}" cy="${getY(0)}" r="4.5" fill="var(--chart-1)" stroke="var(--card)" stroke-width="2" />
-        <rect x="${px - 58}" y="${margin.top + 4}" width="116" height="20" rx="4" fill="var(--card)" stroke="var(--chart-1)" stroke-width="1" />
-        <text x="${px}" y="${margin.top + 17}" text-anchor="middle" fill="var(--chart-1)" font-family="var(--font-mono)" font-size="10" font-weight="600" class="select-none">🎉 Debt Free: Yr ${payoffYear.toFixed(1)}</text>
+        <line x1="${px}" y1="${margin.top + 8}" x2="${px}" y2="${margin.top + plotHeight}" stroke="var(--chart-1)" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.8" />
+        <circle cx="${px}" cy="${getY(0)}" r="4" fill="var(--chart-1)" stroke="var(--card)" stroke-width="2" />
+        <rect x="${px - 42}" y="${margin.top + 2}" width="84" height="18" rx="3" fill="var(--card)" stroke="var(--chart-1)" stroke-width="1" />
+        <text x="${px}" y="${margin.top + 14}" text-anchor="middle" fill="var(--chart-1)" font-family="var(--font-mono)" font-size="9.5" font-weight="600" class="select-none">Payoff · Yr ${payoffYear.toFixed(1)}</text>
       </g>
     `;
   }
@@ -950,7 +950,7 @@ function updateMortgageUI() {
   }
   if (elBadgeTimeSaved) {
     if (paydownResult.monthsSaved > 0) {
-      elBadgeTimeSaved.textContent = `🎉 ${formatMonthsToYears(paydownResult.monthsSaved)} early!`;
+      elBadgeTimeSaved.textContent = `${formatMonthsToYears(paydownResult.monthsSaved)} early`;
       elBadgeTimeSaved.className = 'badge-pill-success';
     } else {
       elBadgeTimeSaved.textContent = 'Standard term';
